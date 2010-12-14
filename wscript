@@ -21,7 +21,7 @@ def build(bld):
 def shutdown():
   import Options, shutil
   if not Options.commands['clean']:
-    if os.path.exists('build/default/binding.node'):
+    if os.path.exists('build/default/timesignature.node'):
       os.symlink('build/default/timesignature.node', 'timesignature.node')
   else:
     if os.path.exists('timesignature.node'):

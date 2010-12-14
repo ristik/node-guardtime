@@ -1,0 +1,73 @@
+API to access GuardTime services.
+
+
+Includes C API in subdirectory libgt; and ugly hack to 
+make it produce only static base libs.
+
+How to build:
+npm link
+or 
+node-waf configure build
+
+
+Hello world:
+---------
+var gt = require('./guardtime');
+
+gt.sign('Hello world!', function(err, ts) {
+  if(err) {
+    return console.error(err);
+  } else {
+    gt.verify('Hello world!', ts, function(err, res){
+    	console.log('Ver result: ' + err, res);});
+  }
+});
+---------
+
+
+Initial API, for proper documentation please see the code ;)
+module TimeSignature  // low level TS toke manipulation layer
+* TimeSignature(der token data)  // constructor
+* TimeSignature.composeRequest(hash, alg='sha256') -> req data   // 'static'
+* TimeSignature.processResponse(gw response) -> der token data   // 'static'
+*  .composeExtendingRequest() -> req data
+*  .extend(ext response)
+*  .isExtended() -> y/n
+*  .getHashAlgorithm()  -> openssl style string
+*  .compareHash(hash, algo)  // get hash value and then compare in js could be prettier
+*  .getContent() -> serialized token data blob
+*  .getRegisteredTime() -> Date() object with Provably Secure Signing Time (TM)
+*  .isEarlierThan(another timesignature)
+*  .verify()   -> integer with flags
+*  TimeSignature.verifyPublications(pub file as der data)  // 'static'
+
+
+module GuardTime  //upper 'service layer' implemented in js
+*  .signHash(hash, alg='sha256', function(error, TimeSignature))
+*  .sign(data, alg='sha256', function(error, TimeSignature))
+*  .signFile(filename, alg='sha256', function(error, TimeSignature))  
+*  .extend(TimeSignature, function(error, TimeSignature)
+*  .loadPublications(cb)   // afterwards all verify.. stuff will use
+*  .verifyHash(hash, alg, TimeSignature, function(error, flags))
+*  .verifyFile(dataFilename, TimeSignature, function(error, flags))
+*  .verify(data buffer, TimeSignature, function(error, flags))
+*  .save(filename, ts, function(err));  // should be TS func
+*  .load(filename, function(err, ts))
+*  .loadSync(filename) -> ts
+*  property signer   // has sensible default for testing 
+*  property verifier
+*  property publications
+*  ... verification flags as properties, other constants
+---------------------
+
+
+For more information please go to
+http://www.guardtime.com/
+
+In short:
+GuardTime service adds hash of your doc to giant hash tree with globally unique
+root value; and regularily publishes these root values in FT.
+
+Published under Apache license v. 2.0
+Copyright GuardTime AS 2010
+
