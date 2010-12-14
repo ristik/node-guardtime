@@ -1,0 +1,59 @@
+\hypertarget{struct_g_t_hash_entry__st}{
+\section{GTHashEntry\_\-st Struct Reference}
+\label{struct_g_t_hash_entry__st}\index{GTHashEntry\_\-st@{GTHashEntry\_\-st}}
+}
+
+
+This is a helper structure to represent hash chains.  
+
+
+
+
+{\ttfamily \#include $<$gt\_\-base.h$>$}
+
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{struct_g_t_hash_entry__st_a92fd2e8c617862d67872bf97ba554d92}{hash\_\-algorithm}
+\item 
+int \hyperlink{struct_g_t_hash_entry__st_aa710126c9daa5e9686235104531a85ce}{direction}
+\item 
+int \hyperlink{struct_g_t_hash_entry__st_a3c427767bec4dcd42f94cdd31f15663f}{sibling\_\-hash\_\-algorithm}
+\item 
+char $\ast$ \hyperlink{struct_g_t_hash_entry__st_ac3ad24df0b919ae386765db7250f29db}{sibling\_\-hash\_\-value}
+\item 
+int \hyperlink{struct_g_t_hash_entry__st_a9c98ea68db1b4e2ce8112d708feccc69}{level}
+\end{DoxyCompactItemize}
+
+
+\subsection{Field Documentation}
+\hypertarget{struct_g_t_hash_entry__st_aa710126c9daa5e9686235104531a85ce}{
+\index{GTHashEntry\_\-st@{GTHashEntry\_\-st}!direction@{direction}}
+\index{direction@{direction}!GTHashEntry_st@{GTHashEntry\_\-st}}
+\subsubsection[{direction}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf GTHashEntry\_\-st::direction}}}
+\label{struct_g_t_hash_entry__st_aa710126c9daa5e9686235104531a85ce}
+The hash chain shape indicator. If {\ttfamily direction} is 0, then {\ttfamily sibling\_\-hash\_\-value} is concatenated to the left of the hash of the data from the previous step. If {\ttfamily direction} is 1, then {\ttfamily sibling\_\-hash\_\-value} is concatenated to the right of the hash of the data from the previous step. No other values are permitted. \hypertarget{struct_g_t_hash_entry__st_a92fd2e8c617862d67872bf97ba554d92}{
+\index{GTHashEntry\_\-st@{GTHashEntry\_\-st}!hash\_\-algorithm@{hash\_\-algorithm}}
+\index{hash\_\-algorithm@{hash\_\-algorithm}!GTHashEntry_st@{GTHashEntry\_\-st}}
+\subsubsection[{hash\_\-algorithm}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf GTHashEntry\_\-st::hash\_\-algorithm}}}
+\label{struct_g_t_hash_entry__st_a92fd2e8c617862d67872bf97ba554d92}
+The algorithm used to perform the hash step. See \hyperlink{group__common_ga5110e02245c37b4ff48ea4c4efb2924a}{GTHashAlgorithm} for possible values. \hypertarget{struct_g_t_hash_entry__st_a9c98ea68db1b4e2ce8112d708feccc69}{
+\index{GTHashEntry\_\-st@{GTHashEntry\_\-st}!level@{level}}
+\index{level@{level}!GTHashEntry_st@{GTHashEntry\_\-st}}
+\subsubsection[{level}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf GTHashEntry\_\-st::level}}}
+\label{struct_g_t_hash_entry__st_a9c98ea68db1b4e2ce8112d708feccc69}
+Indicates how many steps are allowed to precede the current step. \hypertarget{struct_g_t_hash_entry__st_a3c427767bec4dcd42f94cdd31f15663f}{
+\index{GTHashEntry\_\-st@{GTHashEntry\_\-st}!sibling\_\-hash\_\-algorithm@{sibling\_\-hash\_\-algorithm}}
+\index{sibling\_\-hash\_\-algorithm@{sibling\_\-hash\_\-algorithm}!GTHashEntry_st@{GTHashEntry\_\-st}}
+\subsubsection[{sibling\_\-hash\_\-algorithm}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf GTHashEntry\_\-st::sibling\_\-hash\_\-algorithm}}}
+\label{struct_g_t_hash_entry__st_a3c427767bec4dcd42f94cdd31f15663f}
+The algorithm used to compute the sibling hash value. See \hyperlink{group__common_ga5110e02245c37b4ff48ea4c4efb2924a}{GTHashAlgorithm} for possible values. \hypertarget{struct_g_t_hash_entry__st_ac3ad24df0b919ae386765db7250f29db}{
+\index{GTHashEntry\_\-st@{GTHashEntry\_\-st}!sibling\_\-hash\_\-value@{sibling\_\-hash\_\-value}}
+\index{sibling\_\-hash\_\-value@{sibling\_\-hash\_\-value}!GTHashEntry_st@{GTHashEntry\_\-st}}
+\subsubsection[{sibling\_\-hash\_\-value}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf GTHashEntry\_\-st::sibling\_\-hash\_\-value}}}
+\label{struct_g_t_hash_entry__st_ac3ad24df0b919ae386765db7250f29db}
+The hash value from the sibling in the tree, in base 16. 
+
+The documentation for this struct was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{gt__base_8h}{gt\_\-base.h}\end{DoxyCompactItemize}

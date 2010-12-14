@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/c-sdk/!svn/ver/85/trunk/test
+END
+Index.txt
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/c-sdk/!svn/ver/85/trunk/test/Index.txt
+END
+TestData.txt
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/c-sdk/!svn/ver/42/trunk/test/TestData.txt
+END
+TestData.txt.gtts1
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/c-sdk/!svn/ver/85/trunk/test/TestData.txt.gtts1
+END
+TestData.txt.gtts2
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/c-sdk/!svn/ver/85/trunk/test/TestData.txt.gtts2
+END
+TestData.png
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/c-sdk/!svn/ver/42/trunk/test/TestData.png
+END
+TestData.gtts1.png
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/c-sdk/!svn/ver/85/trunk/test/TestData.gtts1.png
+END
+TestData.png.gtts1
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/c-sdk/!svn/ver/85/trunk/test/TestData.png.gtts1
+END
+TestData.gtts2.png
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/c-sdk/!svn/ver/85/trunk/test/TestData.gtts2.png
+END
+TestData.png.gtts2
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/c-sdk/!svn/ver/85/trunk/test/TestData.png.gtts2
+END

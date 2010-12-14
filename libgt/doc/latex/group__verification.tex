@@ -1,0 +1,339 @@
+\hypertarget{group__verification}{
+\section{Verification}
+\label{group__verification}\index{Verification@{Verification}}
+}
+
+
+Functions to verify GuardTime timestamps.  
+
+
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_g_t_time_stamp_implicit__st}{GTTimeStampImplicit\_\-st}
+\begin{DoxyCompactList}\small\item\em This structure represents the implicit data computed from a timestamp. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_hash_entry__st}{GTHashEntry\_\-st}
+\begin{DoxyCompactList}\small\item\em This is a helper structure to represent hash chains. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_signed_attribute__st}{GTSignedAttribute\_\-st}
+\begin{DoxyCompactList}\small\item\em This is a helper structure to represent a signed attribute and its value. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_time_stamp_explicit__st}{GTTimeStampExplicit\_\-st}
+\begin{DoxyCompactList}\small\item\em This structure represents the explicit data extracted from a timestamp. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo\_\-st}
+\begin{DoxyCompactList}\small\item\em This structure represents verification info of a timestamp. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{group__verification_ga8249a216b7eb29f9e91cb5c01365741e}{
+typedef struct \hyperlink{struct_g_t_time_stamp_implicit__st}{GTTimeStampImplicit\_\-st} \hyperlink{group__verification_ga8249a216b7eb29f9e91cb5c01365741e}{GTTimeStampImplicit}}
+\label{group__verification_ga8249a216b7eb29f9e91cb5c01365741e}
+
+\begin{DoxyCompactList}\small\item\em This structure represents the implicit data computed from a timestamp. \item\end{DoxyCompactList}\item 
+\hypertarget{group__verification_ga95f30dc6daa4bd78d637c404c1d0cfa5}{
+typedef struct \hyperlink{struct_g_t_hash_entry__st}{GTHashEntry\_\-st} \hyperlink{group__verification_ga95f30dc6daa4bd78d637c404c1d0cfa5}{GTHashEntry}}
+\label{group__verification_ga95f30dc6daa4bd78d637c404c1d0cfa5}
+
+\begin{DoxyCompactList}\small\item\em This is a helper structure to represent hash chains. \item\end{DoxyCompactList}\item 
+\hypertarget{group__verification_gae2a2597c391b8d36404081ca98a27529}{
+typedef struct \hyperlink{struct_g_t_signed_attribute__st}{GTSignedAttribute\_\-st} \hyperlink{group__verification_gae2a2597c391b8d36404081ca98a27529}{GTSignedAttribute}}
+\label{group__verification_gae2a2597c391b8d36404081ca98a27529}
+
+\begin{DoxyCompactList}\small\item\em This is a helper structure to represent a signed attribute and its value. \item\end{DoxyCompactList}\item 
+\hypertarget{group__verification_ga0f0e3ec7bdbfdcc9e376a73db6f8364c}{
+typedef struct \hyperlink{struct_g_t_time_stamp_explicit__st}{GTTimeStampExplicit\_\-st} \hyperlink{group__verification_ga0f0e3ec7bdbfdcc9e376a73db6f8364c}{GTTimeStampExplicit}}
+\label{group__verification_ga0f0e3ec7bdbfdcc9e376a73db6f8364c}
+
+\begin{DoxyCompactList}\small\item\em This structure represents the explicit data extracted from a timestamp. \item\end{DoxyCompactList}\item 
+\hypertarget{group__verification_ga54ec3cb4a9e8bdfd7400116440e23b36}{
+typedef struct \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo\_\-st} \hyperlink{group__verification_ga54ec3cb4a9e8bdfd7400116440e23b36}{GTVerificationInfo}}
+\label{group__verification_ga54ec3cb4a9e8bdfd7400116440e23b36}
+
+\begin{DoxyCompactList}\small\item\em This structure represents verification info of a timestamp. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{group__verification_ga00f17574800248075712b4aa9a3faf93}{GTVerificationError} \{ \par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93ad0b3e065d9489145ca8dde0e85995a23}{GT\_\-NO\_\-FAILURES} =  0, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a06490f6af403f17ad54bd9d6dcc1d26e}{GT\_\-SYNTACTIC\_\-CHECK\_\-FAILURE} =  1, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a47ce39a1f75381a408a9b9b536f9d0d3}{GT\_\-HASHCHAIN\_\-VERIFICATION\_\-FAILURE} =  2, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a499a52b5452a02af6a91257d45edb566}{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-FAILURE} =  16, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a258b08f5119a5fbd355b338afe836af0}{GT\_\-NOT\_\-VALID\_\-PUBLIC\_\-KEY\_\-FAILURE} =  64, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93aa27848e0a52ca7ec1d60192e1550fd0d}{GT\_\-WRONG\_\-DOCUMENT\_\-FAILURE} =  128, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a90d79e59ed4b4925a4fce5766b0c515c}{GT\_\-NOT\_\-VALID\_\-PUBLICATION} =  256
+ \}
+\item 
+enum \hyperlink{group__verification_gae269a951c7facac91b31ab799f9595d0}{GTVerificationStatus} \{ \par
+\hyperlink{group__verification_ggae269a951c7facac91b31ab799f9595d0a7df57423a1d5add755fdb4c284a600ef}{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-PRESENT} =  1, 
+\par
+\hyperlink{group__verification_ggae269a951c7facac91b31ab799f9595d0a4c3c39acf3fee3df147d6b29623a26fa}{GT\_\-PUBLICATION\_\-REFERENCE\_\-PRESENT} =  2, 
+\par
+\hyperlink{group__verification_ggae269a951c7facac91b31ab799f9595d0abb16c35d0476c33d6a97a820ec97ed66}{GT\_\-DOCUMENT\_\-HASH\_\-CHECKED} =  16, 
+\par
+\hyperlink{group__verification_ggae269a951c7facac91b31ab799f9595d0af2557d8c2b53bc56273671fa78927eac}{GT\_\-PUBLICATION\_\-CHECKED} =  32
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{group__verification_gabb2faaa480064b6aad83582b80aa2c53}{GTTimestamp\_\-verify} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, int parse\_\-data, \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo} $\ast$$\ast$verification\_\-info)
+\item 
+int \hyperlink{group__verification_ga578626c0b001a90e666691f17f08f5c9}{GTTimestamp\_\-checkDocumentHash} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, const \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$data\_\-hash)
+\item 
+int \hyperlink{group__verification_ga7d73ddba1e350c4cfb7c65086f483be9}{GTTimestamp\_\-checkPublication} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file)
+\item 
+int \hyperlink{group__verification_ga317e993f5755ea8aff80335ef252ee04}{GTTimestamp\_\-checkPublicKey} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, \hyperlink{group__common_ga4cc54826c21e0ed438d8e35be7039328}{GT\_\-Time\_\-t64} history\_\-identifier, const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file)
+\item 
+void \hyperlink{group__verification_ga6c88243f78456ebc09cdc7854ade5589}{GTVerificationInfo\_\-print} (FILE $\ast$f, int indent, const \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo} $\ast$vinfo)
+\item 
+void \hyperlink{group__verification_ga39c2deaa12477a4a2ebadbe67672243e}{GTVerificationInfo\_\-free} (\hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo} $\ast$verification\_\-info)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Verification is the procedure of checking whether the data at hand matches the timestamp that is supposed to be proving its authenticity and whether the timestamp itself agrees with an external reference that is supposed to back it up.
+
+This is also the preferred method of exposing information about timestamps, since they contain several pieces of information not easily interpretable unless parsed through a verification procedure.
+
+The basic question about a timestamp is whether it is valid: 
+\begin{DoxyPre}
+    GTTimestamp *gtTimestamp = ... // get the timestamp to verify
+    GTVerificationInfo *gtVerificationInfo;
+    int res = GTTimestamp\_verify(gtTimestamp, 0, &gtVerificationInfo);
+    if (res == GT\_OK \&\& gtVerificationInfo->verification\_errors == GT\_NO\_FAILURES) \{
+        printf("Timestamp is valid!\(\backslash\)n");
+    \} else \{
+        printf("Timestamp is NOT valid!\(\backslash\)n");
+    \}
+\end{DoxyPre}
+
+
+However, the above procedure only checks the internal consistency of the timestamp. To make something meaningful out of it, the timestamp also needs to be connected to the data which supposedly was timestamped, as well as to a GuardTime publication (see \hyperlink{group__publications}{Publications} for info regarding how and why to acquire a publication).
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp}, \hyperlink{group__common_ga96461884b56b666a19e99b5c872eb2a6}{GTDataHash}, \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile}
+\end{DoxySeeAlso}
+The functions described in this group are declared in the {\ttfamily \hyperlink{gt__base_8h}{gt\_\-base.h}} header file and implemented in the {\ttfamily libgtbase} library. For more implementation and usage details, see the notes for the header file. 
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{group__verification_ga00f17574800248075712b4aa9a3faf93}{
+\index{verification@{verification}!GTVerificationError@{GTVerificationError}}
+\index{GTVerificationError@{GTVerificationError}!verification@{verification}}
+\subsubsection[{GTVerificationError}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf GTVerificationError}}}
+\label{group__verification_ga00f17574800248075712b4aa9a3faf93}
+Timestamp verification error codes.
+
+\begin{DoxyNote}{Note}
+Values other than {\ttfamily GT\_\-NO\_\-FAILURES} are bit flags so that a single {\ttfamily int} can contain any combination of them. 
+\end{DoxyNote}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{GT\_\-NO\_\-FAILURES@{GT\_\-NO\_\-FAILURES}!verification@{verification}}\index{verification@{verification}!GT\_\-NO\_\-FAILURES@{GT\_\-NO\_\-FAILURES}}\item[{\em 
+\hypertarget{group__verification_gga00f17574800248075712b4aa9a3faf93ad0b3e065d9489145ca8dde0e85995a23}{
+GT\_\-NO\_\-FAILURES}
+\label{group__verification_gga00f17574800248075712b4aa9a3faf93ad0b3e065d9489145ca8dde0e85995a23}
+}]The verification completed successfully. \index{GT\_\-SYNTACTIC\_\-CHECK\_\-FAILURE@{GT\_\-SYNTACTIC\_\-CHECK\_\-FAILURE}!verification@{verification}}\index{verification@{verification}!GT\_\-SYNTACTIC\_\-CHECK\_\-FAILURE@{GT\_\-SYNTACTIC\_\-CHECK\_\-FAILURE}}\item[{\em 
+\hypertarget{group__verification_gga00f17574800248075712b4aa9a3faf93a06490f6af403f17ad54bd9d6dcc1d26e}{
+GT\_\-SYNTACTIC\_\-CHECK\_\-FAILURE}
+\label{group__verification_gga00f17574800248075712b4aa9a3faf93a06490f6af403f17ad54bd9d6dcc1d26e}
+}]The level bytes inside the hash chains are improperly ordered. \index{GT\_\-HASHCHAIN\_\-VERIFICATION\_\-FAILURE@{GT\_\-HASHCHAIN\_\-VERIFICATION\_\-FAILURE}!verification@{verification}}\index{verification@{verification}!GT\_\-HASHCHAIN\_\-VERIFICATION\_\-FAILURE@{GT\_\-HASHCHAIN\_\-VERIFICATION\_\-FAILURE}}\item[{\em 
+\hypertarget{group__verification_gga00f17574800248075712b4aa9a3faf93a47ce39a1f75381a408a9b9b536f9d0d3}{
+GT\_\-HASHCHAIN\_\-VERIFICATION\_\-FAILURE}
+\label{group__verification_gga00f17574800248075712b4aa9a3faf93a47ce39a1f75381a408a9b9b536f9d0d3}
+}]The hash chain computation result does not match the publication imprint. \index{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-FAILURE@{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-FAILURE}!verification@{verification}}\index{verification@{verification}!GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-FAILURE@{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-FAILURE}}\item[{\em 
+\hypertarget{group__verification_gga00f17574800248075712b4aa9a3faf93a499a52b5452a02af6a91257d45edb566}{
+GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-FAILURE}
+\label{group__verification_gga00f17574800248075712b4aa9a3faf93a499a52b5452a02af6a91257d45edb566}
+}]The {\ttfamily signed\_\-data} structure is incorrectly composed, i.e. wrong data is signed or the signature does not match with the public key in the timestamp. \index{GT\_\-NOT\_\-VALID\_\-PUBLIC\_\-KEY\_\-FAILURE@{GT\_\-NOT\_\-VALID\_\-PUBLIC\_\-KEY\_\-FAILURE}!verification@{verification}}\index{verification@{verification}!GT\_\-NOT\_\-VALID\_\-PUBLIC\_\-KEY\_\-FAILURE@{GT\_\-NOT\_\-VALID\_\-PUBLIC\_\-KEY\_\-FAILURE}}\item[{\em 
+\hypertarget{group__verification_gga00f17574800248075712b4aa9a3faf93a258b08f5119a5fbd355b338afe836af0}{
+GT\_\-NOT\_\-VALID\_\-PUBLIC\_\-KEY\_\-FAILURE}
+\label{group__verification_gga00f17574800248075712b4aa9a3faf93a258b08f5119a5fbd355b338afe836af0}
+}]Public key of signed timestamp is not found among published ones. \index{GT\_\-WRONG\_\-DOCUMENT\_\-FAILURE@{GT\_\-WRONG\_\-DOCUMENT\_\-FAILURE}!verification@{verification}}\index{verification@{verification}!GT\_\-WRONG\_\-DOCUMENT\_\-FAILURE@{GT\_\-WRONG\_\-DOCUMENT\_\-FAILURE}}\item[{\em 
+\hypertarget{group__verification_gga00f17574800248075712b4aa9a3faf93aa27848e0a52ca7ec1d60192e1550fd0d}{
+GT\_\-WRONG\_\-DOCUMENT\_\-FAILURE}
+\label{group__verification_gga00f17574800248075712b4aa9a3faf93aa27848e0a52ca7ec1d60192e1550fd0d}
+}]Timestamp does not match with the document it is claimed to belong to. \index{GT\_\-NOT\_\-VALID\_\-PUBLICATION@{GT\_\-NOT\_\-VALID\_\-PUBLICATION}!verification@{verification}}\index{verification@{verification}!GT\_\-NOT\_\-VALID\_\-PUBLICATION@{GT\_\-NOT\_\-VALID\_\-PUBLICATION}}\item[{\em 
+\hypertarget{group__verification_gga00f17574800248075712b4aa9a3faf93a90d79e59ed4b4925a4fce5766b0c515c}{
+GT\_\-NOT\_\-VALID\_\-PUBLICATION}
+\label{group__verification_gga00f17574800248075712b4aa9a3faf93a90d79e59ed4b4925a4fce5766b0c515c}
+}]The publications file is inconsistent with the corresponding data in timestamp -\/ publication identifiers do not match or published hash values do not match. \end{description}
+\end{Desc}
+
+\hypertarget{group__verification_gae269a951c7facac91b31ab799f9595d0}{
+\index{verification@{verification}!GTVerificationStatus@{GTVerificationStatus}}
+\index{GTVerificationStatus@{GTVerificationStatus}!verification@{verification}}
+\subsubsection[{GTVerificationStatus}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf GTVerificationStatus}}}
+\label{group__verification_gae269a951c7facac91b31ab799f9595d0}
+Timestamp verification status codes.
+
+\begin{DoxyNote}{Note}
+The values are bit flags so that a single {\ttfamily int} can contain any combination of them. 
+\end{DoxyNote}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-PRESENT@{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-PRESENT}!verification@{verification}}\index{verification@{verification}!GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-PRESENT@{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-PRESENT}}\item[{\em 
+\hypertarget{group__verification_ggae269a951c7facac91b31ab799f9595d0a7df57423a1d5add755fdb4c284a600ef}{
+GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-PRESENT}
+\label{group__verification_ggae269a951c7facac91b31ab799f9595d0a7df57423a1d5add755fdb4c284a600ef}
+}]The PKI signature was present in the timestamp. \index{GT\_\-PUBLICATION\_\-REFERENCE\_\-PRESENT@{GT\_\-PUBLICATION\_\-REFERENCE\_\-PRESENT}!verification@{verification}}\index{verification@{verification}!GT\_\-PUBLICATION\_\-REFERENCE\_\-PRESENT@{GT\_\-PUBLICATION\_\-REFERENCE\_\-PRESENT}}\item[{\em 
+\hypertarget{group__verification_ggae269a951c7facac91b31ab799f9595d0a4c3c39acf3fee3df147d6b29623a26fa}{
+GT\_\-PUBLICATION\_\-REFERENCE\_\-PRESENT}
+\label{group__verification_ggae269a951c7facac91b31ab799f9595d0a4c3c39acf3fee3df147d6b29623a26fa}
+}]A publication reference was present in the timestamp. \index{GT\_\-DOCUMENT\_\-HASH\_\-CHECKED@{GT\_\-DOCUMENT\_\-HASH\_\-CHECKED}!verification@{verification}}\index{verification@{verification}!GT\_\-DOCUMENT\_\-HASH\_\-CHECKED@{GT\_\-DOCUMENT\_\-HASH\_\-CHECKED}}\item[{\em 
+\hypertarget{group__verification_ggae269a951c7facac91b31ab799f9595d0abb16c35d0476c33d6a97a820ec97ed66}{
+GT\_\-DOCUMENT\_\-HASH\_\-CHECKED}
+\label{group__verification_ggae269a951c7facac91b31ab799f9595d0abb16c35d0476c33d6a97a820ec97ed66}
+}]The timestamp was checked against the document hash. \index{GT\_\-PUBLICATION\_\-CHECKED@{GT\_\-PUBLICATION\_\-CHECKED}!verification@{verification}}\index{verification@{verification}!GT\_\-PUBLICATION\_\-CHECKED@{GT\_\-PUBLICATION\_\-CHECKED}}\item[{\em 
+\hypertarget{group__verification_ggae269a951c7facac91b31ab799f9595d0af2557d8c2b53bc56273671fa78927eac}{
+GT\_\-PUBLICATION\_\-CHECKED}
+\label{group__verification_ggae269a951c7facac91b31ab799f9595d0af2557d8c2b53bc56273671fa78927eac}
+}]The timestamp was checked against the publication data. \end{description}
+\end{Desc}
+
+
+
+\subsection{Function Documentation}
+\hypertarget{group__verification_ga578626c0b001a90e666691f17f08f5c9}{
+\index{verification@{verification}!GTTimestamp\_\-checkDocumentHash@{GTTimestamp\_\-checkDocumentHash}}
+\index{GTTimestamp\_\-checkDocumentHash@{GTTimestamp\_\-checkDocumentHash}!verification@{verification}}
+\subsubsection[{GTTimestamp\_\-checkDocumentHash}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-checkDocumentHash (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ timestamp, }
+\item[{const {\bf GTDataHash} $\ast$}]{ data\_\-hash}
+\end{DoxyParamCaption}
+)}}
+\label{group__verification_ga578626c0b001a90e666691f17f08f5c9}
+Compares the document hash extracted from the timestamp to the given one. This is used by the verification methods in the next layer.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ Pointer to the timestamp. \\
+\hline
+{\em data\_\-hash} & {\ttfamily }(in) -\/ Pointer to the data hash. The hash computation must be closed before the hash object can be passed to this function.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code {\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code. 
+\end{DoxyReturn}
+\hypertarget{group__verification_ga7d73ddba1e350c4cfb7c65086f483be9}{
+\index{verification@{verification}!GTTimestamp\_\-checkPublication@{GTTimestamp\_\-checkPublication}}
+\index{GTTimestamp\_\-checkPublication@{GTTimestamp\_\-checkPublication}!verification@{verification}}
+\subsubsection[{GTTimestamp\_\-checkPublication}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-checkPublication (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ timestamp, }
+\item[{const {\bf GTPublicationsFile} $\ast$}]{ publications\_\-file}
+\end{DoxyParamCaption}
+)}}
+\label{group__verification_ga7d73ddba1e350c4cfb7c65086f483be9}
+Checks that the publication extracted from the timestamp is listed in the given publications file. This is used by the verification methods in the next layer.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ Pointer to the timestamp. \\
+\hline
+{\em publications\_\-file} & {\ttfamily }(in) -\/ Pointer to the publications file.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code {\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code. 
+\end{DoxyReturn}
+\hypertarget{group__verification_ga317e993f5755ea8aff80335ef252ee04}{
+\index{verification@{verification}!GTTimestamp\_\-checkPublicKey@{GTTimestamp\_\-checkPublicKey}}
+\index{GTTimestamp\_\-checkPublicKey@{GTTimestamp\_\-checkPublicKey}!verification@{verification}}
+\subsubsection[{GTTimestamp\_\-checkPublicKey}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-checkPublicKey (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ timestamp, }
+\item[{{\bf GT\_\-Time\_\-t64}}]{ history\_\-identifier, }
+\item[{const {\bf GTPublicationsFile} $\ast$}]{ publications\_\-file}
+\end{DoxyParamCaption}
+)}}
+\label{group__verification_ga317e993f5755ea8aff80335ef252ee04}
+Checks that the key used to sign the the timestamp is listed in the given publications file and was valid when the timestamp was issued. This is used by the verification methods in the next layer.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ Pointer to the timestamp. \\
+\hline
+{\em history\_\-identifier} & {\ttfamily }(in) -\/ Timestamp registration time. \\
+\hline
+{\em publications\_\-file} & {\ttfamily }(in) -\/ Pointer to the publications file.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code {\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code. 
+\end{DoxyReturn}
+\hypertarget{group__verification_gabb2faaa480064b6aad83582b80aa2c53}{
+\index{verification@{verification}!GTTimestamp\_\-verify@{GTTimestamp\_\-verify}}
+\index{GTTimestamp\_\-verify@{GTTimestamp\_\-verify}!verification@{verification}}
+\subsubsection[{GTTimestamp\_\-verify}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-verify (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ timestamp, }
+\item[{int}]{ parse\_\-data, }
+\item[{{\bf GTVerificationInfo} $\ast$$\ast$}]{ verification\_\-info}
+\end{DoxyParamCaption}
+)}}
+\label{group__verification_gabb2faaa480064b6aad83582b80aa2c53}
+Checks whether the timestamp is internally consistent. This is used by the verification methods in the next layer.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ Pointer to the timestamp that is to be verified. \\
+\hline
+{\em parse\_\-data} & {\ttfamily }(in) -\/ The {\ttfamily explicit\_\-data} field of the verification info will be filled if this is non-\/zero. \\
+\hline
+{\em verification\_\-info} & {\ttfamily }(out) -\/ Pointer that will receive pointer to verification info.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code {\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code. 
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+On success {\ttfamily verification\_\-errors} should still be checked. 
+\end{DoxyNote}
+\hypertarget{group__verification_ga39c2deaa12477a4a2ebadbe67672243e}{
+\index{verification@{verification}!GTVerificationInfo\_\-free@{GTVerificationInfo\_\-free}}
+\index{GTVerificationInfo\_\-free@{GTVerificationInfo\_\-free}!verification@{verification}}
+\subsubsection[{GTVerificationInfo\_\-free}]{\setlength{\rightskip}{0pt plus 5cm}void GTVerificationInfo\_\-free (
+\begin{DoxyParamCaption}
+\item[{{\bf GTVerificationInfo} $\ast$}]{ verification\_\-info}
+\end{DoxyParamCaption}
+)}}
+\label{group__verification_ga39c2deaa12477a4a2ebadbe67672243e}
+Frees memory used by verification info.
+
+
+\begin{DoxyParams}{Parameters}
+{\em verification\_\-info} & {\ttfamily }(in) -\/ {\ttfamily GTVerificationInfo} object that is to be freed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__common_ga0446e9253011a921665126e9f37016a1}{GT\_\-free()} 
+\end{DoxySeeAlso}
+\hypertarget{group__verification_ga6c88243f78456ebc09cdc7854ade5589}{
+\index{verification@{verification}!GTVerificationInfo\_\-print@{GTVerificationInfo\_\-print}}
+\index{GTVerificationInfo\_\-print@{GTVerificationInfo\_\-print}!verification@{verification}}
+\subsubsection[{GTVerificationInfo\_\-print}]{\setlength{\rightskip}{0pt plus 5cm}void GTVerificationInfo\_\-print (
+\begin{DoxyParamCaption}
+\item[{FILE $\ast$}]{ f, }
+\item[{int}]{ indent, }
+\item[{const {\bf GTVerificationInfo} $\ast$}]{ vinfo}
+\end{DoxyParamCaption}
+)}}
+\label{group__verification_ga6c88243f78456ebc09cdc7854ade5589}
+Convenience function to print contents of the GTVerificationInfo structure to the given output file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & {\ttfamily }(in) -\/ Pointer to the output stream. \\
+\hline
+{\em indent} & {\ttfamily }(in) -\/ Number of spaces to put before each output line. \\
+\hline
+{\em vinfo} & {\ttfamily }(in) -\/ Pointer to the verification info structure. \\
+\hline
+\end{DoxyParams}

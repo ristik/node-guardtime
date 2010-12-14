@@ -1,0 +1,472 @@
+\hypertarget{group__http}{
+\section{HTTP transport}
+\label{group__http}\index{HTTP transport@{HTTP transport}}
+}
+
+
+A simple HTTP transport implementation.  
+
+
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{group__http_gacf85f4c0d316a03db66a8ef24ddf3411}{GTHTTP\_\-VERSION}~(0 $<$$<$ 24 $|$ 3 $<$$<$ 16 $|$ 8)
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{group__http_ga9f42032eb2905e40ee6fe84e0dfc03c2}{GTHTTPStatusCode} \{ \par
+\hyperlink{group__http_gga9f42032eb2905e40ee6fe84e0dfc03c2a26adede81bf1a9366ba5c694071e7f7c}{GTHTTP\_\-HTTP\_\-LIMIT} =  0x1000, 
+\par
+\hyperlink{group__http_gga9f42032eb2905e40ee6fe84e0dfc03c2a196935519731c1937ef788ec01bf8e36}{GTHTTP\_\-HTTP\_\-BASE} =  GTHTTP\_\-LOWEST, 
+\par
+\hyperlink{group__http_gga9f42032eb2905e40ee6fe84e0dfc03c2a85676a04ec8467d5f486dbbb33b63a79}{GTHTTP\_\-IMPL\_\-BASE} =  GTHTTP\_\-HTTP\_\-BASE + GTHTTP\_\-HTTP\_\-LIMIT
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{group__http_gadab3f065f857d5187ab911da1c5c6978}{GTHTTP\_\-init} (const char $\ast$user\_\-agent, int init\_\-winsock)
+\item 
+void \hyperlink{group__http_gaf4f64a13a6af9a162dfc39c011c2f812}{GTHTTP\_\-finalize} (void)
+\item 
+const char $\ast$ \hyperlink{group__http_ga3df4ff0f34f540e640e0cc2b7610d921}{GTHTTP\_\-getErrorString} (int error)
+\item 
+int \hyperlink{group__http_gaf8fed890ccd3245cc91dcf656f969f6f}{GTHTTP\_\-getVersion} (void)
+\item 
+void \hyperlink{group__http_gae918254645884f0dedd5960980c1c632}{GTHTTP\_\-setConnectTimeout} (int timeout)
+\item 
+int \hyperlink{group__http_gafc28fbcfb83b8ca6a82053e6bcbcbc04}{GTHTTP\_\-getConnectTimeout} (void)
+\item 
+void \hyperlink{group__http_ga2144f61afab48c756df3441da928c53e}{GTHTTP\_\-setResponseTimeout} (int timeout)
+\item 
+int \hyperlink{group__http_ga5265b911e2549b97bf67979fe8026098}{GTHTTP\_\-getResponseTimeout} (void)
+\item 
+int \hyperlink{group__http_gad6158faeb4747293308cffe102bd9b2d}{GTHTTP\_\-sendRequest} (const char $\ast$url, const unsigned char $\ast$request, size\_\-t request\_\-length, unsigned char $\ast$$\ast$response, size\_\-t $\ast$response\_\-length, char $\ast$$\ast$error)
+\item 
+int \hyperlink{group__http_ga4e3e8302dd412eed484c83f600006dca}{GTHTTP\_\-createTimestampHash} (const \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$hash, const char $\ast$url, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$timestamp)
+\item 
+int \hyperlink{group__http_ga5567c03e03f48709c529dfb323d92a96}{GTHTTP\_\-createTimestampData} (const unsigned char $\ast$data, size\_\-t data\_\-len, const char $\ast$url, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$timestamp)
+\item 
+int \hyperlink{group__http_gaaad2bfa8db7c4770116197d50fb73b76}{GTHTTP\_\-extendTimestamp} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$ts\_\-in, const char $\ast$url, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$ts\_\-out)
+\item 
+int \hyperlink{group__http_ga29c56b103ec317445b65f4ed80028313}{GTHTTP\_\-verifyTimestampHash} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$ts, const \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$hash, const char $\ast$ext\_\-url, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$ext\_\-ts, const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$pub, const char $\ast$pub\_\-url, int parse, \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo} $\ast$$\ast$ver)
+\item 
+int \hyperlink{group__http_gab5486f6fb276f651ced2fa029bace0f2}{GTHTTP\_\-verifyTimestampData} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$ts, const unsigned char $\ast$data, size\_\-t data\_\-len, const char $\ast$ext\_\-url, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$ext\_\-ts, const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$pub, const char $\ast$pub\_\-url, int parse, \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo} $\ast$$\ast$ver)
+\item 
+int \hyperlink{group__http_gaa699442dc8eac0be397048e9287e7101}{GTHTTP\_\-getPublicationsFile} (const char $\ast$url, \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$$\ast$pub)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The functions described in this group are declared in the {\ttfamily \hyperlink{gt__http_8h}{gt\_\-http.h}} header file and implemented in the {\ttfamily libgthttp} library. For more implementation and usage details, see the notes for the header file. 
+
+\subsection{Define Documentation}
+\hypertarget{group__http_gacf85f4c0d316a03db66a8ef24ddf3411}{
+\index{http@{http}!GTHTTP\_\-VERSION@{GTHTTP\_\-VERSION}}
+\index{GTHTTP\_\-VERSION@{GTHTTP\_\-VERSION}!http@{http}}
+\subsubsection[{GTHTTP\_\-VERSION}]{\setlength{\rightskip}{0pt plus 5cm}\#define GTHTTP\_\-VERSION~(0 $<$$<$ 24 $|$ 3 $<$$<$ 16 $|$ 8)}}
+\label{group__http_gacf85f4c0d316a03db66a8ef24ddf3411}
+Version number of the HTTP module, as a 4-\/byte integer, with the major number in the highest, minor number in the second highest and build number in the two lowest bytes. The preprocessor macro is included to enable conditional compilation.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__http_gaf8fed890ccd3245cc91dcf656f969f6f}{GTHTTP\_\-getVersion}, \hyperlink{group__common_gafdac78985a08fc5052b1d1f2888a25c9}{GT\_\-VERSION} 
+\end{DoxySeeAlso}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{group__http_ga9f42032eb2905e40ee6fe84e0dfc03c2}{
+\index{http@{http}!GTHTTPStatusCode@{GTHTTPStatusCode}}
+\index{GTHTTPStatusCode@{GTHTTPStatusCode}!http@{http}}
+\subsubsection[{GTHTTPStatusCode}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf GTHTTPStatusCode}}}
+\label{group__http_ga9f42032eb2905e40ee6fe84e0dfc03c2}
+GuardTime status codes specific for the HTTP transport module.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__common_ga43b0c0f44bcf02caf0c2866b1f647a35}{GTStatusCode}. 
+\end{DoxySeeAlso}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{GTHTTP\_\-HTTP\_\-LIMIT@{GTHTTP\_\-HTTP\_\-LIMIT}!http@{http}}\index{http@{http}!GTHTTP\_\-HTTP\_\-LIMIT@{GTHTTP\_\-HTTP\_\-LIMIT}}\item[{\em 
+\hypertarget{group__http_gga9f42032eb2905e40ee6fe84e0dfc03c2a26adede81bf1a9366ba5c694071e7f7c}{
+GTHTTP\_\-HTTP\_\-LIMIT}
+\label{group__http_gga9f42032eb2905e40ee6fe84e0dfc03c2a26adede81bf1a9366ba5c694071e7f7c}
+}]This is the limit on distinct HTTP response codes the GuardTime HTTP module can handle. Since it's a fair bit above the highest value defined by the W3C, we should be safe for quite some time. \index{GTHTTP\_\-HTTP\_\-BASE@{GTHTTP\_\-HTTP\_\-BASE}!http@{http}}\index{http@{http}!GTHTTP\_\-HTTP\_\-BASE@{GTHTTP\_\-HTTP\_\-BASE}}\item[{\em 
+\hypertarget{group__http_gga9f42032eb2905e40ee6fe84e0dfc03c2a196935519731c1937ef788ec01bf8e36}{
+GTHTTP\_\-HTTP\_\-BASE}
+\label{group__http_gga9f42032eb2905e40ee6fe84e0dfc03c2a196935519731c1937ef788ec01bf8e36}
+}]This is the base value for response codes from the HTTP server. The response {\ttfamily xxx} is returned as {\ttfamily }(GTHTTP\_\-HTTP\_\-BASE + xxx), where xxx must be $>$0 and $<$GTHTTP\_\-HTTP\_\-LIMIT; anything outside that range is replaced with 0 (and returned as GTHTTP\_\-HTTP\_\-BASE). \index{GTHTTP\_\-IMPL\_\-BASE@{GTHTTP\_\-IMPL\_\-BASE}!http@{http}}\index{http@{http}!GTHTTP\_\-IMPL\_\-BASE@{GTHTTP\_\-IMPL\_\-BASE}}\item[{\em 
+\hypertarget{group__http_gga9f42032eb2905e40ee6fe84e0dfc03c2a85676a04ec8467d5f486dbbb33b63a79}{
+GTHTTP\_\-IMPL\_\-BASE}
+\label{group__http_gga9f42032eb2905e40ee6fe84e0dfc03c2a85676a04ec8467d5f486dbbb33b63a79}
+}]This is the base value for error codes from the underlying transport library (cURL on Linux, WinINet on Windows) used to disambiguate them from the GuardTime error codes: the library error {\ttfamily err} is returned as {\ttfamily }(GTHTTP\_\-IMPL\_\-BASE + err) from the GuardTime functions. Make sure nobody else uses the values in the range from {\ttfamily GTHTTP\_\-IMPL\_\-BASE} to {\ttfamily GTHTTP\_\-HIGHEST} or else the error codes can't be resolved to error messages correctly. \end{description}
+\end{Desc}
+
+
+
+\subsection{Function Documentation}
+\hypertarget{group__http_ga5567c03e03f48709c529dfb323d92a96}{
+\index{http@{http}!GTHTTP\_\-createTimestampData@{GTHTTP\_\-createTimestampData}}
+\index{GTHTTP\_\-createTimestampData@{GTHTTP\_\-createTimestampData}!http@{http}}
+\subsubsection[{GTHTTP\_\-createTimestampData}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-createTimestampData (
+\begin{DoxyParamCaption}
+\item[{const unsigned char $\ast$}]{ data, }
+\item[{size\_\-t}]{ data\_\-len, }
+\item[{const char $\ast$}]{ url, }
+\item[{{\bf GTTimestamp} $\ast$$\ast$}]{ timestamp}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_ga5567c03e03f48709c529dfb323d92a96}
+Creates a timestamp for the given data bytes using the signing service on the given URL.
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & {\ttfamily }(in) -\/ The data to create the timestamp for. \\
+\hline
+{\em data\_\-len} & {\ttfamily }(in) -\/ Length of the data. \\
+\hline
+{\em url} & {\ttfamily }(in) -\/ The signing service to use. \\
+\hline
+{\em timestamp} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the created timestamp. Use \hyperlink{group__timestamps_gab765221df505f63b2155c08a63c62c0f}{GTTimestamp\_\-free()} to release the memory when done. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__http_ga4e3e8302dd412eed484c83f600006dca}{
+\index{http@{http}!GTHTTP\_\-createTimestampHash@{GTHTTP\_\-createTimestampHash}}
+\index{GTHTTP\_\-createTimestampHash@{GTHTTP\_\-createTimestampHash}!http@{http}}
+\subsubsection[{GTHTTP\_\-createTimestampHash}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-createTimestampHash (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTDataHash} $\ast$}]{ hash, }
+\item[{const char $\ast$}]{ url, }
+\item[{{\bf GTTimestamp} $\ast$$\ast$}]{ timestamp}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_ga4e3e8302dd412eed484c83f600006dca}
+Creates a timestamp for the given data hash using the signing service on the given URL.
+
+
+\begin{DoxyParams}{Parameters}
+{\em hash} & {\ttfamily }(in) -\/ The data hash to create the timestamp for. \\
+\hline
+{\em url} & {\ttfamily }(in) -\/ The signing service to use. \\
+\hline
+{\em timestamp} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the created timestamp. Use \hyperlink{group__timestamps_gab765221df505f63b2155c08a63c62c0f}{GTTimestamp\_\-free()} to release the memory when done. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__http_gaaad2bfa8db7c4770116197d50fb73b76}{
+\index{http@{http}!GTHTTP\_\-extendTimestamp@{GTHTTP\_\-extendTimestamp}}
+\index{GTHTTP\_\-extendTimestamp@{GTHTTP\_\-extendTimestamp}!http@{http}}
+\subsubsection[{GTHTTP\_\-extendTimestamp}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-extendTimestamp (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ ts\_\-in, }
+\item[{const char $\ast$}]{ url, }
+\item[{{\bf GTTimestamp} $\ast$$\ast$}]{ ts\_\-out}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_gaaad2bfa8db7c4770116197d50fb73b76}
+Extends the given timestamp using the extending service on the given URL.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ts\_\-in} & {\ttfamily }(in) -\/ The timestamp to be extended. \\
+\hline
+{\em url} & {\ttfamily }(in) -\/ The extending service to use. \\
+\hline
+{\em ts\_\-out} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the newly created timestamp. Use \hyperlink{group__timestamps_gab765221df505f63b2155c08a63c62c0f}{GTTimestamp\_\-free()} to release the memory when done. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__http_gaf4f64a13a6af9a162dfc39c011c2f812}{
+\index{http@{http}!GTHTTP\_\-finalize@{GTHTTP\_\-finalize}}
+\index{GTHTTP\_\-finalize@{GTHTTP\_\-finalize}!http@{http}}
+\subsubsection[{GTHTTP\_\-finalize}]{\setlength{\rightskip}{0pt plus 5cm}void GTHTTP\_\-finalize (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_gaf4f64a13a6af9a162dfc39c011c2f812}
+Frees the resources used by the HTTP module. Must be called once after any other HTTP functions.
+
+\begin{DoxyNote}{Note}
+You most likely have to call \hyperlink{group__common_ga3facfda504f40ddda537fcb91fc6c712}{GT\_\-finalize()} to clean up the base module as well. 
+\end{DoxyNote}
+\hypertarget{group__http_gafc28fbcfb83b8ca6a82053e6bcbcbc04}{
+\index{http@{http}!GTHTTP\_\-getConnectTimeout@{GTHTTP\_\-getConnectTimeout}}
+\index{GTHTTP\_\-getConnectTimeout@{GTHTTP\_\-getConnectTimeout}!http@{http}}
+\subsubsection[{GTHTTP\_\-getConnectTimeout}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-getConnectTimeout (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_gafc28fbcfb83b8ca6a82053e6bcbcbc04}
+Returns the timeout for connecting to the server.
+
+\begin{DoxyReturn}{Returns}
+The timeout, in seconds. Zero means waiting forever (no timeout), negative means using the implementation default. 
+\end{DoxyReturn}
+\hypertarget{group__http_ga3df4ff0f34f540e640e0cc2b7610d921}{
+\index{http@{http}!GTHTTP\_\-getErrorString@{GTHTTP\_\-getErrorString}}
+\index{GTHTTP\_\-getErrorString@{GTHTTP\_\-getErrorString}!http@{http}}
+\subsubsection[{GTHTTP\_\-getErrorString}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ GTHTTP\_\-getErrorString (
+\begin{DoxyParamCaption}
+\item[{int}]{ error}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_ga3df4ff0f34f540e640e0cc2b7610d921}
+Gets human readable error string in English.
+
+
+\begin{DoxyParams}{Parameters}
+{\em error} & {\ttfamily }(in) -\/ Status code from a GuardTime HTTP function. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the error string (it is static, don't try to free it).
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+The functions in the HTTP module may relay status codes from the base module. This function can handle the relayed codes as well.
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__common_gaf03ec60bbbf4da31f46e6420ec7bb3d4}{GT\_\-getErrorString()} 
+\end{DoxySeeAlso}
+\hypertarget{group__http_gaa699442dc8eac0be397048e9287e7101}{
+\index{http@{http}!GTHTTP\_\-getPublicationsFile@{GTHTTP\_\-getPublicationsFile}}
+\index{GTHTTP\_\-getPublicationsFile@{GTHTTP\_\-getPublicationsFile}!http@{http}}
+\subsubsection[{GTHTTP\_\-getPublicationsFile}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-getPublicationsFile (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{ url, }
+\item[{{\bf GTPublicationsFile} $\ast$$\ast$}]{ pub}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_gaa699442dc8eac0be397048e9287e7101}
+Downloads the publications file from the given URL.
+
+
+\begin{DoxyParams}{Parameters}
+{\em url} & {\ttfamily }(in) -\/ Publications file URL. \\
+\hline
+{\em pub} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the publications file. Use \hyperlink{group__publications_ga585049b56c3445dab5b099b98734693c}{GTPublicationsFile\_\-free()} to release the memory when done. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__http_ga5265b911e2549b97bf67979fe8026098}{
+\index{http@{http}!GTHTTP\_\-getResponseTimeout@{GTHTTP\_\-getResponseTimeout}}
+\index{GTHTTP\_\-getResponseTimeout@{GTHTTP\_\-getResponseTimeout}!http@{http}}
+\subsubsection[{GTHTTP\_\-getResponseTimeout}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-getResponseTimeout (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_ga5265b911e2549b97bf67979fe8026098}
+Returns the timeout for getting a response from the server.
+
+\begin{DoxyReturn}{Returns}
+The timeout, in seconds. Zero means waiting forever (no timeout), negative means using the implementation default. 
+\end{DoxyReturn}
+\hypertarget{group__http_gaf8fed890ccd3245cc91dcf656f969f6f}{
+\index{http@{http}!GTHTTP\_\-getVersion@{GTHTTP\_\-getVersion}}
+\index{GTHTTP\_\-getVersion@{GTHTTP\_\-getVersion}!http@{http}}
+\subsubsection[{GTHTTP\_\-getVersion}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-getVersion (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_gaf8fed890ccd3245cc91dcf656f969f6f}
+Returns the version number of the library.
+
+\begin{DoxyReturn}{Returns}
+version number of the HTTP module, as a 4-\/byte integer, with the major number in the highest, minor number in the second highest and build number in the two lowest bytes.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__http_gacf85f4c0d316a03db66a8ef24ddf3411}{GTHTTP\_\-VERSION}, \hyperlink{group__common_ga29f20e0dcc653a818552d01aa8b02369}{GT\_\-getVersion} 
+\end{DoxySeeAlso}
+\hypertarget{group__http_gadab3f065f857d5187ab911da1c5c6978}{
+\index{http@{http}!GTHTTP\_\-init@{GTHTTP\_\-init}}
+\index{GTHTTP\_\-init@{GTHTTP\_\-init}!http@{http}}
+\subsubsection[{GTHTTP\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-init (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{ user\_\-agent, }
+\item[{int}]{ init\_\-winsock}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_gadab3f065f857d5187ab911da1c5c6978}
+Initializes the HTTP module. Must be called once before any other HTTP functions.
+
+
+\begin{DoxyParams}{Parameters}
+{\em user\_\-agent} & {\ttfamily }(in) -\/ If this is not {\ttfamily NULL}, it is reported to the service provider in order to help with server-\/side troubleshooting and statistics. It is recommended to include the application name and version number. \\
+\hline
+{\em init\_\-winsock} & {\ttfamily }(in) -\/ If this parameter is non-\/zero, then performs Windows socket initialization and cleanup. If this flag is zero, then the user must have initialized Windows sockets. On Unix systems, this parameter has no effect. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code).
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+You most likely have to call \hyperlink{group__common_gafb831f40c4486b882d9eef38d7c85f94}{GT\_\-init()} to initialize the base module as well. 
+\end{DoxyNote}
+\hypertarget{group__http_gad6158faeb4747293308cffe102bd9b2d}{
+\index{http@{http}!GTHTTP\_\-sendRequest@{GTHTTP\_\-sendRequest}}
+\index{GTHTTP\_\-sendRequest@{GTHTTP\_\-sendRequest}!http@{http}}
+\subsubsection[{GTHTTP\_\-sendRequest}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-sendRequest (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{ url, }
+\item[{const unsigned char $\ast$}]{ request, }
+\item[{size\_\-t}]{ request\_\-length, }
+\item[{unsigned char $\ast$$\ast$}]{ response, }
+\item[{size\_\-t $\ast$}]{ response\_\-length, }
+\item[{char $\ast$$\ast$}]{ error}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_gad6158faeb4747293308cffe102bd9b2d}
+Sends a HTTP request.
+
+
+\begin{DoxyParams}{Parameters}
+{\em url} & {\ttfamily }(in) -\/ URL to send the request to. \\
+\hline
+{\em request} & {\ttfamily }(in) -\/ Pointer to the buffer containing the request. If {\ttfamily request} is {\ttfamily NULL}, a {\ttfamily GET} request is sent. If {\ttfamily request} is non-\/{\ttfamily NULL}, a {\ttfamily POST} request is sent. \\
+\hline
+{\em request\_\-length} & {\ttfamily }(in) -\/ Size of the buffer pointed by {\ttfamily request}. \\
+\hline
+{\em response} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the response. Use \hyperlink{group__common_ga0446e9253011a921665126e9f37016a1}{GT\_\-free()} to release the memory when done. \\
+\hline
+{\em response\_\-length} & {\ttfamily }(out) -\/ Pointer to the variable that receives the length of the response. \\
+\hline
+{\em error} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the error message. Use \hyperlink{group__common_ga0446e9253011a921665126e9f37016a1}{GT\_\-free()} to release the memory when done. May be {\ttfamily NULL}, in which case the error message is not returned. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__http_gae918254645884f0dedd5960980c1c632}{
+\index{http@{http}!GTHTTP\_\-setConnectTimeout@{GTHTTP\_\-setConnectTimeout}}
+\index{GTHTTP\_\-setConnectTimeout@{GTHTTP\_\-setConnectTimeout}!http@{http}}
+\subsubsection[{GTHTTP\_\-setConnectTimeout}]{\setlength{\rightskip}{0pt plus 5cm}void GTHTTP\_\-setConnectTimeout (
+\begin{DoxyParamCaption}
+\item[{int}]{ timeout}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_gae918254645884f0dedd5960980c1c632}
+Sets the timeout to be used for subsequent HTTP requests for connecting to the server.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timeout} & {\ttfamily }(in) -\/ The timeout, in seconds. Pass zero to wait forever (no timeout), or negative to use the implementation default. \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__http_ga2144f61afab48c756df3441da928c53e}{
+\index{http@{http}!GTHTTP\_\-setResponseTimeout@{GTHTTP\_\-setResponseTimeout}}
+\index{GTHTTP\_\-setResponseTimeout@{GTHTTP\_\-setResponseTimeout}!http@{http}}
+\subsubsection[{GTHTTP\_\-setResponseTimeout}]{\setlength{\rightskip}{0pt plus 5cm}void GTHTTP\_\-setResponseTimeout (
+\begin{DoxyParamCaption}
+\item[{int}]{ timeout}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_ga2144f61afab48c756df3441da928c53e}
+Sets the timeout to be used for subsequent HTTP requests for getting a response from the server.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timeout} & {\ttfamily }(in) -\/ The timeout, in seconds. Pass zero to wait forever (no timeout), or negative to use the implementation default. \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__http_gab5486f6fb276f651ced2fa029bace0f2}{
+\index{http@{http}!GTHTTP\_\-verifyTimestampData@{GTHTTP\_\-verifyTimestampData}}
+\index{GTHTTP\_\-verifyTimestampData@{GTHTTP\_\-verifyTimestampData}!http@{http}}
+\subsubsection[{GTHTTP\_\-verifyTimestampData}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-verifyTimestampData (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ ts, }
+\item[{const unsigned char $\ast$}]{ data, }
+\item[{size\_\-t}]{ data\_\-len, }
+\item[{const char $\ast$}]{ ext\_\-url, }
+\item[{{\bf GTTimestamp} $\ast$$\ast$}]{ ext\_\-ts, }
+\item[{const {\bf GTPublicationsFile} $\ast$}]{ pub, }
+\item[{const char $\ast$}]{ pub\_\-url, }
+\item[{int}]{ parse, }
+\item[{{\bf GTVerificationInfo} $\ast$$\ast$}]{ ver}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_gab5486f6fb276f651ced2fa029bace0f2}
+Verifies the given timestamp using the given data and the publication file from the given URL.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ts} & {\ttfamily }(in) -\/ The timestamp to be verified. \\
+\hline
+{\em data} & {\ttfamily }(in) -\/ The data to check the timestamp against. \\
+\hline
+{\em data\_\-len} & {\ttfamily }(in) -\/ Length of the data. \\
+\hline
+{\em ext\_\-url} & {\ttfamily }(in) -\/ The URL of the extending service. If this is {\ttfamily NULL}, no extension is attempted. \\
+\hline
+{\em ext\_\-ts} & {\ttfamily }(out) -\/ The pointer that will receive a pointer to the extended timestamp if the timestamp is extended during verification. If no extension is performed, {\ttfamily $\ast$ext\_\-ts} will be set to {\ttfamily NULL}. If {\ttfamily ext\_\-ts} is {\ttfamily NULL}, the extended timestamp is discarded. \\
+\hline
+{\em pub} & {\ttfamily }(in) -\/ The publications file. Exactly one of {\ttfamily pub} and {\ttfamily pub\_\-url} must be non-\/{\ttfamily NULL}. \\
+\hline
+{\em pub\_\-url} & {\ttfamily }(in) -\/ The URL to get the publications file from. Exactly one of {\ttfamily pub} and {\ttfamily pub\_\-url} must be non-\/{\ttfamily NULL}. \\
+\hline
+{\em parse} & {\ttfamily }(in) -\/ The {\ttfamily explicit\_\-data} field of the verification info will be filled if this is non-\/zero. \\
+\hline
+{\em ver} & {\ttfamily }(out) -\/ Pointer that will receive pointer to verification info. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+On success {\ttfamily verification\_\-errors} should still be checked. 
+\end{DoxyNote}
+\hypertarget{group__http_ga29c56b103ec317445b65f4ed80028313}{
+\index{http@{http}!GTHTTP\_\-verifyTimestampHash@{GTHTTP\_\-verifyTimestampHash}}
+\index{GTHTTP\_\-verifyTimestampHash@{GTHTTP\_\-verifyTimestampHash}!http@{http}}
+\subsubsection[{GTHTTP\_\-verifyTimestampHash}]{\setlength{\rightskip}{0pt plus 5cm}int GTHTTP\_\-verifyTimestampHash (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ ts, }
+\item[{const {\bf GTDataHash} $\ast$}]{ hash, }
+\item[{const char $\ast$}]{ ext\_\-url, }
+\item[{{\bf GTTimestamp} $\ast$$\ast$}]{ ext\_\-ts, }
+\item[{const {\bf GTPublicationsFile} $\ast$}]{ pub, }
+\item[{const char $\ast$}]{ pub\_\-url, }
+\item[{int}]{ parse, }
+\item[{{\bf GTVerificationInfo} $\ast$$\ast$}]{ ver}
+\end{DoxyParamCaption}
+)}}
+\label{group__http_ga29c56b103ec317445b65f4ed80028313}
+Verifies the given timestamp using the given data hash and the publication file from the given URL.
+
+
+\begin{DoxyParams}{Parameters}
+{\em ts} & {\ttfamily }(in) -\/ The timestamp to be verified. \\
+\hline
+{\em hash} & {\ttfamily }(in) -\/ The data hash to check the timestamp against. \\
+\hline
+{\em ext\_\-url} & {\ttfamily }(in) -\/ The URL of the extending service. If this is {\ttfamily NULL}, no extension is attempted. \\
+\hline
+{\em ext\_\-ts} & {\ttfamily }(out) -\/ The pointer that will receive a pointer to the extended timestamp if the timestamp is extended during verification. If no extension is performed, {\ttfamily $\ast$ext\_\-ts} will be set to {\ttfamily NULL}. If {\ttfamily ext\_\-ts} is {\ttfamily NULL}, the extended timestamp is discarded. \\
+\hline
+{\em pub} & {\ttfamily }(in) -\/ The publications file. Exactly one of {\ttfamily pub} and {\ttfamily pub\_\-url} must be non-\/{\ttfamily NULL}. \\
+\hline
+{\em pub\_\-url} & {\ttfamily }(in) -\/ The URL to get the publications file from. Exactly one of {\ttfamily pub} and {\ttfamily pub\_\-url} must be non-\/{\ttfamily NULL}. \\
+\hline
+{\em parse} & {\ttfamily }(in) -\/ The {\ttfamily explicit\_\-data} field of the verification info will be filled if this is non-\/zero. \\
+\hline
+{\em ver} & {\ttfamily }(out) -\/ Pointer that will receive pointer to verification info. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+On success {\ttfamily verification\_\-errors} should still be checked. 
+\end{DoxyNote}

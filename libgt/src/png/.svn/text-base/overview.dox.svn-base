@@ -1,0 +1,61 @@
+/*
+ * $Id$
+ *
+ * Copyright 2008-2010 GuardTime AS
+ *
+ * This file is part of the GuardTime client SDK.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. 
+ */
+
+/**
+\defgroup png PNG integration
+
+\brief Functions to support embedding of GuardTime timestamps into PNG image files.
+
+The functions described in this group are declared in the \c gt_png.h header file and implemented in the \c libgtpng library. For more implementation and usage details, see the notes for the header file.
+
+<b>Overview</b>
+
+PNG (Portable Network Graphics) is a file format for storing raster images. The normative reference for the PNG file format is <a target="_blank" href="http://www.w3.org/TR/PNG/">ISO/IEC 15948:2003</a>. A non-normative, but still widely cited reference is <a target="_blank" href="http://www.ietf.org/rfc/rfc2083.txt">RFC 2083</a>.
+
+A PNG file consists of a fixed 8-byte header and a number of data chunks. Each data chunk consists of 4-byte length, 4-byte type tag, the content data, and 4-byte checksum.
+
+The predefined types include a framework of adding textual meta-data to the file, but these fields are expected to contain plain text using ISO 8859-1 character set, which is not suitable for direct embedding of GuardTime timestamps. There's also a separate data type for the last modification time of the file, but this is defined to contain just date and time and is expected to be automatically updated by image manipulation tools.
+
+<b>The <code>gtTS</code> Data Chunk</b>
+
+Considering the above information, it seems best to use the extensible nature of the PNG format and define a new type for GuardTime timestamps.
+
+Thus, GuardTime timestamps will be embedded in PNG files in chunks tagged <code>gtTS</code>. The choice of the letters is obvious: <code>gtTS</code> stands for <b>G</b>uard<b>T</b>ime <b>t</b>ime<b>s</b>tamp. The case of letters (formally the bit 5 of the corresponding byte) has the following meaning:
+-# ancillary: value 1 (lower-case) means the data chunk is not critical for proper rendering of the image; viewers are safe to ignore the <code>gtTS</code> chunk if they don't recognize it;
+-# private: value 1 (lower-case) means the type is a privately defined one, not part of the PNG specification;
+-# reserved: all currently defined tags must use value 0 (upper-case);
+-# no-copy: value 0 (upper-case) means the chunk should be discarded, not blindly copied, when the image is changed by an application that does not know how to keep the contents updated.
+
+The layout of the <code>gtTS</code> chunk is defined as follows:
+- 4-byte length of the content data (1 + the size of the timestamp itself);
+- 4-byte type tag (the ASCII characters <code>g</code>, <code>t</code>, <code>T</code>, <code>S</code>; or the byte values 103, 116, 84, 83 in decimal; or the byte values 67, 74, 54, 53 in hexadecimal);
+- 1-byte version number (byte value 1 for the current version of the specification);
+- the DER-encoded timestamp itself;
+- 4-byte CRC32 checksum (computed over the type tag, version number, and timestamp).
+
+<b>Timestamping</b>
+
+For timestamping, the whole contents of the original PNG image are hashed and the resulting hash value is submitted for timestamping. The timestamp is then wrapped into a <code>gtTS</code> chunk as described above and the chunk is inserted into the file. For extending, the original <code>gtTS</code> chunk is replaced with one containing the extended timestamp. For verification, the <code>gtTS</code> chunk is skipped over when hashing the file contents. The resulting hash value is then compared to the one extracted from the timestamp.
+
+At most one <code>gtTS</code> chunk can appear in a PNG file. Multiple timestamps on a file are not supported, as that would make the verification and extension ambiguous.
+
+While the reference implementation always inserts the <code>gtTS</code> chunk immediately before the terminating <code>IEND</code> chunk, this is not a requirement and verifiers must be able to extract an otherwise properly formatted <code>gtTS</code> chunk from any position after the starting <code>IHDR</code> and before the terminating <code>IEND</code> chunk. (It would be against the PNG specification to have any data chunk before the <code>IHDR</code> chunk or after the <code>IEND</code> chunk.)
+
+Some data chunks in a PNG file can be re-ordered without affecting the rendering of the image. However, there is no way to detect the ordering requirements for unknown chunks. Therefore no normalization is attempted before hashing the file for either timestamping or verification. This brings a slight risk that loading a timestamped PNG file into some tool and saving it back without any changes will break the timestamp even though the information carried by the file has not changed. The alternative would be to sort the chunks in some fixed order and risk the possibility that someone manages to come up with a file where different orderings of the chunks yield different renderings of the image, but the timestamp would be insensitive to those. Clearly, the second risk is one we can't take and the first one is tolerable, especially considering the tool is encouraged to update the contents of the <code>tIME</code> chunk which would invalidate the timestamp in any case.
+
+*/

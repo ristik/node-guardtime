@@ -1,0 +1,342 @@
+\hypertarget{gt__base_8h}{
+\section{gt\_\-base.h File Reference}
+\label{gt__base_8h}\index{gt\_\-base.h@{gt\_\-base.h}}
+}
+
+
+GuardTime client SDK, public header file for base functions.  
+
+
+{\ttfamily \#include $<$stddef.h$>$}\par
+{\ttfamily \#include $<$stdio.h$>$}\par
+{\ttfamily \#include $<$time.h$>$}\par
+{\ttfamily \#include $<$stdint.h$>$}\par
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_g_t_message_digest__st}{GTMessageDigest\_\-st}
+\begin{DoxyCompactList}\small\item\em This structure represents hashed data. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_time_stamp_implicit__st}{GTTimeStampImplicit\_\-st}
+\begin{DoxyCompactList}\small\item\em This structure represents the implicit data computed from a timestamp. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_hash_entry__st}{GTHashEntry\_\-st}
+\begin{DoxyCompactList}\small\item\em This is a helper structure to represent hash chains. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_signed_attribute__st}{GTSignedAttribute\_\-st}
+\begin{DoxyCompactList}\small\item\em This is a helper structure to represent a signed attribute and its value. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_time_stamp_explicit__st}{GTTimeStampExplicit\_\-st}
+\begin{DoxyCompactList}\small\item\em This structure represents the explicit data extracted from a timestamp. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo\_\-st}
+\begin{DoxyCompactList}\small\item\em This structure represents verification info of a timestamp. \item\end{DoxyCompactList}\item 
+struct \hyperlink{struct_g_t_pub_file_verification_info__st}{GTPubFileVerificationInfo\_\-st}
+\begin{DoxyCompactList}\small\item\em This structure represents verification info of a publications file. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{group__common_gafdac78985a08fc5052b1d1f2888a25c9}{GT\_\-VERSION}~(0 $<$$<$ 24 $|$ 3 $<$$<$ 16 $|$ 8)
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef int64\_\-t \hyperlink{group__common_ga0c05c3a051f674d7bf4df22831a3b5f3}{GT\_\-Int64}
+\item 
+typedef uint64\_\-t \hyperlink{group__common_gab05f0d6e953c4aee143ec3063384dd77}{GT\_\-UInt64}
+\item 
+typedef \hyperlink{group__common_ga0c05c3a051f674d7bf4df22831a3b5f3}{GT\_\-Int64} \hyperlink{group__common_ga4cc54826c21e0ed438d8e35be7039328}{GT\_\-Time\_\-t64}
+\item 
+typedef struct GTTimestamp\_\-st \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp}
+\item 
+typedef struct GTPublicationsFile\_\-st \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile}
+\item 
+typedef struct \hyperlink{struct_g_t_message_digest__st}{GTMessageDigest\_\-st} \hyperlink{group__common_ga96461884b56b666a19e99b5c872eb2a6}{GTDataHash}
+\begin{DoxyCompactList}\small\item\em This structure represents hashed data. \item\end{DoxyCompactList}\item 
+\hypertarget{group__verification_ga8249a216b7eb29f9e91cb5c01365741e}{
+typedef struct \hyperlink{struct_g_t_time_stamp_implicit__st}{GTTimeStampImplicit\_\-st} \hyperlink{group__verification_ga8249a216b7eb29f9e91cb5c01365741e}{GTTimeStampImplicit}}
+\label{group__verification_ga8249a216b7eb29f9e91cb5c01365741e}
+
+\begin{DoxyCompactList}\small\item\em This structure represents the implicit data computed from a timestamp. \item\end{DoxyCompactList}\item 
+\hypertarget{group__verification_ga95f30dc6daa4bd78d637c404c1d0cfa5}{
+typedef struct \hyperlink{struct_g_t_hash_entry__st}{GTHashEntry\_\-st} \hyperlink{group__verification_ga95f30dc6daa4bd78d637c404c1d0cfa5}{GTHashEntry}}
+\label{group__verification_ga95f30dc6daa4bd78d637c404c1d0cfa5}
+
+\begin{DoxyCompactList}\small\item\em This is a helper structure to represent hash chains. \item\end{DoxyCompactList}\item 
+\hypertarget{group__verification_gae2a2597c391b8d36404081ca98a27529}{
+typedef struct \hyperlink{struct_g_t_signed_attribute__st}{GTSignedAttribute\_\-st} \hyperlink{group__verification_gae2a2597c391b8d36404081ca98a27529}{GTSignedAttribute}}
+\label{group__verification_gae2a2597c391b8d36404081ca98a27529}
+
+\begin{DoxyCompactList}\small\item\em This is a helper structure to represent a signed attribute and its value. \item\end{DoxyCompactList}\item 
+\hypertarget{group__verification_ga0f0e3ec7bdbfdcc9e376a73db6f8364c}{
+typedef struct \hyperlink{struct_g_t_time_stamp_explicit__st}{GTTimeStampExplicit\_\-st} \hyperlink{group__verification_ga0f0e3ec7bdbfdcc9e376a73db6f8364c}{GTTimeStampExplicit}}
+\label{group__verification_ga0f0e3ec7bdbfdcc9e376a73db6f8364c}
+
+\begin{DoxyCompactList}\small\item\em This structure represents the explicit data extracted from a timestamp. \item\end{DoxyCompactList}\item 
+\hypertarget{group__verification_ga54ec3cb4a9e8bdfd7400116440e23b36}{
+typedef struct \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo\_\-st} \hyperlink{group__verification_ga54ec3cb4a9e8bdfd7400116440e23b36}{GTVerificationInfo}}
+\label{group__verification_ga54ec3cb4a9e8bdfd7400116440e23b36}
+
+\begin{DoxyCompactList}\small\item\em This structure represents verification info of a timestamp. \item\end{DoxyCompactList}\item 
+\hypertarget{group__publications_ga9f0ecc8c6bd1cad3c039c6914c138783}{
+typedef struct \hyperlink{struct_g_t_pub_file_verification_info__st}{GTPubFileVerificationInfo\_\-st} \hyperlink{group__publications_ga9f0ecc8c6bd1cad3c039c6914c138783}{GTPubFileVerificationInfo}}
+\label{group__publications_ga9f0ecc8c6bd1cad3c039c6914c138783}
+
+\begin{DoxyCompactList}\small\item\em This structure represents verification info of a publications file. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{group__common_ga43b0c0f44bcf02caf0c2866b1f647a35}{GTStatusCode} \{ \par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35af146251f9857673f1f5dac74ae9fc33d}{GTBASE\_\-LOWEST} =  0x00000000, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35ad069ecd772334533f3fffeb36ff56883}{GTBASE\_\-HIGHEST} =  0x0000ffff, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a482dd722dd3a434c49cf697238afece1}{GTHTTP\_\-LOWEST} =  0x00010000, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35ac72fe66798a566f300fdd86e060fd856}{GTHTTP\_\-HIGHEST} =  0x0001ffff, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35aa6c867b2e8a5c68beb3200d2f71b5c14}{GTPNG\_\-LOWEST} =  0x00020000, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35af97a98f04945f529eb41bb2194dc14ca}{GTPNG\_\-HIGHEST} =  0x0002ffff, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a996c7fc00d2a9bf08b5ba39bb9d58be9}{GT\_\-OK} =  0x00000000, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a5cbd9721ecf4a6ba9bb59bbe25b1c8f2}{GT\_\-EARLIER}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35aa3219ad05a105f80de2f5c6611ba5304}{GT\_\-NOT\_\-EARLIER}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a264552b4501a19232e314f9918d286b0}{GT\_\-EXTENDED}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35ac12e472467ea8c6713ece545fbcd2299}{GT\_\-NOT\_\-EXTENDED}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a5f889055677c0eb6fdda08ef7557d05d}{GT\_\-INVALID\_\-ARGUMENT} =  0x00000100, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a4fcba6e4b980a9ab05d426f99360e1ed}{GT\_\-INVALID\_\-FORMAT}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35ae7f12fbec6304d0fb0b98dbdaa500b03}{GT\_\-UNTRUSTED\_\-HASH\_\-ALGORITHM}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a3537820bc5194cfbcb582ab92223ac7c}{GT\_\-UNTRUSTED\_\-SIGNATURE\_\-ALGORITHM}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a7d46db9f79e9d719f81f0990e5629767}{GT\_\-INVALID\_\-LINKING\_\-INFO}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35aedb9c391823de3ce19caa656ca9b5f59}{GT\_\-UNSUPPORTED\_\-FORMAT}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a49d650f235664fd42ceec662ee864e54}{GT\_\-DIFFERENT\_\-HASH\_\-ALGORITHMS}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a69490c49019ff4aff3f355a1658370e4}{GT\_\-PKI\_\-BAD\_\-ALG}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a4d2b2181ff62acdf48a447d33ab2cc30}{GT\_\-PKI\_\-BAD\_\-REQUEST}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35ab5fc75cc500cf242e1700bef5268f7a3}{GT\_\-PKI\_\-BAD\_\-DATA\_\-FORMAT}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a93ca0159bbda5776e6aa074c6c9dcf55}{GT\_\-PROTOCOL\_\-MISMATCH}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a03a88f516786427e27f74af7525710a8}{GT\_\-NONSTD\_\-EXTEND\_\-LATER}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a08994728ca3424b360f47b8bc2831328}{GT\_\-NONSTD\_\-EXTENSION\_\-OVERDUE}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35adea40e832518f9b68c7561e7bf23c408}{GT\_\-UNACCEPTED\_\-POLICY}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a9f505c283a024218f3453e3a3ecaaf50}{GT\_\-WRONG\_\-DOCUMENT} =  0x00000200, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a14ca98db27d15382884963cdc73ceb7c}{GT\_\-WRONG\_\-SIZE\_\-OF\_\-HISTORY}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a4aaf89798478916e6fd0c52d91b925b9}{GT\_\-REQUEST\_\-TIME\_\-MISMATCH}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a24646a453a06ef1ed86d0759b67e1d3b}{GT\_\-INVALID\_\-LENGTH\_\-BYTES}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a90efaf44bf00c048dd3538275a51336b}{GT\_\-INVALID\_\-AGGREGATION}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a7f5a3f747a5125746aea2ce58cd2a41f}{GT\_\-INVALID\_\-SIGNATURE}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a7de160cd71ff92d4f28328adce57b170}{GT\_\-WRONG\_\-SIGNED\_\-DATA}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a6467d3a62f48b44ff67d3850454a4945}{GT\_\-TRUST\_\-POINT\_\-NOT\_\-FOUND}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35aa34ec77610a50e78ea54e1e251770658}{GT\_\-INVALID\_\-TRUST\_\-POINT}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35af9092595593c2c1c4977e5b0b32b44db}{GT\_\-CANNOT\_\-EXTEND}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35abacb60fe077d53aef426c06cfb4117d8}{GT\_\-ALREADY\_\-EXTENDED}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35ab278b4e86a5ed73febecbf023f8831d8}{GT\_\-KEY\_\-NOT\_\-PUBLISHED}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35ab4b5f779174f4eb680a7158960f4d250}{GT\_\-CERT\_\-TICKET\_\-TOO\_\-OLD}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35ab91b6c5d5238ce4129c6e41d19758457}{GT\_\-OUT\_\-OF\_\-MEMORY} =  0x00000300, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a1f281f74b5939fbd94b240ffafdbd944}{GT\_\-IO\_\-ERROR}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a0e71df3dbfd8410baa6a0b38dd793a24}{GT\_\-TIME\_\-OVERFLOW}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35af324e20163086132808eb36e860fbd53}{GT\_\-CRYPTO\_\-FAILURE}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35a82ab79e9424de4ed7368ef11ee0bb623}{GT\_\-PKI\_\-SYSTEM\_\-FAILURE}, 
+\par
+\hyperlink{group__common_gga43b0c0f44bcf02caf0c2866b1f647a35ae9da3f6482fc4fdaf6395bd3f6051714}{GT\_\-UNKNOWN\_\-ERROR}
+ \}
+\item 
+enum \hyperlink{group__verification_ga00f17574800248075712b4aa9a3faf93}{GTVerificationError} \{ \par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93ad0b3e065d9489145ca8dde0e85995a23}{GT\_\-NO\_\-FAILURES} =  0, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a06490f6af403f17ad54bd9d6dcc1d26e}{GT\_\-SYNTACTIC\_\-CHECK\_\-FAILURE} =  1, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a47ce39a1f75381a408a9b9b536f9d0d3}{GT\_\-HASHCHAIN\_\-VERIFICATION\_\-FAILURE} =  2, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a499a52b5452a02af6a91257d45edb566}{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-FAILURE} =  16, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a258b08f5119a5fbd355b338afe836af0}{GT\_\-NOT\_\-VALID\_\-PUBLIC\_\-KEY\_\-FAILURE} =  64, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93aa27848e0a52ca7ec1d60192e1550fd0d}{GT\_\-WRONG\_\-DOCUMENT\_\-FAILURE} =  128, 
+\par
+\hyperlink{group__verification_gga00f17574800248075712b4aa9a3faf93a90d79e59ed4b4925a4fce5766b0c515c}{GT\_\-NOT\_\-VALID\_\-PUBLICATION} =  256
+ \}
+\item 
+enum \hyperlink{group__verification_gae269a951c7facac91b31ab799f9595d0}{GTVerificationStatus} \{ \par
+\hyperlink{group__verification_ggae269a951c7facac91b31ab799f9595d0a7df57423a1d5add755fdb4c284a600ef}{GT\_\-PUBLIC\_\-KEY\_\-SIGNATURE\_\-PRESENT} =  1, 
+\par
+\hyperlink{group__verification_ggae269a951c7facac91b31ab799f9595d0a4c3c39acf3fee3df147d6b29623a26fa}{GT\_\-PUBLICATION\_\-REFERENCE\_\-PRESENT} =  2, 
+\par
+\hyperlink{group__verification_ggae269a951c7facac91b31ab799f9595d0abb16c35d0476c33d6a97a820ec97ed66}{GT\_\-DOCUMENT\_\-HASH\_\-CHECKED} =  16, 
+\par
+\hyperlink{group__verification_ggae269a951c7facac91b31ab799f9595d0af2557d8c2b53bc56273671fa78927eac}{GT\_\-PUBLICATION\_\-CHECKED} =  32
+ \}
+\item 
+enum \hyperlink{group__common_ga5110e02245c37b4ff48ea4c4efb2924a}{GTHashAlgorithm} \{ \par
+\hyperlink{group__common_gga5110e02245c37b4ff48ea4c4efb2924aacf228534e6197f397844e3df570ab4ac}{GT\_\-HASHALG\_\-SHA1} =  0, 
+\par
+\hyperlink{group__common_gga5110e02245c37b4ff48ea4c4efb2924aae10bc68e67a18f73f0c5f8f8efceefee}{GT\_\-HASHALG\_\-SHA256}, 
+\par
+\hyperlink{group__common_gga5110e02245c37b4ff48ea4c4efb2924aa5549aedec095a5198f18053b29a0a076}{GT\_\-HASHALG\_\-RIPEMD160}, 
+\par
+\hyperlink{group__common_gga5110e02245c37b4ff48ea4c4efb2924aa13fec9f022128da24b256438e5d4ebdb}{GT\_\-HASHALG\_\-SHA224}, 
+\par
+\hyperlink{group__common_gga5110e02245c37b4ff48ea4c4efb2924aa37c70805117fe51e381f1909743be4fc}{GT\_\-HASHALG\_\-SHA384}, 
+\par
+\hyperlink{group__common_gga5110e02245c37b4ff48ea4c4efb2924aaeac44b28ef0ce297740ab418e3b484e4}{GT\_\-HASHALG\_\-SHA512}, 
+\par
+\hyperlink{group__common_gga5110e02245c37b4ff48ea4c4efb2924aab9f938a3bcdd62e6732ea0b7221e10fd}{GT\_\-HASHALG\_\-DEFAULT} =  -\/1
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{group__timestamps_ga58dca66e7a9b95b22d65fba870b23b7c}{GTTimestamp\_\-getDEREncoded} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, unsigned char $\ast$$\ast$data, size\_\-t $\ast$data\_\-length)
+\item 
+int \hyperlink{group__timestamps_ga3215673483c473abcf6fe7dd6b7151b2}{GTTimestamp\_\-DERDecode} (const void $\ast$data, size\_\-t data\_\-length, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$timestamp)
+\item 
+int \hyperlink{group__timestamps_gabff8b301b58b0ce0602b128e4bac05f6}{GTTimestamp\_\-prepareTimestampRequest} (const \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$data\_\-hash, unsigned char $\ast$$\ast$request\_\-data, size\_\-t $\ast$request\_\-length)
+\item 
+int \hyperlink{group__timestamps_ga135b81ff9a23081b3438c224f7388424}{GTTimestamp\_\-createTimestamp} (const void $\ast$response, size\_\-t response\_\-length, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$timestamp)
+\item 
+int \hyperlink{group__timestamps_ga983d529528937553b716168b57aa29ee}{GTTimestamp\_\-prepareExtensionRequest} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, unsigned char $\ast$$\ast$request\_\-data, size\_\-t $\ast$request\_\-length)
+\item 
+int \hyperlink{group__timestamps_ga472426871678c08c1a4ad00bbb43efc7}{GTTimestamp\_\-createExtendedTimestamp} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, const void $\ast$response, size\_\-t response\_\-length, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$extended\_\-timestamp)
+\item 
+int \hyperlink{group__timestamps_ga00fbe27df09c87517479d068afaf11a0}{GTTimestamp\_\-getAlgorithm} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, int $\ast$algorithm)
+\item 
+int \hyperlink{group__timestamps_ga4f4d4ffa1ccd17c7bbb290e54806b8c2}{GTTimestamp\_\-isExtended} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp)
+\item 
+int \hyperlink{group__timestamps_gacca559dbe52467feed1df7d0c3aad4fb}{GTTimestamp\_\-isEarlierThan} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$this\_\-timestamp, const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$that\_\-timestamp)
+\item 
+int \hyperlink{group__verification_gabb2faaa480064b6aad83582b80aa2c53}{GTTimestamp\_\-verify} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, int parse\_\-data, \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo} $\ast$$\ast$verification\_\-info)
+\item 
+int \hyperlink{group__verification_ga578626c0b001a90e666691f17f08f5c9}{GTTimestamp\_\-checkDocumentHash} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, const \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$data\_\-hash)
+\item 
+int \hyperlink{group__verification_ga7d73ddba1e350c4cfb7c65086f483be9}{GTTimestamp\_\-checkPublication} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file)
+\item 
+int \hyperlink{group__verification_ga317e993f5755ea8aff80335ef252ee04}{GTTimestamp\_\-checkPublicKey} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, \hyperlink{group__common_ga4cc54826c21e0ed438d8e35be7039328}{GT\_\-Time\_\-t64} history\_\-identifier, const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file)
+\item 
+void \hyperlink{group__timestamps_gab765221df505f63b2155c08a63c62c0f}{GTTimestamp\_\-free} (\hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp)
+\item 
+int \hyperlink{group__common_ga6fd1be4d24783c063c414058f22395f2}{GTDataHash\_\-create} (int hash\_\-algorithm, const unsigned char $\ast$data, size\_\-t data\_\-length, \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$$\ast$data\_\-hash)
+\item 
+int \hyperlink{group__common_gacf607cae9a65dfc7bb4d356279d4700e}{GTDataHash\_\-open} (int hash\_\-algorithm, \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$$\ast$data\_\-hash)
+\item 
+int \hyperlink{group__common_gabe9c209fccd1f795d126a6b3a89a62fb}{GTDataHash\_\-add} (\hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$data\_\-hash, const unsigned char $\ast$data, size\_\-t data\_\-length)
+\item 
+int \hyperlink{group__common_ga7a93b38f14cff1f73b363d61502bb1a1}{GTDataHash\_\-close} (\hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$data\_\-hash)
+\item 
+void \hyperlink{group__common_gaff69acd5ef8287b0eca9fe14d3be5e57}{GTDataHash\_\-free} (\hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$data\_\-hash)
+\item 
+const char $\ast$ \hyperlink{group__common_gababe6a9e0bca4400a65c10914bb20a2e}{GTHash\_\-oid} (int hash\_\-algorithm)
+\item 
+int \hyperlink{group__publications_ga2f0755e9ef1686ca255098a9c3f2de8a}{GTPublicationsFile\_\-DERDecode} (const void $\ast$data, size\_\-t data\_\-length, \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$$\ast$publications\_\-file)
+\item 
+int \hyperlink{group__publications_gac7154e5bda48840a583100dfa5a8393b}{GTPublicationsFile\_\-getByIndex} (const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file, unsigned int publication\_\-index, char $\ast$$\ast$publication)
+\item 
+int \hyperlink{group__publications_ga37390311c583fe0ecc6871db4b4b8f05}{GTPublicationsFile\_\-getKeyHashByIndex} (const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file, unsigned int key\_\-hash\_\-index, char $\ast$$\ast$key\_\-hash)
+\item 
+int \hyperlink{group__publications_gac3eccc436ce6e5114346b9135b616fc9}{GTPublicationsFile\_\-verify} (const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file, \hyperlink{struct_g_t_pub_file_verification_info__st}{GTPubFileVerificationInfo} $\ast$$\ast$verification\_\-info)
+\item 
+void \hyperlink{group__publications_ga585049b56c3445dab5b099b98734693c}{GTPublicationsFile\_\-free} (\hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file)
+\item 
+int \hyperlink{group__publications_ga2de8433bddcaf74efc7d90f6ab1d52f7}{GTPublicationsFile\_\-extractTimeFromRawPublication} (const char $\ast$publication, \hyperlink{group__common_ga4cc54826c21e0ed438d8e35be7039328}{GT\_\-Time\_\-t64} $\ast$publication\_\-time)
+\item 
+void \hyperlink{group__verification_ga6c88243f78456ebc09cdc7854ade5589}{GTVerificationInfo\_\-print} (FILE $\ast$f, int indent, const \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo} $\ast$vinfo)
+\item 
+void \hyperlink{group__verification_ga39c2deaa12477a4a2ebadbe67672243e}{GTVerificationInfo\_\-free} (\hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo} $\ast$verification\_\-info)
+\item 
+void \hyperlink{group__publications_gaea9337f5fb77d0bc0f9c1159c369df61}{GTPubFileVerificationInfo\_\-free} (\hyperlink{struct_g_t_pub_file_verification_info__st}{GTPubFileVerificationInfo} $\ast$verification\_\-info)
+\item 
+const char $\ast$ \hyperlink{group__common_gaf03ec60bbbf4da31f46e6420ec7bb3d4}{GT\_\-getErrorString} (int error)
+\item 
+int \hyperlink{group__common_ga29f20e0dcc653a818552d01aa8b02369}{GT\_\-getVersion} (void)
+\item 
+int \hyperlink{group__common_gafb831f40c4486b882d9eef38d7c85f94}{GT\_\-init} (void)
+\item 
+void \hyperlink{group__common_ga3facfda504f40ddda537fcb91fc6c712}{GT\_\-finalize} (void)
+\item 
+void $\ast$ \hyperlink{group__common_ga9620e1d79a0ca9901be12eded4346b6e}{GT\_\-malloc} (size\_\-t s)
+\item 
+void $\ast$ \hyperlink{group__common_gab3c710e11d4beb606c697f0476ed3324}{GT\_\-calloc} (size\_\-t n, size\_\-t s)
+\item 
+void $\ast$ \hyperlink{group__common_ga69604583989a4d9320bb5542fc3910d3}{GT\_\-realloc} (void $\ast$p, size\_\-t s)
+\item 
+void \hyperlink{group__common_ga0446e9253011a921665126e9f37016a1}{GT\_\-free} (void $\ast$p)
+\item 
+int \hyperlink{group__common_ga409dea240b5b501fa097de7c06705203}{GT\_\-loadFile} (const char $\ast$path, unsigned char $\ast$$\ast$out\_\-data, size\_\-t $\ast$out\_\-size)
+\item 
+int \hyperlink{group__common_ga3570d986dbe113cf94eca05ca7f68dfb}{GT\_\-hashFile} (const char $\ast$path, int hash\_\-algorithm, \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$$\ast$data\_\-hash)
+\item 
+int \hyperlink{group__common_ga7837f369f5c83abadc08f6b55af31f30}{GT\_\-saveFile} (const char $\ast$path, const void $\ast$in\_\-data, size\_\-t in\_\-size)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This module offers the basic functions to create, encode, decode and otherwise process the timestamps, but does not address issues like network transport or embedding timestamps into specific document formats.
+
+The three main functions are:
+\begin{DoxyItemize}
+\item creating a timestamp (the resulting PKI-\/signed timestamp can be verified using the GuardTime public key certificate);
+\item extending a timestamp (the resulting hash-\/linked timestamp can be verified independently from GuardTime for unlimited time);
+\item verifying a timestamp.
+\end{DoxyItemize}
+
+\subsubsection*{Usage}
+
+The cryptographic functions in this SDK rely on OpenSSL. The use of the OpenSSL code is covered by the license available online from \href{http://www.openssl.org/source/license.html}{\tt www.openssl.org/source/license.html} and also enclosed in the file {\ttfamily license.openssl.txt}.
+
+Multi-\/platform source code for OpenSSL can be downloaded from \href{http://www.openssl.org/}{\tt www.openssl.org}. This version of the SDK has been tested with OpenSSL 0.9.8g.
+
+{\bfseries Linux}
+
+Although it's not difficult to compile OpenSSL on Linux, most distributions also provide prebuilt binaries through their normal package management facilities. When installing a prebuilt package, make sure you pick a \char`\"{}developer\char`\"{} version, otherwise you may only get the tools and utilities, but no libraries or headers.
+
+To compile a program that uses the GuardTime base API, use a command along the lines of 
+\begin{DoxyCode}
+    gcc example.c -o example -I/usr/local/gt/include \
+    -L/usr/local/gt/lib -L/usr/local/ssl/lib \
+    -lgtbase -lcrypto -lrt
+\end{DoxyCode}
+ (either with the backslashes or all on a single line) replacing {\ttfamily /usr/local/gt} and {\ttfamily /usr/local/ssl} with the directories where you unpacked the GuardTime and OpenSSL libraries.
+
+{\bfseries Windows}
+
+OpenSSL can be complied on Windows, but it's easier to use the prebuilt binaries distributed with the SDK.
+
+To compile a program that uses the GuardTime base API, use a command along the lines of 
+\begin{DoxyCode}
+    cl.exe /MT example.c /I C:\gt\include
+    /link /libpath:C:\gt\lib /libpath:C:\openssl\lib
+    libgtbaseMT.lib libeay32MT.lib
+    wsock32.lib wldap32.lib winmm.lib user32.lib gdi32.lib advapi32.lib
+\end{DoxyCode}
+ (all on a single line) replacing {\ttfamily C:$\backslash$gt} and {\ttfamily C:$\backslash$openssl} with the directories where you unpacked the GuardTime and OpenSSL libraries.
+
+When compiling, keep in mind that mixing code compiled with different {\ttfamily /Mxx} settings is dangerous. It's best to always use the GuardTime and OpenSSL libraries that match the {\ttfamily /Mxx} setting you specified for compiling your own source code. 

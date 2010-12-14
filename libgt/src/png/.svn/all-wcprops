@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/c-sdk/!svn/ver/99/trunk/src/png
+END
+gt_png.c
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/c-sdk/!svn/ver/74/trunk/src/png/gt_png.c
+END
+overview.dox
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/c-sdk/!svn/ver/77/trunk/src/png/overview.dox
+END
+gtpng_crc32.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/c-sdk/!svn/ver/74/trunk/src/png/gtpng_crc32.h
+END
+GNUmakefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/c-sdk/!svn/ver/94/trunk/src/png/GNUmakefile.am
+END
+libgtpng.def
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/c-sdk/!svn/ver/74/trunk/src/png/libgtpng.def
+END
+gt_png.h
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/c-sdk/!svn/ver/99/trunk/src/png/gt_png.h
+END
+png_create.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/c-sdk/!svn/ver/98/trunk/src/png/png_create.c
+END
+png_insert.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/c-sdk/!svn/ver/98/trunk/src/png/png_insert.c
+END
+png_verify.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/c-sdk/!svn/ver/98/trunk/src/png/png_verify.c
+END
+gtpng_crc32.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/c-sdk/!svn/ver/74/trunk/src/png/gtpng_crc32.c
+END
+png_extend.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/c-sdk/!svn/ver/98/trunk/src/png/png_extend.c
+END
+makefile
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/c-sdk/!svn/ver/98/trunk/src/png/makefile
+END

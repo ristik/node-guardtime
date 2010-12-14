@@ -1,0 +1,46 @@
+#
+# $Id$
+#
+# Copyright 2009-2010 GuardTime AS
+#
+# This file is part of the GuardTime client SDK.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+# implied. See the License for the specific language governing
+# permissions and limitations under the License. 
+#
+#
+# This is the GNU automake makefile.
+#
+# To use it, go to the directory two levels up from here and issue
+#     ./configure && make && make check
+#
+
+AM_CFLAGS = -I$(top_srcdir)/src/base/ -I$(top_srcdir)/src/http/
+
+lib_LTLIBRARIES = libgtpng.la
+
+libgtpng_la_SOURCES = gt_png.c gt_png.h gtpng_crc32.c gtpng_crc32.h
+
+include_HEADERS = gt_png.h
+
+check_PROGRAMS = png_insert png_create png_extend png_verify
+check_LDADD = $(top_builddir)/src/png/libgtpng.la $(top_builddir)/src/http/libgthttp.la $(top_builddir)/src/base/libgtbase.la
+
+png_insert_SOURCES = png_insert.c
+png_insert_LDADD = $(check_LDADD)
+
+png_create_SOURCES = png_create.c
+png_create_LDADD = $(check_LDADD)
+
+png_extend_SOURCES = png_extend.c
+png_extend_LDADD = $(check_LDADD)
+
+png_verify_SOURCES = png_verify.c
+png_verify_LDADD = $(check_LDADD)

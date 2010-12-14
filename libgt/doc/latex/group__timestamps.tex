@@ -1,0 +1,310 @@
+\hypertarget{group__timestamps}{
+\section{Timestamps}
+\label{group__timestamps}\index{Timestamps@{Timestamps}}
+}
+
+
+Functions to create, encode, decode, and otherwise process GuardTime timestamp objects.  
+
+
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct GTTimestamp\_\-st \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{group__timestamps_ga58dca66e7a9b95b22d65fba870b23b7c}{GTTimestamp\_\-getDEREncoded} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, unsigned char $\ast$$\ast$data, size\_\-t $\ast$data\_\-length)
+\item 
+int \hyperlink{group__timestamps_ga3215673483c473abcf6fe7dd6b7151b2}{GTTimestamp\_\-DERDecode} (const void $\ast$data, size\_\-t data\_\-length, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$timestamp)
+\item 
+int \hyperlink{group__timestamps_gabff8b301b58b0ce0602b128e4bac05f6}{GTTimestamp\_\-prepareTimestampRequest} (const \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$data\_\-hash, unsigned char $\ast$$\ast$request\_\-data, size\_\-t $\ast$request\_\-length)
+\item 
+int \hyperlink{group__timestamps_ga135b81ff9a23081b3438c224f7388424}{GTTimestamp\_\-createTimestamp} (const void $\ast$response, size\_\-t response\_\-length, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$timestamp)
+\item 
+int \hyperlink{group__timestamps_ga983d529528937553b716168b57aa29ee}{GTTimestamp\_\-prepareExtensionRequest} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, unsigned char $\ast$$\ast$request\_\-data, size\_\-t $\ast$request\_\-length)
+\item 
+int \hyperlink{group__timestamps_ga472426871678c08c1a4ad00bbb43efc7}{GTTimestamp\_\-createExtendedTimestamp} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, const void $\ast$response, size\_\-t response\_\-length, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$extended\_\-timestamp)
+\item 
+int \hyperlink{group__timestamps_ga00fbe27df09c87517479d068afaf11a0}{GTTimestamp\_\-getAlgorithm} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp, int $\ast$algorithm)
+\item 
+int \hyperlink{group__timestamps_ga4f4d4ffa1ccd17c7bbb290e54806b8c2}{GTTimestamp\_\-isExtended} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp)
+\item 
+int \hyperlink{group__timestamps_gacca559dbe52467feed1df7d0c3aad4fb}{GTTimestamp\_\-isEarlierThan} (const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$this\_\-timestamp, const \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$that\_\-timestamp)
+\item 
+void \hyperlink{group__timestamps_gab765221df505f63b2155c08a63c62c0f}{GTTimestamp\_\-free} (\hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$timestamp)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A timestamp contains the information to certify that some data existed in a given form at some given time in the past.
+
+GuardTime timestamps are internally represented in ASN.1 and serialized and stored in DER-\/encoding.
+
+A GuardTime timestamp is instanciated by:
+\begin{DoxyItemize}
+\item creating a timestamp request from a hash value using \hyperlink{group__timestamps_gabff8b301b58b0ce0602b128e4bac05f6}{GTTimestamp\_\-prepareTimestampRequest()} and sending that request to a timesource, then using \hyperlink{group__timestamps_ga135b81ff9a23081b3438c224f7388424}{GTTimestamp\_\-createTimestamp()} to create a timestamp from the timesource response;
+\item creating a timestamp extension request from an existing timestamp by using \hyperlink{group__timestamps_ga983d529528937553b716168b57aa29ee}{GTTimestamp\_\-prepareExtensionRequest()} and sending that request to an extender, then using \hyperlink{group__timestamps_ga472426871678c08c1a4ad00bbb43efc7}{GTTimestamp\_\-createExtendedTimestamp()} to create an extended timestamp from the extender response;
+\item loading an existing DER-\/encoded timestamp using \hyperlink{group__timestamps_ga3215673483c473abcf6fe7dd6b7151b2}{GTTimestamp\_\-DERDecode()}.
+\end{DoxyItemize}
+
+To save a timestamp, use \hyperlink{group__timestamps_ga58dca66e7a9b95b22d65fba870b23b7c}{GTTimestamp\_\-getDEREncoded()} and write the resulting byte array to a file or store it in some other applicable way.
+
+A timestamp directly only exposes the hash algorithm which was used to calculate the hash sum from which the timestamp was created (use \hyperlink{group__timestamps_ga00fbe27df09c87517479d068afaf11a0}{GTTimestamp\_\-getAlgorithm()} to get that information). All other properties, such as whether the timestamp is valid, when it was issued, etc are exposed by creating a \hyperlink{group__verification_ga54ec3cb4a9e8bdfd7400116440e23b36}{GTVerificationInfo} object using \hyperlink{group__verification_gabb2faaa480064b6aad83582b80aa2c53}{GTTimestamp\_\-verify()}.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__publications}{Publications}, \hyperlink{group__verification}{Verification}
+\end{DoxySeeAlso}
+The functions described in this group are declared in the {\ttfamily \hyperlink{gt__base_8h}{gt\_\-base.h}} header file and implemented in the {\ttfamily libgtbase} library. For more implementation and usage details, see the notes for the header file. 
+
+\subsection{Typedef Documentation}
+\hypertarget{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{
+\index{timestamps@{timestamps}!GTTimestamp@{GTTimestamp}}
+\index{GTTimestamp@{GTTimestamp}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct GTTimestamp\_\-st {\bf GTTimestamp}}}
+\label{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}
+This opaque structure represents a timestamp. Use the \hyperlink{group__verification_gabb2faaa480064b6aad83582b80aa2c53}{GTTimestamp\_\-verify()}, \hyperlink{group__timestamps_ga00fbe27df09c87517479d068afaf11a0}{GTTimestamp\_\-getAlgorithm()}, \hyperlink{group__timestamps_ga4f4d4ffa1ccd17c7bbb290e54806b8c2}{GTTimestamp\_\-isExtended()}, \hyperlink{group__timestamps_gacca559dbe52467feed1df7d0c3aad4fb}{GTTimestamp\_\-isEarlierThan()} functions to extract details from it. 
+
+\subsection{Function Documentation}
+\hypertarget{group__timestamps_ga472426871678c08c1a4ad00bbb43efc7}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-createExtendedTimestamp@{GTTimestamp\_\-createExtendedTimestamp}}
+\index{GTTimestamp\_\-createExtendedTimestamp@{GTTimestamp\_\-createExtendedTimestamp}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-createExtendedTimestamp}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-createExtendedTimestamp (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ timestamp, }
+\item[{const void $\ast$}]{ response, }
+\item[{size\_\-t}]{ response\_\-length, }
+\item[{{\bf GTTimestamp} $\ast$$\ast$}]{ extended\_\-timestamp}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_ga472426871678c08c1a4ad00bbb43efc7}
+Creates an extended timestamp based on timestamp and extension response.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ Timestamp that is to be extended. \\
+\hline
+{\em response} & {\ttfamily }(in) -\/ Pointer to the buffer containing encoded extendion response. \\
+\hline
+{\em response\_\-length} & {\ttfamily }(in) -\/ Size of the buffer pointed by {\ttfamily response}. \\
+\hline
+{\em extended\_\-timestamp} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the extended timestamp. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). Semantic errors can be:
+\begin{DoxyItemize}
+\item {\ttfamily GT\_\-CANNOT\_\-EXTEND} -\/ The {\ttfamily historyImprint} field of {\ttfamily timestamp} is inconsistent with the {\ttfamily history.dataChain} field of response. 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\hypertarget{group__timestamps_ga135b81ff9a23081b3438c224f7388424}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-createTimestamp@{GTTimestamp\_\-createTimestamp}}
+\index{GTTimestamp\_\-createTimestamp@{GTTimestamp\_\-createTimestamp}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-createTimestamp}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-createTimestamp (
+\begin{DoxyParamCaption}
+\item[{const void $\ast$}]{ response, }
+\item[{size\_\-t}]{ response\_\-length, }
+\item[{{\bf GTTimestamp} $\ast$$\ast$}]{ timestamp}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_ga135b81ff9a23081b3438c224f7388424}
+Creates a timestamp from response data.
+
+
+\begin{DoxyParams}{Parameters}
+{\em response} & {\ttfamily }(in) -\/ Pointer to the buffer containing encoded response. \\
+\hline
+{\em response\_\-length} & {\ttfamily }(in) -\/ Size of the buffer pointed by {\ttfamily response}. \\
+\hline
+{\em timestamp} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the created timestamp. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__timestamps_ga3215673483c473abcf6fe7dd6b7151b2}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-DERDecode@{GTTimestamp\_\-DERDecode}}
+\index{GTTimestamp\_\-DERDecode@{GTTimestamp\_\-DERDecode}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-DERDecode}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-DERDecode (
+\begin{DoxyParamCaption}
+\item[{const void $\ast$}]{ data, }
+\item[{size\_\-t}]{ data\_\-length, }
+\item[{{\bf GTTimestamp} $\ast$$\ast$}]{ timestamp}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_ga3215673483c473abcf6fe7dd6b7151b2}
+Decodes a timestamp from given byte string.
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & {\ttfamily }(in) -\/ Pointer to buffer containing DER-\/encoded timestamp. \\
+\hline
+{\em data\_\-length} & {\ttfamily }(in) -\/ Size of buffer pointed by {\ttfamily data}. \\
+\hline
+{\em timestamp} & {\ttfamily }(out) -\/ Pointer that will receive pointer to decoded timestamp. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__timestamps_gab765221df505f63b2155c08a63c62c0f}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-free@{GTTimestamp\_\-free}}
+\index{GTTimestamp\_\-free@{GTTimestamp\_\-free}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-free}]{\setlength{\rightskip}{0pt plus 5cm}void GTTimestamp\_\-free (
+\begin{DoxyParamCaption}
+\item[{{\bf GTTimestamp} $\ast$}]{ timestamp}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_gab765221df505f63b2155c08a63c62c0f}
+Frees memory used by timestamp.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ {\ttfamily GTTimestamp} object that is to be freed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__common_ga0446e9253011a921665126e9f37016a1}{GT\_\-free()} 
+\end{DoxySeeAlso}
+\hypertarget{group__timestamps_ga00fbe27df09c87517479d068afaf11a0}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-getAlgorithm@{GTTimestamp\_\-getAlgorithm}}
+\index{GTTimestamp\_\-getAlgorithm@{GTTimestamp\_\-getAlgorithm}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-getAlgorithm}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-getAlgorithm (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ timestamp, }
+\item[{int $\ast$}]{ algorithm}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_ga00fbe27df09c87517479d068afaf11a0}
+Extracts the hash algorithm from the given timestamp.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ Pointer to timestamp. \\
+\hline
+{\em algorithm} & {\ttfamily }(out) -\/ Pointer to the integer value receiving hash algorithm used to hash the data. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__timestamps_ga58dca66e7a9b95b22d65fba870b23b7c}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-getDEREncoded@{GTTimestamp\_\-getDEREncoded}}
+\index{GTTimestamp\_\-getDEREncoded@{GTTimestamp\_\-getDEREncoded}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-getDEREncoded}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-getDEREncoded (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ timestamp, }
+\item[{unsigned char $\ast$$\ast$}]{ data, }
+\item[{size\_\-t $\ast$}]{ data\_\-length}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_ga58dca66e7a9b95b22d65fba870b23b7c}
+Encodes a timestamp into byte string.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ Timestamp that is to be encoded. \\
+\hline
+{\em data} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the DER-\/encoded timestamp. \\
+\hline
+{\em data\_\-length} & {\ttfamily }(out) -\/ Pointer that will receive length of DER-\/encoded timestamp \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__timestamps_gacca559dbe52467feed1df7d0c3aad4fb}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-isEarlierThan@{GTTimestamp\_\-isEarlierThan}}
+\index{GTTimestamp\_\-isEarlierThan@{GTTimestamp\_\-isEarlierThan}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-isEarlierThan}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-isEarlierThan (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ this\_\-timestamp, }
+\item[{const {\bf GTTimestamp} $\ast$}]{ that\_\-timestamp}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_gacca559dbe52467feed1df7d0c3aad4fb}
+Compares temporal order of two timestamps, trying to determine if {\ttfamily this\_\-timestamp} was issued earlier {\ttfamily that\_\-timestamp}. Note that if {\ttfamily this\_\-timestamp} is not earlier than {\ttfamily that\_\-timestamp}, then this does not necessarily mean that {\ttfamily that\_\-timestamp} is earlier than {\ttfamily this\_\-timestamp}. It is possible that the temporal order of two timestamps cannot be determined.
+
+Both timestamps must be successfully verified if result of this comparison is to have any meaningful value. \begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item {\ttfamily GT\_\-EARLIER}, if {\ttfamily this\_\-timestamp} is earlier than {\ttfamily that\_\-timestamp}.
+\item {\ttfamily GT\_\-NOT\_\-EARLIER}, if {\ttfamily this\_\-timestamp} cannot be proved to be earlier than {\ttfamily that\_\-timestamp}.
+\item error code, if there was an error when performing the comparison. 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\hypertarget{group__timestamps_ga4f4d4ffa1ccd17c7bbb290e54806b8c2}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-isExtended@{GTTimestamp\_\-isExtended}}
+\index{GTTimestamp\_\-isExtended@{GTTimestamp\_\-isExtended}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-isExtended}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-isExtended (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ timestamp}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_ga4f4d4ffa1ccd17c7bbb290e54806b8c2}
+Checks if the given timestamp is extended.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ Pointer to timestamp. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\begin{DoxyItemize}
+\item {\ttfamily GT\_\-EXTENDED}, if {\ttfamily timestamp} is a hash-\/linked one.
+\item {\ttfamily GT\_\-NOT\_\-EXTENDED}, if {\ttfamily timestamp} is an PKI-\/signed one.
+\item error code, if there was an error when performing the check. 
+\end{DoxyItemize}
+\end{DoxyReturn}
+\hypertarget{group__timestamps_ga983d529528937553b716168b57aa29ee}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-prepareExtensionRequest@{GTTimestamp\_\-prepareExtensionRequest}}
+\index{GTTimestamp\_\-prepareExtensionRequest@{GTTimestamp\_\-prepareExtensionRequest}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-prepareExtensionRequest}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-prepareExtensionRequest (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTTimestamp} $\ast$}]{ timestamp, }
+\item[{unsigned char $\ast$$\ast$}]{ request\_\-data, }
+\item[{size\_\-t $\ast$}]{ request\_\-length}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_ga983d529528937553b716168b57aa29ee}
+Prepares an encoded timestamp extension request that can be used to extend given timestamp to another timestamp.
+
+
+\begin{DoxyParams}{Parameters}
+{\em timestamp} & {\ttfamily }(in) -\/ Timestamp that is to be extended. \\
+\hline
+{\em request\_\-data} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the DER-\/encoded timestamp extension request. \\
+\hline
+{\em request\_\-length} & {\ttfamily }(out) -\/ Pointer that will receive length of DER-\/encoded timestamp extension request. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__timestamps_gabff8b301b58b0ce0602b128e4bac05f6}{
+\index{timestamps@{timestamps}!GTTimestamp\_\-prepareTimestampRequest@{GTTimestamp\_\-prepareTimestampRequest}}
+\index{GTTimestamp\_\-prepareTimestampRequest@{GTTimestamp\_\-prepareTimestampRequest}!timestamps@{timestamps}}
+\subsubsection[{GTTimestamp\_\-prepareTimestampRequest}]{\setlength{\rightskip}{0pt plus 5cm}int GTTimestamp\_\-prepareTimestampRequest (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTDataHash} $\ast$}]{ data\_\-hash, }
+\item[{unsigned char $\ast$$\ast$}]{ request\_\-data, }
+\item[{size\_\-t $\ast$}]{ request\_\-length}
+\end{DoxyParamCaption}
+)}}
+\label{group__timestamps_gabff8b301b58b0ce0602b128e4bac05f6}
+Prepares an encoded timestamp request.
+
+
+\begin{DoxyParams}{Parameters}
+{\em data\_\-hash} & {\ttfamily }(in) -\/ Pointer to the data hash. The hash computation must be closed before the hash object can be passed to this function. \\
+\hline
+{\em request\_\-data} & {\ttfamily }(out) -\/ Pointer that will receive pointer to the DER-\/encoded timestamp request. \\
+\hline
+{\em request\_\-length} & {\ttfamily }(out) -\/ Pointer to the variable that receives length of DER-\/encoded timestamp request. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}

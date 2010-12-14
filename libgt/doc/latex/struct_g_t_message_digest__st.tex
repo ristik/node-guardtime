@@ -1,0 +1,57 @@
+\hypertarget{struct_g_t_message_digest__st}{
+\section{GTMessageDigest\_\-st Struct Reference}
+\label{struct_g_t_message_digest__st}\index{GTMessageDigest\_\-st@{GTMessageDigest\_\-st}}
+}
+
+
+This structure represents hashed data.  
+
+
+
+
+{\ttfamily \#include $<$gt\_\-base.h$>$}
+
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+unsigned char $\ast$ \hyperlink{struct_g_t_message_digest__st_a53a1fc3f2fdabc9de5b9b6655029513a}{digest}
+\item 
+size\_\-t \hyperlink{struct_g_t_message_digest__st_a82b4f7bd46c9de400747db1ad357ec80}{digest\_\-length}
+\item 
+int \hyperlink{struct_g_t_message_digest__st_a4562fac49b3cfdec37198dfa656158a5}{algorithm}
+\item 
+void $\ast$ \hyperlink{struct_g_t_message_digest__st_a1e0f499b53b27ef920b1bac9a1a83b3f}{context}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A GuardTime hash sum object, used as the seed to create a \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} and again when verifying that timestamp to create a \hyperlink{group__verification_ga54ec3cb4a9e8bdfd7400116440e23b36}{GTVerificationInfo}.
+
+When calculating the hash sum of some data to verify a timestamp, make sure to use the same hash algorithm as when the timestamp was created. 
+
+\subsection{Field Documentation}
+\hypertarget{struct_g_t_message_digest__st_a4562fac49b3cfdec37198dfa656158a5}{
+\index{GTMessageDigest\_\-st@{GTMessageDigest\_\-st}!algorithm@{algorithm}}
+\index{algorithm@{algorithm}!GTMessageDigest_st@{GTMessageDigest\_\-st}}
+\subsubsection[{algorithm}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf GTMessageDigest\_\-st::algorithm}}}
+\label{struct_g_t_message_digest__st_a4562fac49b3cfdec37198dfa656158a5}
+The hash algorithm used to produce the digest. See \hyperlink{group__common_ga5110e02245c37b4ff48ea4c4efb2924a}{GTHashAlgorithm} for possible values. \hypertarget{struct_g_t_message_digest__st_a1e0f499b53b27ef920b1bac9a1a83b3f}{
+\index{GTMessageDigest\_\-st@{GTMessageDigest\_\-st}!context@{context}}
+\index{context@{context}!GTMessageDigest_st@{GTMessageDigest\_\-st}}
+\subsubsection[{context}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ {\bf GTMessageDigest\_\-st::context}}}
+\label{struct_g_t_message_digest__st_a1e0f499b53b27ef920b1bac9a1a83b3f}
+The context of hash computation. Only used while incremental hashing is in progress. \hypertarget{struct_g_t_message_digest__st_a53a1fc3f2fdabc9de5b9b6655029513a}{
+\index{GTMessageDigest\_\-st@{GTMessageDigest\_\-st}!digest@{digest}}
+\index{digest@{digest}!GTMessageDigest_st@{GTMessageDigest\_\-st}}
+\subsubsection[{digest}]{\setlength{\rightskip}{0pt plus 5cm}unsigned char$\ast$ {\bf GTMessageDigest\_\-st::digest}}}
+\label{struct_g_t_message_digest__st_a53a1fc3f2fdabc9de5b9b6655029513a}
+Data digest. \hypertarget{struct_g_t_message_digest__st_a82b4f7bd46c9de400747db1ad357ec80}{
+\index{GTMessageDigest\_\-st@{GTMessageDigest\_\-st}!digest\_\-length@{digest\_\-length}}
+\index{digest\_\-length@{digest\_\-length}!GTMessageDigest_st@{GTMessageDigest\_\-st}}
+\subsubsection[{digest\_\-length}]{\setlength{\rightskip}{0pt plus 5cm}size\_\-t {\bf GTMessageDigest\_\-st::digest\_\-length}}}
+\label{struct_g_t_message_digest__st_a82b4f7bd46c9de400747db1ad357ec80}
+Length of the digest. 
+
+The documentation for this struct was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{gt__base_8h}{gt\_\-base.h}\end{DoxyCompactItemize}

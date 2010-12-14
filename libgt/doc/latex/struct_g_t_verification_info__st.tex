@@ -1,0 +1,59 @@
+\hypertarget{struct_g_t_verification_info__st}{
+\section{GTVerificationInfo\_\-st Struct Reference}
+\label{struct_g_t_verification_info__st}\index{GTVerificationInfo\_\-st@{GTVerificationInfo\_\-st}}
+}
+
+
+This structure represents verification info of a timestamp.  
+
+
+
+
+{\ttfamily \#include $<$gt\_\-base.h$>$}
+
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{struct_g_t_verification_info__st_a74ada58f129d43790cf81e023ce1ae71}{version}
+\item 
+int \hyperlink{struct_g_t_verification_info__st_aeb572fb192cf7e67a573d8fbd924a3dd}{verification\_\-errors}
+\item 
+int \hyperlink{struct_g_t_verification_info__st_a9c1f6171361e1bd9b4c19b9d7152dd0c}{verification\_\-status}
+\item 
+\hyperlink{struct_g_t_time_stamp_implicit__st}{GTTimeStampImplicit} $\ast$ \hyperlink{struct_g_t_verification_info__st_a88ab8f11b10eef254f0a2b7fcec13c40}{implicit\_\-data}
+\item 
+\hyperlink{struct_g_t_time_stamp_explicit__st}{GTTimeStampExplicit} $\ast$ \hyperlink{struct_g_t_verification_info__st_ac01008ee2f1698ba06125490912c8eac}{explicit\_\-data}
+\end{DoxyCompactItemize}
+
+
+\subsection{Field Documentation}
+\hypertarget{struct_g_t_verification_info__st_ac01008ee2f1698ba06125490912c8eac}{
+\index{GTVerificationInfo\_\-st@{GTVerificationInfo\_\-st}!explicit\_\-data@{explicit\_\-data}}
+\index{explicit\_\-data@{explicit\_\-data}!GTVerificationInfo_st@{GTVerificationInfo\_\-st}}
+\subsubsection[{explicit\_\-data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf GTTimeStampExplicit}$\ast$ {\bf GTVerificationInfo\_\-st::explicit\_\-data}}}
+\label{struct_g_t_verification_info__st_ac01008ee2f1698ba06125490912c8eac}
+Explicit values extracted from the timestamp. Only present if parsing of the timestamp was requested in the call to \hyperlink{group__verification_gabb2faaa480064b6aad83582b80aa2c53}{GTTimestamp\_\-verify()}. \hypertarget{struct_g_t_verification_info__st_a88ab8f11b10eef254f0a2b7fcec13c40}{
+\index{GTVerificationInfo\_\-st@{GTVerificationInfo\_\-st}!implicit\_\-data@{implicit\_\-data}}
+\index{implicit\_\-data@{implicit\_\-data}!GTVerificationInfo_st@{GTVerificationInfo\_\-st}}
+\subsubsection[{implicit\_\-data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf GTTimeStampImplicit}$\ast$ {\bf GTVerificationInfo\_\-st::implicit\_\-data}}}
+\label{struct_g_t_verification_info__st_a88ab8f11b10eef254f0a2b7fcec13c40}
+Implicit values computed from the timestamp. Always present. \hypertarget{struct_g_t_verification_info__st_aeb572fb192cf7e67a573d8fbd924a3dd}{
+\index{GTVerificationInfo\_\-st@{GTVerificationInfo\_\-st}!verification\_\-errors@{verification\_\-errors}}
+\index{verification\_\-errors@{verification\_\-errors}!GTVerificationInfo_st@{GTVerificationInfo\_\-st}}
+\subsubsection[{verification\_\-errors}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf GTVerificationInfo\_\-st::verification\_\-errors}}}
+\label{struct_g_t_verification_info__st_aeb572fb192cf7e67a573d8fbd924a3dd}
+Bitmap of errors found in the timestamp during verification. See \hyperlink{group__verification_ga00f17574800248075712b4aa9a3faf93}{GTVerificationError} for meaning of the bits. \hypertarget{struct_g_t_verification_info__st_a9c1f6171361e1bd9b4c19b9d7152dd0c}{
+\index{GTVerificationInfo\_\-st@{GTVerificationInfo\_\-st}!verification\_\-status@{verification\_\-status}}
+\index{verification\_\-status@{verification\_\-status}!GTVerificationInfo_st@{GTVerificationInfo\_\-st}}
+\subsubsection[{verification\_\-status}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf GTVerificationInfo\_\-st::verification\_\-status}}}
+\label{struct_g_t_verification_info__st_a9c1f6171361e1bd9b4c19b9d7152dd0c}
+Bitmap of conditions discovered during verification. See \hyperlink{group__verification_gae269a951c7facac91b31ab799f9595d0}{GTVerificationStatus} for meaning of the bits. \hypertarget{struct_g_t_verification_info__st_a74ada58f129d43790cf81e023ce1ae71}{
+\index{GTVerificationInfo\_\-st@{GTVerificationInfo\_\-st}!version@{version}}
+\index{version@{version}!GTVerificationInfo_st@{GTVerificationInfo\_\-st}}
+\subsubsection[{version}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf GTVerificationInfo\_\-st::version}}}
+\label{struct_g_t_verification_info__st_a74ada58f129d43790cf81e023ce1ae71}
+Version of the {\ttfamily VerificationInfo} structure. Currently always 2. 
+
+The documentation for this struct was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{gt__base_8h}{gt\_\-base.h}\end{DoxyCompactItemize}

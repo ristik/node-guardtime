@@ -1,0 +1,57 @@
+\hypertarget{gt__png_8h}{
+\section{gt\_\-png.h File Reference}
+\label{gt__png_8h}\index{gt\_\-png.h@{gt\_\-png.h}}
+}
+
+
+GuardTime timestamping SDK, public header file for PNG integration.  
+
+
+{\ttfamily \#include \char`\"{}gt\_\-base.h\char`\"{}}\par
+{\ttfamily \#include \char`\"{}gt\_\-http.h\char`\"{}}\par
+{\ttfamily \#include $<$stddef.h$>$}\par
+\subsection*{Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{group__png_ga85c3c057105e954a4504dbe98ba9a2ba}{GTPNG\_\-VERSION}~(0 $<$$<$ 24 $|$ 3 $<$$<$ 16 $|$ 8)
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{group__png_ga70021c722b39d6b5945e9dd65b5d3b77}{GTPNGStatusCode} \{ \par
+\hyperlink{group__png_gga70021c722b39d6b5945e9dd65b5d3b77a39011e68decc1c79ddc0424d9e42d581}{GTPNG\_\-BAD\_\-DATA} =  GTPNG\_\-LOWEST, 
+\par
+\hyperlink{group__png_gga70021c722b39d6b5945e9dd65b5d3b77ae3e19c689f17d7a2ea6e13f8db297a1d}{GTPNG\_\-NO\_\-GTTS}, 
+\par
+\hyperlink{group__png_gga70021c722b39d6b5945e9dd65b5d3b77a20c972dfb42a0a00c24ee1f3382a270e}{GTPNG\_\-MULTIPLE\_\-GTTS}, 
+\par
+\hyperlink{group__png_gga70021c722b39d6b5945e9dd65b5d3b77a34a60e01de9485155446af3ee0d2cef6}{GTPNG\_\-GTTS\_\-VERSION}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+const char $\ast$ \hyperlink{group__png_ga6627f66b5eff92e2259d0e06f2790502}{GTPNG\_\-getErrorString} (int error)
+\item 
+int \hyperlink{group__png_ga912eedbe157a29e9b1b40d7438ccf7d4}{GTPNG\_\-getVersion} (void)
+\item 
+int \hyperlink{group__png_gad55b2f8d7d57cc8810515058d3c05f33}{GTPNG\_\-hash} (int hash\_\-algorithm, void $\ast$img, size\_\-t img\_\-len, \hyperlink{struct_g_t_message_digest__st}{GTDataHash} $\ast$$\ast$img\_\-hash)
+\item 
+int \hyperlink{group__png_gaa61d36d3d1f3a285c25a577c077329a7}{GTPNG\_\-insert} (void $\ast$img, size\_\-t $\ast$img\_\-len, size\_\-t buf\_\-len, const void $\ast$ts, size\_\-t ts\_\-len)
+\item 
+int \hyperlink{group__png_ga0b290532190c3733d699af7c6cbbcd84}{GTPNG\_\-extract} (const void $\ast$img, size\_\-t img\_\-len, const void $\ast$$\ast$ts, size\_\-t $\ast$ts\_\-len)
+\item 
+int \hyperlink{group__png_gaa51ff47232930fe430e37cf13162e588}{GTPNG\_\-createTimestamp} (const void $\ast$img, size\_\-t img\_\-len, const char $\ast$url, void $\ast$$\ast$img\_\-ts, size\_\-t $\ast$img\_\-ts\_\-len)
+\item 
+int \hyperlink{group__png_ga529cb12b6beca769df8fe306c22e7ab5}{GTPNG\_\-extendTimestamp} (const void $\ast$img, size\_\-t img\_\-len, const char $\ast$url, void $\ast$$\ast$img\_\-ts, size\_\-t $\ast$img\_\-ts\_\-len)
+\item 
+int \hyperlink{group__png_gaafa094593caab313f2d19188beefeb57}{GTPNG\_\-verifyTimestamp} (void $\ast$img, size\_\-t img\_\-len, const char $\ast$ext\_\-url, \hyperlink{group__timestamps_gaddb792efe52216386853c94e7aeaf6ba}{GTTimestamp} $\ast$$\ast$ext\_\-ts, const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$pub, const char $\ast$pub\_\-url, int parse, \hyperlink{struct_g_t_verification_info__st}{GTVerificationInfo} $\ast$$\ast$ver)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This module offers the functions to embed GuardTime timestamps in PNG image files.
+
+{\bfseries Usage}
+
+The timestamping functions in this module rely on the base module and any functions taking URLs as parameters additionally rely on the HTTP transport module, so the {\ttfamily libgtbase} and {\ttfamily libgthttp} libraries have to be available to your application. Refer to the usage notes in the {\ttfamily \hyperlink{gt__base_8h}{gt\_\-base.h}} and {\ttfamily \hyperlink{gt__http_8h}{gt\_\-http.h}} sections for more details. 

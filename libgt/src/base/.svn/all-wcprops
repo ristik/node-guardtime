@@ -1,0 +1,149 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/c-sdk/!svn/ver/99/trunk/src/base
+END
+gt_asn1.h
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_asn1.h
+END
+gt_fileio.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_fileio.c
+END
+GNUmakefile.am
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/c-sdk/!svn/ver/74/trunk/src/base/GNUmakefile.am
+END
+gt_base.c
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/c-sdk/!svn/ver/88/trunk/src/base/gt_base.c
+END
+gt_crc32.c
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_crc32.c
+END
+gt_internal.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_internal.c
+END
+gt_datahash.c
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_datahash.c
+END
+libgtbase.def
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/c-sdk/!svn/ver/74/trunk/src/base/libgtbase.def
+END
+gt_base.h
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/c-sdk/!svn/ver/99/trunk/src/base/gt_base.h
+END
+gt_crc32.h
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_crc32.h
+END
+gt_internal.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_internal.h
+END
+overview.dox
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/c-sdk/!svn/ver/74/trunk/src/base/overview.dox
+END
+asn1_time_get.c
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/c-sdk/!svn/ver/74/trunk/src/base/asn1_time_get.c
+END
+base32.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/c-sdk/!svn/ver/74/trunk/src/base/base32.c
+END
+asn1_time_get.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/c-sdk/!svn/ver/74/trunk/src/base/asn1_time_get.h
+END
+base32.h
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/c-sdk/!svn/ver/74/trunk/src/base/base32.h
+END
+gt_info.c
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_info.c
+END
+gt_publicationsfile.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/c-sdk/!svn/ver/92/trunk/src/base/gt_publicationsfile.c
+END
+hashchain.c
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/c-sdk/!svn/ver/74/trunk/src/base/hashchain.c
+END
+gt_publicationsfile.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_publicationsfile.h
+END
+hashchain.h
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/c-sdk/!svn/ver/74/trunk/src/base/hashchain.h
+END
+gt_asn1.c
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/c-sdk/!svn/ver/74/trunk/src/base/gt_asn1.c
+END
+makefile
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/c-sdk/!svn/ver/77/trunk/src/base/makefile
+END
+gt_timestamp.c
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/c-sdk/!svn/ver/77/trunk/src/base/gt_timestamp.c
+END

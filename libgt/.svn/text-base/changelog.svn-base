@@ -1,0 +1,38 @@
+Version 0.3
+
+2010-12-01 release (0.3.8)
+* Now uses WinINet instead of WinHTTP on Windows.
+  This enables automatic use of proxy settings from IE.
+
+2010-11-30 release (0.3.7)
+* Now uses WinHTTP instead of cURL on Windows.
+* The CA root certificate for publications file verification is now embedded in the code.
+* Renamed example programs to avoid naming conflicts in Windows build process.
+
+2010-11-17 release (0.3.6)
+* Better HTTP error response handling.
+* Version numbers now include the build number.
+* Replaced test gateway addresses in examples (again).
+* Replaced test timestamps with more recent ones.
+
+2010-03-10 release (0.3.5)
+* Various documentation improvements.
+* No code changes.
+
+2010-02-22 release (0.3.4)
+* Now released under Apache License 2.0.
+* Replaced test gateway addresses in examples.
+* No code changes.
+
+2009-08-26 release (0.3.3)
+* Replaced test timestamps with more recent ones.
+* No code changes.
+
+2009-08-06 release (0.3.2)
+* Replaced test gateway addresses in examples.
+* No code changes.
+
+2009-06-12 release (0.3.1)
+* Linux build process now based on GNU autoconf/automake.
+* Windows build process now based on recursive makefiles.
+* Now also builds cleanly on 64-bit systems.

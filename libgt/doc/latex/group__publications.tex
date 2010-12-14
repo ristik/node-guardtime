@@ -1,0 +1,226 @@
+\hypertarget{group__publications}{
+\section{Publications}
+\label{group__publications}\index{Publications@{Publications}}
+}
+
+
+Functions to decode and validate the information in GuardTime electronic publications.  
+
+
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_g_t_pub_file_verification_info__st}{GTPubFileVerificationInfo\_\-st}
+\begin{DoxyCompactList}\small\item\em This structure represents verification info of a publications file. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct GTPublicationsFile\_\-st \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile}
+\item 
+\hypertarget{group__publications_ga9f0ecc8c6bd1cad3c039c6914c138783}{
+typedef struct \hyperlink{struct_g_t_pub_file_verification_info__st}{GTPubFileVerificationInfo\_\-st} \hyperlink{group__publications_ga9f0ecc8c6bd1cad3c039c6914c138783}{GTPubFileVerificationInfo}}
+\label{group__publications_ga9f0ecc8c6bd1cad3c039c6914c138783}
+
+\begin{DoxyCompactList}\small\item\em This structure represents verification info of a publications file. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{group__publications_ga2f0755e9ef1686ca255098a9c3f2de8a}{GTPublicationsFile\_\-DERDecode} (const void $\ast$data, size\_\-t data\_\-length, \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$$\ast$publications\_\-file)
+\item 
+int \hyperlink{group__publications_gac7154e5bda48840a583100dfa5a8393b}{GTPublicationsFile\_\-getByIndex} (const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file, unsigned int publication\_\-index, char $\ast$$\ast$publication)
+\item 
+int \hyperlink{group__publications_ga37390311c583fe0ecc6871db4b4b8f05}{GTPublicationsFile\_\-getKeyHashByIndex} (const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file, unsigned int key\_\-hash\_\-index, char $\ast$$\ast$key\_\-hash)
+\item 
+int \hyperlink{group__publications_gac3eccc436ce6e5114346b9135b616fc9}{GTPublicationsFile\_\-verify} (const \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file, \hyperlink{struct_g_t_pub_file_verification_info__st}{GTPubFileVerificationInfo} $\ast$$\ast$verification\_\-info)
+\item 
+void \hyperlink{group__publications_ga585049b56c3445dab5b099b98734693c}{GTPublicationsFile\_\-free} (\hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} $\ast$publications\_\-file)
+\item 
+int \hyperlink{group__publications_ga2de8433bddcaf74efc7d90f6ab1d52f7}{GTPublicationsFile\_\-extractTimeFromRawPublication} (const char $\ast$publication, \hyperlink{group__common_ga4cc54826c21e0ed438d8e35be7039328}{GT\_\-Time\_\-t64} $\ast$publication\_\-time)
+\item 
+void \hyperlink{group__publications_gaea9337f5fb77d0bc0f9c1159c369df61}{GTPubFileVerificationInfo\_\-free} (\hyperlink{struct_g_t_pub_file_verification_info__st}{GTPubFileVerificationInfo} $\ast$verification\_\-info)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Publications are what nail timestamps down in time: they are hash sums published in tangible media so if a timestamp can prove its participation through hashing in a publication, it also proves that it existed before that hash sum was published. GuardTime publications are printed in major newspapers across the world which makes it extremely unlikely that someone manages to destroy or falsify all copies of any given publication.
+
+There are essentially three ways to acquire a publication the timestamp at hand should be connected to:
+\begin{DoxyItemize}
+\item extract the publication value from the timestamp and compare it to a publication in a newspaper; since the tangible sources are hard to contaminate, this is the most secure method;
+\item fetch an up to date publications file from an authenticated source; as the file contains publications up until the current date on which many other verifiers would be continuously dependent on, this is also a good method;
+\item use an archived authenticated publication file; this may not be so good, as someone may have tampered with the archival copy.
+\end{DoxyItemize}
+
+Create a \hyperlink{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{GTPublicationsFile} object by feeding the bytes containing the DER-\/encoded publication file to the \hyperlink{group__publications_ga2f0755e9ef1686ca255098a9c3f2de8a}{GTPublicationsFile\_\-DERDecode()}. The \hyperlink{group__publications_gac3eccc436ce6e5114346b9135b616fc9}{GTPublicationsFile\_\-verify()} method can then be used to verify the integrity of the publications file. The range of publications contained in a particular file can be retrieved by consulting GTPubFileVerificationInfo::first\_\-publication\_\-time and GTPubFileVerificationInfo::last\_\-publication\_\-time.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__verification}{Verification}
+\end{DoxySeeAlso}
+The functions described in this group are declared in the {\ttfamily \hyperlink{gt__base_8h}{gt\_\-base.h}} header file and implemented in the {\ttfamily libgtbase} library. For more implementation and usage details, see the notes for the header file. 
+
+\subsection{Typedef Documentation}
+\hypertarget{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}{
+\index{publications@{publications}!GTPublicationsFile@{GTPublicationsFile}}
+\index{GTPublicationsFile@{GTPublicationsFile}!publications@{publications}}
+\subsubsection[{GTPublicationsFile}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct GTPublicationsFile\_\-st {\bf GTPublicationsFile}}}
+\label{group__publications_gacf561fdbce4067eb94bd9761a71e7e5a}
+This opaque structure represents a publications file. Use the \hyperlink{group__publications_gac3eccc436ce6e5114346b9135b616fc9}{GTPublicationsFile\_\-verify()}, \hyperlink{group__publications_gac7154e5bda48840a583100dfa5a8393b}{GTPublicationsFile\_\-getByIndex()}, \hyperlink{group__publications_ga37390311c583fe0ecc6871db4b4b8f05}{GTPublicationsFile\_\-getKeyHashByIndex()} functions to extract details from it. 
+
+\subsection{Function Documentation}
+\hypertarget{group__publications_gaea9337f5fb77d0bc0f9c1159c369df61}{
+\index{publications@{publications}!GTPubFileVerificationInfo\_\-free@{GTPubFileVerificationInfo\_\-free}}
+\index{GTPubFileVerificationInfo\_\-free@{GTPubFileVerificationInfo\_\-free}!publications@{publications}}
+\subsubsection[{GTPubFileVerificationInfo\_\-free}]{\setlength{\rightskip}{0pt plus 5cm}void GTPubFileVerificationInfo\_\-free (
+\begin{DoxyParamCaption}
+\item[{{\bf GTPubFileVerificationInfo} $\ast$}]{ verification\_\-info}
+\end{DoxyParamCaption}
+)}}
+\label{group__publications_gaea9337f5fb77d0bc0f9c1159c369df61}
+Frees memory used by publications file verification info.
+
+
+\begin{DoxyParams}{Parameters}
+{\em verification\_\-info} & {\ttfamily }(in) -\/ {\ttfamily GTPubFileVerificationInfo} object that is to be freed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__common_ga0446e9253011a921665126e9f37016a1}{GT\_\-free()} 
+\end{DoxySeeAlso}
+\hypertarget{group__publications_ga2f0755e9ef1686ca255098a9c3f2de8a}{
+\index{publications@{publications}!GTPublicationsFile\_\-DERDecode@{GTPublicationsFile\_\-DERDecode}}
+\index{GTPublicationsFile\_\-DERDecode@{GTPublicationsFile\_\-DERDecode}!publications@{publications}}
+\subsubsection[{GTPublicationsFile\_\-DERDecode}]{\setlength{\rightskip}{0pt plus 5cm}int GTPublicationsFile\_\-DERDecode (
+\begin{DoxyParamCaption}
+\item[{const void $\ast$}]{ data, }
+\item[{size\_\-t}]{ data\_\-length, }
+\item[{{\bf GTPublicationsFile} $\ast$$\ast$}]{ publications\_\-file}
+\end{DoxyParamCaption}
+)}}
+\label{group__publications_ga2f0755e9ef1686ca255098a9c3f2de8a}
+Decodes publications file from given byte string.
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & {\ttfamily }(in) -\/ Pointer to buffer containing DER-\/encoded publications file. \\
+\hline
+{\em data\_\-length} & {\ttfamily }(in) -\/ Size of buffer pointed by {\ttfamily data}. \\
+\hline
+{\em publications\_\-file} & {\ttfamily }(out) -\/ Pointer that will receive pointer to decoded publications file. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__publications_ga2de8433bddcaf74efc7d90f6ab1d52f7}{
+\index{publications@{publications}!GTPublicationsFile\_\-extractTimeFromRawPublication@{GTPublicationsFile\_\-extractTimeFromRawPublication}}
+\index{GTPublicationsFile\_\-extractTimeFromRawPublication@{GTPublicationsFile\_\-extractTimeFromRawPublication}!publications@{publications}}
+\subsubsection[{GTPublicationsFile\_\-extractTimeFromRawPublication}]{\setlength{\rightskip}{0pt plus 5cm}int GTPublicationsFile\_\-extractTimeFromRawPublication (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{ publication, }
+\item[{{\bf GT\_\-Time\_\-t64} $\ast$}]{ publication\_\-time}
+\end{DoxyParamCaption}
+)}}
+\label{group__publications_ga2de8433bddcaf74efc7d90f6ab1d52f7}
+Extracts publication time from human readable publication string.
+
+
+\begin{DoxyParams}{Parameters}
+{\em publication} & {\ttfamily }(in) Pointer to human readable publication value. \\
+\hline
+{\em publication\_\-time} & {\ttfamily }(out) Pointer to the variable that receives publication time. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__publications_ga585049b56c3445dab5b099b98734693c}{
+\index{publications@{publications}!GTPublicationsFile\_\-free@{GTPublicationsFile\_\-free}}
+\index{GTPublicationsFile\_\-free@{GTPublicationsFile\_\-free}!publications@{publications}}
+\subsubsection[{GTPublicationsFile\_\-free}]{\setlength{\rightskip}{0pt plus 5cm}void GTPublicationsFile\_\-free (
+\begin{DoxyParamCaption}
+\item[{{\bf GTPublicationsFile} $\ast$}]{ publications\_\-file}
+\end{DoxyParamCaption}
+)}}
+\label{group__publications_ga585049b56c3445dab5b099b98734693c}
+Frees memory used by the publications file structure.
+
+
+\begin{DoxyParams}{Parameters}
+{\em publications\_\-file} & {\ttfamily }(in) -\/ {\ttfamily GTPublicationsFile} object that is to be freed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{group__common_ga0446e9253011a921665126e9f37016a1}{GT\_\-free()} 
+\end{DoxySeeAlso}
+\hypertarget{group__publications_gac7154e5bda48840a583100dfa5a8393b}{
+\index{publications@{publications}!GTPublicationsFile\_\-getByIndex@{GTPublicationsFile\_\-getByIndex}}
+\index{GTPublicationsFile\_\-getByIndex@{GTPublicationsFile\_\-getByIndex}!publications@{publications}}
+\subsubsection[{GTPublicationsFile\_\-getByIndex}]{\setlength{\rightskip}{0pt plus 5cm}int GTPublicationsFile\_\-getByIndex (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTPublicationsFile} $\ast$}]{ publications\_\-file, }
+\item[{unsigned int}]{ publication\_\-index, }
+\item[{char $\ast$$\ast$}]{ publication}
+\end{DoxyParamCaption}
+)}}
+\label{group__publications_gac7154e5bda48840a583100dfa5a8393b}
+Extracts publication with the given index from the publications file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em publications\_\-file} & {\ttfamily }(in) -\/ Publications file to extract from. \\
+\hline
+{\em publication\_\-index} & {\ttfamily }(in) -\/ Index of the publication to extract. \\
+\hline
+{\em publication} & {\ttfamily }(out) -\/ Pointer to the pointer receiving extracted human readable publication value as an ordinary C-\/string on success. This value must be freed with \hyperlink{group__common_ga0446e9253011a921665126e9f37016a1}{GT\_\-free()} later when not needed anymore. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__publications_ga37390311c583fe0ecc6871db4b4b8f05}{
+\index{publications@{publications}!GTPublicationsFile\_\-getKeyHashByIndex@{GTPublicationsFile\_\-getKeyHashByIndex}}
+\index{GTPublicationsFile\_\-getKeyHashByIndex@{GTPublicationsFile\_\-getKeyHashByIndex}!publications@{publications}}
+\subsubsection[{GTPublicationsFile\_\-getKeyHashByIndex}]{\setlength{\rightskip}{0pt plus 5cm}int GTPublicationsFile\_\-getKeyHashByIndex (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTPublicationsFile} $\ast$}]{ publications\_\-file, }
+\item[{unsigned int}]{ key\_\-hash\_\-index, }
+\item[{char $\ast$$\ast$}]{ key\_\-hash}
+\end{DoxyParamCaption}
+)}}
+\label{group__publications_ga37390311c583fe0ecc6871db4b4b8f05}
+This function returns published key hash with index {\ttfamily key\_\-hash\_\-index}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em publications\_\-file} & {\ttfamily }(in) -\/ Pointer to publications file. \\
+\hline
+{\em key\_\-hash\_\-index} & {\ttfamily }(in) -\/ Index of published key hash. \\
+\hline
+{\em key\_\-hash} & {\ttfamily }(out) -\/ The output string of published key hash, must be disposed of after use with \hyperlink{group__common_ga0446e9253011a921665126e9f37016a1}{GT\_\-free()}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}
+\hypertarget{group__publications_gac3eccc436ce6e5114346b9135b616fc9}{
+\index{publications@{publications}!GTPublicationsFile\_\-verify@{GTPublicationsFile\_\-verify}}
+\index{GTPublicationsFile\_\-verify@{GTPublicationsFile\_\-verify}!publications@{publications}}
+\subsubsection[{GTPublicationsFile\_\-verify}]{\setlength{\rightskip}{0pt plus 5cm}int GTPublicationsFile\_\-verify (
+\begin{DoxyParamCaption}
+\item[{const {\bf GTPublicationsFile} $\ast$}]{ publications\_\-file, }
+\item[{{\bf GTPubFileVerificationInfo} $\ast$$\ast$}]{ verification\_\-info}
+\end{DoxyParamCaption}
+)}}
+\label{group__publications_gac3eccc436ce6e5114346b9135b616fc9}
+Verifies signature of the published file.
+
+
+\begin{DoxyParams}{Parameters}
+{\em publications\_\-file} & {\ttfamily }(in) -\/ Publications file that is to be verified. \\
+\hline
+{\em verification\_\-info} & {\ttfamily }(out) -\/ Pointer that will receive pointer to publications file verification info. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+status code ({\ttfamily GT\_\-OK}, when operation succeeded, otherwise an error code). 
+\end{DoxyReturn}

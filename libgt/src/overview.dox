@@ -1,0 +1,201 @@
+/*
+ * $Id: overview.dox 98 2010-12-01 13:19:04Z ahto.truu $
+ *
+ * Copyright 2008-2010 GuardTime AS
+ *
+ * This file is part of the GuardTime client SDK.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License. 
+ */
+
+/**
+\mainpage
+
+<p>This is reference manual for the GuardTime client SDK. The SDK offers functions and examples useful for developers who want to integrate GuardTime timestamps into their own applications.</p>
+
+<p>Disclaimer: This is the first public release of the SDK. We expect to deliver updates based on feedback from the first users and cannot guarantee that the updated versions will maintain interface compatibility with the current release.</p>
+
+<h2>Timestamps</h2>
+
+<p>A timestamp contains the information to certify that some data existed in a given form at some given time in the past. Timestamps are normally issued by trusted third parties called Timestamping Authorities (TSAs). The main innovation in GuardTime timestamps is that the amount of trust in the TSA required from the customers is significantly reduced compared to the more traditional approaches.<p>
+
+<p>The two main operations on timestamps are generation and verification. Generation of a timestamp involves cryptographically binding the data whose integrity is to be protected to the time value from a reliable source in a way that neither the data nor the time value could later be changed undetectably. Verification means checking that the binding is still intact.</p>
+
+<p>To get a timestamp from a GuardTime timestamping service, the client application computes a hash value of the data to be timestamped and submits the hash value to the timestamping service. The service returns a timestamp binding the hash value to the current time. The interaction follows the standard timestamping protocol defined in the RFC 3161.</p>
+
+<p>A hash value is like a digital fingerprint of the data. Given both the original data and the hash value, it is easy to verify that they match. Yet it is impossible to recover the original data from the hash value, much like it is not possible to reconstruct a person from his/her fingerprint. So, even confidential data can be timestamped without any fear of disclosure. It is also quite impossible to create two different documents having the same fingerprint.<p>
+
+<p>Every month, GuardTime creates an Integrity Code and publishes it in several newspapers across the world. The Integrity Code is a summary of all timestamps issued by the GuardTime timestamping services. Any timestamp issued prior to the creation of the Integrity Code can be traced to it to unambiguously prove the timestamp's age and integrity.</p>
+
+<p>The proof connecting the timestamp to the Integrity Code can be inserted back into the timestamp itself in a process we call extending the timestamp. An extended timestamp is completely independent of GuardTime. Only the original data, the timestamp and any copy of the newspaper where the Integrity Code is published will be necessary to prove the intgerity and the age of the document.</p>
+
+<p>Until the Integrity Code is generated, the timestamps are protected by GuardTime's digital signature. Digitally signing timestamps is the most common mode of operation of TSAs. The independent proof of authenticity based on publically available data is what makes GuardTime's solution unique.</p>
+
+<p>For convenience, GuardTime publishes an electronic archive containing all Integrity Codes since the launch of the service and all valid signing keys. This electronic archive can be used to automate mass verification of thousands of timestamps (whether extended or not) per second in a large archive.</p>
+
+\image html TspOverview.png
+\image latex TspOverview.pdf  "" width=15cm
+
+<h2>Structure</h2>
+
+For manageability, the GuardTime client SDK is split into several layers.
+
+<b>The Base API</b>
+
+The base API deals with the low-level details of handling the timestamps. The public interface of this layer is defined in the file \c gt_base.h and the implementation is provided in the library \c libgtbase.
+
+The functions in this layer cover the follwoing functional areas:
+- the \ref timestamps section describes the functions dealing with creation, encoding and decoding of timestamp objects;
+- the \ref publications section describes the functions for handling the electronic archives of Integrity Codes;
+- the \ref verification section describes the functions for verifying the validity of timestamps;
+- the \ref common section collects various helper functions, such as for data hashing and error handling.
+
+The cryptographic functions in the base API rely on the OpenSSL library, which has to be available to your application. See the documentation for the header file for more details on this.
+
+<b>The HTTP Transport</b>
+
+This module deals with communicating to the GuardTime network over the HTTP protocol. The public interface of this layer is defined in the file \c gt_http.h and the implementation is provided in the library \c libgthttp.
+
+Detailed documentation for this layer is available in the \ref http section.
+
+For actual network transport on Linux, this module relies on the cURL library, which has to be available to your application. On Windows, the module relies on WinINet which comes standard on all supported versions of Windows. See the documentation for the header file for more details on this.
+
+The HTTP module also uses the base API for handling the timestamps.
+
+<b>The PNG Integration</b>
+
+This module deals with seamless embedding of GuardTime timestamps into PNG image files. The public interface of this layer is defined in the file \c gt_png.h and the implementation is provided in the library \c libgtpng.
+
+Detailed documentation for this module is available in the \ref png section.
+
+This module does not have any external dependencies, but it does rely on the base API and the HTTP module.
+
+We expect to provide similar modules for several other file formats in the next release of the GuardTime client SDK.
+
+<h2>Examples</h2>
+
+The SDK includes simple command line utilities for timestamping arbitrary files and verifying the timestamps.
+
+<b>Creating a timestamp</b>
+
+The timestamping utility is located in the file \c src/http/http_create.c within the SDK source code archive.
+
+To compile the example under Linux, use a command along the lines of
+\code
+	gcc http_create.c -o http_create -I/usr/local/gt/include \
+	-L/usr/local/gt/lib -L/usr/local/curl/lib -L/usr/local/ssl/lib \
+	-lgthttp -lgtbase -lcurl -lcrypto -lrt
+\endcode
+(either with the backslashes or all on a single line) replacing \c /usr/local/gt, \c /usr/local/curl and \c /usr/local/ssl with the directories where you unpacked the GuardTime, cURL and OpenSSL libraries (you can skip the \c /I and \c /L options if you installed everything in standard system locations).
+
+To compile the example under Windows, use a command along the lines of
+\code
+	cl.exe http_create.c /MT /I C:\gt\include
+	/link /libpath:C:\gt\lib /libpath:C:\openssl\lib
+	libgthttpMT.lib libgtbaseMT.lib libeay32MT.lib wininet.lib
+	wsock32.lib wldap32.lib winmm.lib user32.lib gdi32.lib advapi32.lib
+\endcode
+(all on a single line) replacing \c C:\\gt and \c C:\\openssl with the directories where you unpacked the GuardTime and OpenSSL libraries.
+
+To run the compiled example, use a command along the lines of
+\code
+	http_create data_in_file timestamp_out_file stamper_url
+\endcode
+where the data is to be read from the file \c data_in_file, the timestamp is to be written to the file \c timestamp_out_file and the timestamping service is located at the URL \c stamper_url.
+
+The core of the example is as follows:
+\code
+	// Error handling omitted for brevity
+	// See the actual source code for full details
+
+	// Hash the data file
+	GT_hashFile(in_file, GT_HASHALG_DEFAULT, &data_hash);
+
+	// Get the timestamp
+	GTHTTP_createTimestampHash(data_hash, tsa_url, &timestamp);
+
+	// Encode the timestamp
+	GTTimestamp_getDEREncoded(timestamp, &der, &der_len);
+
+	// Save the DER-encoded timestamp to a file
+	GT_saveFile(out_file, der, der_len);
+\endcode
+
+<b>Verifying a timestamp</b>
+
+The timestamp verification utility is located in the file \c src/http/http_verify.c within the SDK source code archive.
+
+To compile the example under Linux, use a command along the lines of
+\code
+	gcc http_verify.c -o http_verify -I/usr/local/gt/include \
+	-L/usr/local/gt/lib -L/usr/local/curl/lib -L/usr/local/ssl/lib \
+	-lgthttp -lgtbase -lcurl -lcrypto -lrt
+\endcode
+(either with the backslashes or all on a single line) replacing \c /usr/local/gt, \c /usr/local/curl and \c /usr/local/ssl with the directories where you unpacked the GuardTime, cURL and OpenSSL libraries (you can skip the \c /I and \c /L option if you installed everything in standard system locations).
+
+To compile the example under Windows, use a command along the lines of
+\code
+	cl.exe http_verify.c /MT /I C:\gt\include
+	/link /libpath:C:\gt\lib /libpath:C:\openssl\lib
+	libgthttpMT.lib libgtbaseMT.lib libeay32MT.lib wininet.lib
+	wsock32.lib wldap32.lib winmm.lib user32.lib gdi32.lib advapi32.lib
+\endcode
+(all on a single line) replacing \c C:\\gt and \c C:\\openssl with the directories where you unpacked the GuardTime and OpenSSL libraries.
+
+To run the compiled example, use a command along the lines of
+\code
+	http_verify timestamp_in_file data_in_file publications_url verifier_url
+\endcode
+where the timestamp is to be read from the file \c timestamp_in_file, the data is to be read from the file \c data_in_file, the publications list is to be retrieved from the URL \c publications_url and the online verifying service is located at the URL \c verifier_url (the last one is optional, specify \c - instead of the URL for offline verification).
+
+The core of the example is as follows:
+\code
+	// Error handling omitted for brevity
+	// See the actual source code for full details
+
+	// Read the timestamp file
+	GT_loadFile(timestamp_file, &stamp_der, &stamp_der_len);
+
+	// Decode the timestamp
+	GTTimestamp_DERDecode(stamp_der, stamp_der_len, &timestamp);
+
+	// Hash the data file
+	GTTimestamp_getAlgorithm(timestamp, &hash_algo);
+	GT_hashFile(data_file, hash_algo, &data_hash);
+
+	// Verify the timestamp
+	GTHTTP_verifyTimestampHash(timestamp, data_hash,
+		verifier_url, NULL, NULL, publications_url, 0, &ver);
+
+	// Display the results
+	GTVerificationInfo_print(stderr, 0, ver);
+	if (ver->verification_errors == GT_NO_FAILURES) {
+		printf("Verification succeeded!\n");
+	}
+\endcode
+
+<h2>License</h2>
+
+Copyright 2008-2010 GuardTime AS
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>.
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. 
+
+<h2>Acknowledgements</h2>
+
+This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit (<a href="http://www.openssl.org/">www.openssl.org</a>).
+
+This product includes cryptographic software written by Eric Young (eay@cryptsoft.com). This product includes software written by Tim Hudson (tjh@cryptsoft.com).
+
+This product includes networking software developed by the cURL Project (<a href="http://curl.haxx.se/">curl.haxx.se</a>).
+
+*/
