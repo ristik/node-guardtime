@@ -1,0 +1,96 @@
+API is split into two modules:
+  * 'TimeSignature' encapsulates signature token and offers some low-level 'static' methods;
+  * 'GuardTime' is service layer bridging tokens to GuardTime services.
+
+
+***** module GuardTime
+  gt.sign(String data, function(Exception error, TimeSignature ts){});
+  gt.signFile(String filename, function(Exception error, TimeSignature ts){});
+  gt.signHash(Buffer binary_hash, String hashalgo, function(Exception error, TimeSignature ts){});
+  
+Signs data, reates TimeSignature token and returns it as a argument to callback.
+
+  gt.save(String filename, TimeSignature ts, function(Exception error)[]);
+Saves asyncronously TimeSignature token to file.
+
+  gt.load(String filename, function(Exception error, TimeSignature ts){});
+Loads and creates TimeSignature token from file.
+
+  TimeSignature ts = gt.loadSync(String filename);
+Loads and creates TimeSignature token from file, asynchronously.
+
+  gt.verify(String data, TimeSignature ts, function(Exception err, Integer resultflags){});
+  gt.verifyFile(String filename, TimeSignature ts, function(Exception err, Integer resultflags){});
+  gt.verifyHash(Buffer binaryhash, String alg, TimeSignature ts, function(Exception err, Integer resultflags){});
+Verifies TimeSignature on data. On success the callback gets back flags about the checks done.
+
+
+  gt.loadPublications(function(Exception error){});
+Loads publications data form network and saves it in GuardTime object for future verification use.
+Note that all verification functions need this data and call this function if it is not done explicitly.
+It is advised to refresh publications data after approx. every 6 hours.
+Callback will be called when loading is done; error is null in the case of success.
+
+  gt.extend(TimeSignature ts, function(Exception error, TimeSignature ts){});
+Creates 'extended' form of TimeSignature token, ready for hash-chain based verification.
+Mostly for internal use. Does not create new TimeSignature token; modifies original.
+Note that if callback returns error object then signature must not be considered as broken and can
+still be verified (offline).
+
+
+
+***** module TimeSignature
+
+  cnstructor ts = new TimeSignature(Buffer der_token_content);
+Creates new timesignature token from DER-encoded serialized representation (for example file on disk)
+
+
+  Buffer req = ts.composeExtendingRequest();
+Creates request data blob to be sent to Verification service.
+
+  Integer checks_done = ts.verify();
+Verifies internal consistency of signature token and returns flags about successful tests, or
+throws an exception.
+
+  Boolean earlier = ts.isEarlierThan(TimeSignature ts2);
+Compares two signature tokens; returns True if encapsulated token is provably earlier than one
+provided as an argument.
+
+  Date date = ts.getRegisteredTime();
+Returns provably secure signature registration time as Date object, with 1 second resolution.
+
+  Boolean extended = ts.isExtended();
+Returns True if timesignature token has all missing bits of hash-chain embedded for offline verification.
+
+  String algo_name = ts.getHashAlgorithm();
+Returns OpenSSL style hash algorithm name. Necessary for verification - data has to be hashed with same alg.
+
+  Integer checks_done = ts.verifyHash(Buffer hash, String algo);
+Compares hash to one in signature token; makes sense only if algorithms are same.
+
+  Integer checks_done = ts.checkPublication(Buffer pub_data);
+Verifies timesignature token using data in publications file; returns check flags or throws an exception on
+any error.
+
+  Buffer data_blob = ts.getContent();
+Returns storable DER representation of TimeSignature token.
+
+  Boolean ok = ts.extend(Buffer response);
+Creates 'extended' version of timesignature token, by including missing bits of the hash-chain.
+Input: Buffer with verification service response; returns True or throws an exception.
+
+
+'static' functions:
+
+  Buffer req = TimeSignature.composeRequest(String hash, String alg='sha256);
+Creates request data to be sent to signing service. Input: binary hash string and hash alg. name.
+
+  Buffer der_token_content = TimeSignature.processResponse(Buffer resp);
+Creates DER encoded serialized timesignature, usually fed to TimeSignature constructor.
+Input: response from signing service.
+
+  Bool ok = TimeSignature.verifyPublications(Buffer der_publications_file_content);
+Verifies publications file (used by higher level verification routines).
+Returns True or throws exception.
+
+
