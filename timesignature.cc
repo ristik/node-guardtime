@@ -13,20 +13,9 @@ class TimeSignature: ObjectWrap
 private:
   GTTimestamp *timestamp;
   
-  static int getAlgoID(const char *algoName) {
-        return (
-                strcasecmp(algoName, "sha1") == 0 ? GT_HASHALG_SHA1 :
-                strcasecmp(algoName, "sha224") == 0 ? GT_HASHALG_SHA224 :
-                strcasecmp(algoName, "sha256") == 0 ? GT_HASHALG_SHA256 :
-                strcasecmp(algoName, "sha384") == 0 ? GT_HASHALG_SHA384 :
-                strcasecmp(algoName, "sha512") == 0 ? GT_HASHALG_SHA512 :
-                strcasecmp(algoName, "ripemd160") == 0 ? GT_HASHALG_RIPEMD160 :
-                -1);
-   }
-
 public:
-
   static Persistent<FunctionTemplate> constructor_template;
+  
   static void Init(Handle<Object> target)
   {
     HandleScope scope;
@@ -72,17 +61,6 @@ public:
   		GTTimestamp_free(timestamp);
   }
   
-  static bool HasInstance(v8::Handle<v8::Value> val) {
-  	if (!val->IsObject()) return false;
-  	v8::Local<v8::Object> obj = val->ToObject();
-
-  	if (obj->GetIndexedPropertiesExternalArrayDataType() == kExternalUnsignedByteArray)
-    	return true;
-	if (constructor_template->HasInstance(obj)) 
-    	return true;
-  	return false;
-  }
-
   static Handle<Value> New(const Arguments& args)
   {
   	if (!args.IsConstructCall()) {  
@@ -399,7 +377,7 @@ public:
     GTTimestamp_free(ts->timestamp);
     ts->timestamp = new_ts;
     
-    return scope.Close(Integer::New(GT_OK));
+    return scope.Close(True());
   }
   
   
@@ -541,6 +519,31 @@ public:
     	return scope.Close(NODE_UNIXTIME_V8(result)); // Date::New(time_t * 1000)
 
 	}
+	
+  private:
+	  static int getAlgoID(const char *algoName) {
+        return (
+                strcasecmp(algoName, "sha1") == 0 ? GT_HASHALG_SHA1 :
+                strcasecmp(algoName, "sha224") == 0 ? GT_HASHALG_SHA224 :
+                strcasecmp(algoName, "sha256") == 0 ? GT_HASHALG_SHA256 :
+                strcasecmp(algoName, "sha384") == 0 ? GT_HASHALG_SHA384 :
+                strcasecmp(algoName, "sha512") == 0 ? GT_HASHALG_SHA512 :
+                strcasecmp(algoName, "ripemd160") == 0 ? GT_HASHALG_RIPEMD160 :
+                -1);
+   }
+   
+   static bool HasInstance(v8::Handle<v8::Value> val) {
+  	if (!val->IsObject()) return false;
+  	Local<Object> obj = val->ToObject();
+
+  	if (obj->GetIndexedPropertiesExternalArrayDataType() == kExternalUnsignedByteArray)
+    	return true;
+	if (constructor_template->HasInstance(obj)) 
+    	return true;
+  	return false;
+  }
+
+
 	
 	
 };

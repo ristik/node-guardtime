@@ -24,50 +24,15 @@ gt.sign('Hello world!', function(err, ts) {
 });
 ---------
 
+For API documentation please see file node-guardtime-api.txt
 
-Initial API, for proper documentation please see the code ;)
-module TimeSignature  // low level TS toke manipulation layer
-* TimeSignature(der token data)  // constructor
-* TimeSignature.composeRequest(hash, alg='sha256') -> req data   // 'static'
-* TimeSignature.processResponse(gw response) -> der token data   // 'static'
-*  .composeExtendingRequest() -> req data
-*  .extend(ext response)
-*  .isExtended() -> y/n
-*  .getHashAlgorithm()  -> openssl style string
-*  .compareHash(hash, algo)  // get hash value and then compare in js could be prettier
-*  .getContent() -> serialized token data blob
-*  .getRegisteredTime() -> Date() object with Provably Secure Signing Time (TM)
-*  .isEarlierThan(another timesignature)
-*  .verify()   -> integer with flags
-*  TimeSignature.verifyPublications(pub file as der data)  // 'static'
-
-
-module GuardTime  //upper 'service layer' implemented in js
-*  .signHash(hash, alg='sha256', function(error, TimeSignature))
-*  .sign(data, alg='sha256', function(error, TimeSignature))
-*  .signFile(filename, alg='sha256', function(error, TimeSignature))  
-*  .extend(TimeSignature, function(error, TimeSignature)
-*  .loadPublications(cb)   // afterwards all verify.. stuff will use
-*  .verifyHash(hash, alg, TimeSignature, function(error, flags))
-*  .verifyFile(dataFilename, TimeSignature, function(error, flags))
-*  .verify(data buffer, TimeSignature, function(error, flags))
-*  .save(filename, ts, function(err));  // should be TS func
-*  .load(filename, function(err, ts))
-*  .loadSync(filename) -> ts
-*  property signer   // has sensible default for testing 
-*  property verifier
-*  property publications
-*  ... verification flags as properties, other constants
----------------------
-
-
-For more information please go to
+For more information about GuardTime Keyless Signature service please go to
 http://www.guardtime.com/
-
-In short:
+As You are already here - this is the essence:
 GuardTime service adds hash of your doc to giant hash tree with globally unique
 root value; and regularily publishes these root values in FT.
 
-Published under Apache license v. 2.0
+
+Published under Apache license v. 2.0.
 Copyright GuardTime AS 2010
 

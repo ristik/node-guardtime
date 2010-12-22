@@ -11,6 +11,10 @@
     "install": "node-waf configure build",
     "test": "node test3.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/ristik/node-guardtime.git"
+  },
   "engines": {
     "node": "*"
   }
