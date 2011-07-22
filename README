@@ -1,18 +1,17 @@
 API to access GuardTime services.
 
 
-Includes C API in subdirectory libgt; and ugly hack to 
-make it produce only static base libs.
+Includes GuardTime C API in subdirectory libgt-x.y
 
 How to build:
 npm link
 or 
-node-waf configure build
+node-waf configure build test install
 
 
 Hello world:
 ---------
-var gt = require('./guardtime');
+var gt = require('guardtime');
 
 gt.sign('Hello world!', function(err, ts) {
   if(err) {
@@ -34,5 +33,5 @@ root value; and regularily publishes these root values in FT.
 
 
 Published under Apache license v. 2.0.
-Copyright GuardTime AS 2010
+Copyright GuardTime AS 2010-2011
 

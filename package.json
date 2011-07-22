@@ -1,6 +1,6 @@
 {
   "name": "guardtime",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "GuardTime signing service access/verification API for node.js",
   "author": "Risto Laanoja",
   "homepage": "http://www.guardtime.com/",
@@ -9,7 +9,7 @@
   "main": "./guardtime",
   "scripts": {
     "install": "node-waf configure build",
-    "test": "node test3.js"
+    "test": "node tests.js"
   },
   "repository": {
     "type": "git",

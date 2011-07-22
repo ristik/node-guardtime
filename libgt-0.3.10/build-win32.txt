@@ -1,0 +1,24 @@
+Install Microsoft Visual C++ compiler and build tools
+Set the appropriate environment variables using the script included with the compiler
+
+Install OpenSSL libaries
+Set OPENSSL_DIR to point to the top-level directory (where the include, lib, and dll directories are)
+
+If you want to generate HTML or PDF documentation
+Install Doxygen and add it to PATH
+
+If you want to compile PDF documentation
+Install LaTeX and add it to PATH
+
+In the GuardTime SDK top-level directory
+	Build the libraries (for finer control, see comments in the makefile)
+nmake all
+	Build the examples
+nmake check
+	Verify that the examples work
+.\out\http_create.exe .\test\TestData.txt .\test\TestData.txt.gtts http://stamper.guardtime.net/gt-signingservice
+.\out\http_verify.exe .\test\TestData.txt.gtts .\test\TestData.txt http://verify.guardtime.com/gt-controlpublications.bin -
+	Optionally build the HTML documentation
+nmake htmldoc
+	Optionally build the full documentation
+nmake doc

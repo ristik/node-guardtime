@@ -59,6 +59,10 @@ provided as an argument.
   Date date = ts.getRegisteredTime();
 Returns provably secure signature registration time as Date object, with 1 second resolution.
 
+  String s = ts.getSignerName();
+Returns signer's identity as ':' - separated hierarchical list of responsible authenticators.
+If token does not contain identity then '' (empty string) is returned.
+
   Boolean extended = ts.isExtended();
 Returns True if timesignature token has all missing bits of hash-chain embedded for offline verification.
 

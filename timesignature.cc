@@ -28,9 +28,10 @@ public:
     
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "verify", Verify);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "isExtended", IsExtended);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "getHashAlgorithm", GetHashAlgorithm);      NODE_SET_PROTOTYPE_METHOD(constructor_template, "compareHash", CompareHash);
+    NODE_SET_PROTOTYPE_METHOD(constructor_template, "getHashAlgorithm", GetHashAlgorithm);
+    NODE_SET_PROTOTYPE_METHOD(constructor_template, "compareHash", CompareHash);
 	NODE_SET_PROTOTYPE_METHOD(constructor_template, "checkPublication", CheckPublication);
-        
+    NODE_SET_PROTOTYPE_METHOD(constructor_template, "getSignerName", GetSignerName);   
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "getContent", GetContent);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "composeExtendingRequest", ComposeExtendingRequest);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "extend", Extend);
@@ -158,8 +159,7 @@ public:
                 String::New(GT_getErrorString(res))));               
   	
   	// ids copied from gt_base.h -> enum GTHashAlgorithm
-  	// there is static const char* hashAlgName(int hash_alg) in forthcoming version of C API.
-  	switch(alg) {  
+   	switch(alg) {  
   		case 1: return scope.Close(String::New("SHA256"));
   		case 0: return scope.Close(String::New("SHA1"));
   		case 2: return scope.Close(String::New("RIPEMD160"));
@@ -169,10 +169,9 @@ public:
   	   default:
     	 return ThrowException(Exception::Error(
                 String::New("Unknown hash algorithm ID")));
-  		
-  	}
+   	} 
+  	// using static func in gt_info.c: return scope.Close(String::New(hashAlgName(alg)));
   }
-  
 
   static Handle<Value> GetRegisteredTime(const Arguments& args)
   {
@@ -302,7 +301,33 @@ public:
 			
 	return scope.Close(Integer::New(GT_PUBLICATION_CHECKED));
   }
- 
+  
+  static Handle<Value> GetSignerName(const Arguments& args)
+  {
+    HandleScope scope;
+    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
+
+	if (ts->timestamp == NULL)
+		return ThrowException(Exception::Error(
+                String::New("TimeSignature is blank")));
+               
+	GTVerificationInfo *verification_info = NULL;
+    int res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
+    if (res != GT_OK) 
+    	return ThrowException(Exception::Error(
+                String::New(GT_getErrorString(res))));
+                
+    if (verification_info->verification_errors != GT_NO_FAILURES) {
+        GTVerificationInfo_free(verification_info);
+		return ThrowException(Exception::Error(
+                String::New("TimeSignature verification error")));
+	}  	
+	Local<String> result = String::New(
+			verification_info->implicit_data->location_name ? 
+			verification_info->implicit_data->location_name : "");
+    GTVerificationInfo_free(verification_info);
+    return scope.Close(result);
+  }
  
   // returns DER encoded ts token
   static Handle<Value> GetContent(const Arguments& args)
@@ -348,7 +373,8 @@ public:
     return scope.Close(result->handle_);
   }
   
-    // ts.extend(ext. response)
+    // ts.extend(extending response)
+    // returns true or throws an exception
   static Handle<Value> Extend(const Arguments& args)
   {
     HandleScope scope;
@@ -541,11 +567,7 @@ public:
 	if (constructor_template->HasInstance(obj)) 
     	return true;
   	return false;
-  }
-
-
-	
-	
+  }	
 };
 
 Persistent<FunctionTemplate> TimeSignature::constructor_template;

@@ -21,12 +21,21 @@ function parseUri(sourceUri){
 
 
 var GuardTime = module.exports = {
-  default_hashalg: 'sha256',
-  res: {  // verification result bitmap constants
-  	PUBLIC_KEY_SIGNATURE_PRESENT: 1,
-  	PUBLICATION_REFERENCE_PRESENT: 2,
-  	DOCUMENT_HASH_CHECKED: 16,
-  	PUBLICATION_CHECKED: 32
+  default_hashalg: 'SHA256',
+  VER_ERR : {
+	NO_FAILURES : 0,
+	SYNTACTIC_CHECK_FAILURE : 1,
+	HASHCHAIN_VERIFICATION_FAILURE : 2,
+	PUBLIC_KEY_SIGNATURE_FAILURE : 16,
+	NOT_VALID_PUBLIC_KEY_FAILURE : 64,
+	WRONG_DOCUMENT_FAILURE : 128,
+	NOT_VALID_PUBLICATION : 256
+  },
+  VER_RES : {
+	PUBLIC_KEY_SIGNATURE_PRESENT : 1,
+	PUBLICATION_REFERENCE_PRESENT : 2,
+	DOCUMENT_HASH_CHECKED : 16,
+	PUBLICATION_CHECKED : 32
   },
   publications: {
   	data: '',
@@ -165,7 +174,7 @@ var GuardTime = module.exports = {
            	 return callback(er);
            }
            if (callback) 
-           	   callback(result, ts);
+           	   callback(null, ts);
         });
       });
    },
@@ -185,7 +194,6 @@ var GuardTime = module.exports = {
 		if (typeof(callback) !== 'function') 
 				callback = function (){};
 		var result = 0;
-		
 		// if publications file is not yet downloaded - download and recall itself
 		if (!GuardTime.publications.data) {
 			return GuardTime.loadPublications(function(err){
@@ -201,9 +209,9 @@ var GuardTime = module.exports = {
 			if (!ts.isExtended() && !is_new) {
 				return GuardTime.extend(ts, function(err, xts) {
 					if (err) {
-					    // no failover:
+					    //no failover:
 						// return callback(err);
-						// failover:
+						//failover:
 						xts = ts;
 					}
 					try {
