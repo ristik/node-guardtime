@@ -5,6 +5,7 @@
 //   signed file cat.gif
 //   internet connectivity
 //   GW with public identity is used.
+//   run in module build directory
 
 var gt = require('./guardtime'), 
   TimeSignature = require('./timesignature').TimeSignature,
@@ -28,6 +29,7 @@ gt.loadPublications(function(err) {
 	  var tsdate = ts.getRegisteredTime();
 	  assert.ok(tsdate.getTime() + 1000*60*10 > now.getTime(), "signing time is not within 5 minutes (check your wall clock?)");
 	  assert.ok(tsdate.getTime() - 1000*60*10 < now.getTime(), "signing time is not within 5 minutes (check your wall clock?)");
+	  
 	  assert.ok(ts.getSignerName().match(/public/));
 	  
 	  gt.verify('UnHello!', ts, function(err, res) {
@@ -69,7 +71,7 @@ gt.loadPublications(function(err) {
 	    gt.verifyFile('cat.gif', ts, function(err, res) {
 		  assert.ok(err == null, err);
 		  assert.equal(res, gt.VER_RES.DOCUMENT_HASH_CHECKED + 
-		  			gt.VER_RES.PUBLICATION_CHECKED); 
+		  			gt.VER_RES.PUBLICATION_CHECKED);
 	    });
 	  });
 	 

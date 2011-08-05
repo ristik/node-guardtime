@@ -321,9 +321,9 @@ public:
         GTVerificationInfo_free(verification_info);
 		return ThrowException(Exception::Error(
                 String::New("TimeSignature verification error")));
-	}  	
+	}
 	Local<String> result = String::New(
-			verification_info->implicit_data->location_name ? 
+			(verification_info->implicit_data->location_name != NULL) ? 
 			verification_info->implicit_data->location_name : "");
     GTVerificationInfo_free(verification_info);
     return scope.Close(result);
@@ -393,8 +393,7 @@ public:
 	size_t buffer_length = Buffer::Length(buffer_obj);
   	GTTimestamp *new_ts;
     int res = GTTimestamp_createExtendedTimestamp(ts->timestamp, buffer_data, buffer_length, &new_ts);
-    if (res == GT_ALREADY_EXTENDED || res == GT_NONSTD_EXTEND_LATER ||
-    		res == GT_NONSTD_EXTENSION_OVERDUE)
+    if (res == GT_ALREADY_EXTENDED || res == GT_NONSTD_EXTEND_LATER || res == GT_NONSTD_EXTENSION_OVERDUE)
     	return scope.Close(Integer::New(res));
     if (res != GT_OK) 
     	return ThrowException(Exception::Error(

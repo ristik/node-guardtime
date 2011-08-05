@@ -13,9 +13,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/ristik/node-guardtime.git"
+    "url": "https://github.com/ristik/node-guardtime.git"
   },
   "engines": {
-    "node": "*"
+    "node": ">=0.3.0"
   }
 }

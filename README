@@ -31,6 +31,7 @@ As You are already here - this is the essence:
 GuardTime service adds hash of your doc to giant hash tree with globally unique
 root value; and regularily publishes these root values in FT.
 
+Needs Node.JS >= 0.3.0
 
 Published under Apache license v. 2.0.
 Copyright GuardTime AS 2010-2011
