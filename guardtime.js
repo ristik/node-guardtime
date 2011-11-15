@@ -1,8 +1,7 @@
-var crypto = require('crypto');
-var sys = require('sys');
-var http = require('http');
-var fs = require('fs');
-var TimeSignature = require('./timesignature').TimeSignature;
+var crypto = require('crypto'),
+	util = require('util'),
+	http = require('http'),
+	fs = require('fs');
 
 
 function parseUri(sourceUri){
@@ -37,6 +36,7 @@ var GuardTime = module.exports = {
 	DOCUMENT_HASH_CHECKED : 16,
 	PUBLICATION_CHECKED : 32
   },
+  TimeSignature: require('./timesignature').TimeSignature,
   publications: {
   	data: '',
   	last: ''
@@ -75,7 +75,7 @@ var GuardTime = module.exports = {
 
     var sserver = http.createClient(
          GuardTime.service.signer.port == ''? 80 : GuardTime.service.signer.port, GuardTime.service.signer.domain);
-	var reqdata = TimeSignature.composeRequest(hash, alg);
+	var reqdata = GuardTime.TimeSignature.composeRequest(hash, alg);
     var request = sserver.request('POST', GuardTime.service.signer.path, 
         {'host': GuardTime.service.signer.domain, 
          'Content-Length': reqdata.length});
@@ -90,7 +90,7 @@ var GuardTime = module.exports = {
     	   pos = pos + chunk.length;
          }).on('end', function(){
            try{
-             ts = new TimeSignature(TimeSignature.processResponse(resp.slice(0, pos)));
+             ts = new GuardTime.TimeSignature(GuardTime.TimeSignature.processResponse(resp.slice(0, pos)));
            } catch (er) {
         	 return callback(er);
            }
@@ -107,14 +107,14 @@ var GuardTime = module.exports = {
 	 fs.readFile(filename, function (err, data) {
   	 	if (err) cb(err);
   	 	try {
-  			var ts = new TimeSignature(data);
+  			var ts = new GuardTime.TimeSignature(data);
 	  		cb(null, ts);
   		} catch (err) {return cb(err);}
 	 });  
   },
   
   loadSync: function (filename) {
-	 return new TimeSignature(fs.readFileSync(filename));
+	 return new GuardTime.TimeSignature(fs.readFileSync(filename));
   },
   
   loadPublications: function () {
@@ -135,7 +135,7 @@ var GuardTime = module.exports = {
          }).on('end', function(){
            var pub = resp.slice(0, pos);
            try {
-             var d = TimeSignature.verifyPublications(pub); // exception on error
+             var d = GuardTime.TimeSignature.verifyPublications(pub); // exception on error
              GuardTime.publications.last = d;
            	 GuardTime.publications.data = pub;
            	} catch (er) {
@@ -245,8 +245,6 @@ var GuardTime = module.exports = {
 			  GuardTime.verifyHash(new Buffer(hash.digest(), encoding='binary'), 
 						ts.getHashAlgorithm(), ts, callback);  
 		});   
-   }
-
-    
+   }    
 }
   	

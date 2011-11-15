@@ -1,7 +1,7 @@
 API is split into two modules:
   * 'TimeSignature' encapsulates signature token and offers some low-level 'static' methods;
   * 'GuardTime' is service layer bridging tokens to GuardTime services.
-
+TimeSignature is exported as guardtime.TimeSignature.
 
 ***** module GuardTime
   gt.sign(String data, function(Exception error, TimeSignature ts){});

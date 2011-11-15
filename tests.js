@@ -8,7 +8,7 @@
 //   run in module build directory
 
 var gt = require('./guardtime'), 
-  TimeSignature = require('./timesignature').TimeSignature,
+  TimeSignature = gt.TimeSignature,
   assert = require('assert');
 
 gt.loadPublications(function(err) {
