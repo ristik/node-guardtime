@@ -84,13 +84,13 @@ var GuardTime = module.exports = {
 
 	request.on('response', function (response) {
     	//console.log('STATUS: ' + response.statusCode);
-    	var resp = new Buffer(5500), pos = 0;  // todo: detect overflow
+    	var resp = "";
     	response.on('data', function(chunk){
-    	   resp.write(chunk.toString('binary'), pos, encoding='binary');
-    	   pos = pos + chunk.length;
+    	   resp += chunk.toString('binary');
          }).on('end', function(){
            try{
-             ts = new GuardTime.TimeSignature(GuardTime.TimeSignature.processResponse(resp.slice(0, pos)));
+             ts = new GuardTime.TimeSignature(GuardTime.TimeSignature.processResponse(
+             				new Buffer(resp, encoding='binary')));
            } catch (er) {
         	 return callback(er);
            }
@@ -128,13 +128,12 @@ var GuardTime = module.exports = {
         {'host': GuardTime.service.publications.domain});
     request.end();
     request.on('response', function (response) {
-    	var resp = new Buffer(6000), pos = 0;  // todo: detect overflow
+    	var resp = "";
     	response.on('data', function(chunk){
-    	   resp.write(chunk.toString('binary'), pos, encoding='binary');
-    	   pos = pos + chunk.length;
+    	   resp += chunk.toString('binary');
          }).on('end', function(){
-           var pub = resp.slice(0, pos);
            try {
+             var pub = new Buffer(resp, encoding='binary');
              var d = GuardTime.TimeSignature.verifyPublications(pub); // exception on error
              GuardTime.publications.last = d;
            	 GuardTime.publications.data = pub;
@@ -162,14 +161,13 @@ var GuardTime = module.exports = {
 	
 	request.on('response', function (response) {
     	// console.log('STATUS: ' + response.statusCode);
-    	var resp = new Buffer(3500), pos = 0;  // todo: detect overflow
+    	var resp = "";
     	response.on('data', function(chunk){
-    	   resp.write(chunk.toString('binary'), pos, encoding='binary');
-    	   pos = pos + chunk.length;
+    	   resp += chunk.toString('binary');
          }).on('end', function(){
            var result = 0;
            try{
-             result = ts.extend(resp.slice(0, pos));
+             result = ts.extend(new Buffer(resp, ecoding='binary'));
            } catch (er) {
            	 return callback(er);
            }
