@@ -4,6 +4,13 @@
 #include <node_buffer.h>
 #include <string.h>
 
+
+// from node_crypo.cc
+#define ASSERT_IS_STRING_OR_BUFFER(val) \
+if (!val->IsString() && !Buffer::HasInstance(val)) { \
+return ThrowException(Exception::TypeError(String::New("Not a string or buffer"))); \
+}
+
 using namespace node;
 using namespace v8;
 
@@ -65,7 +72,7 @@ public:
   static Handle<Value> New(const Arguments& args)
   {
     if (!args.IsConstructCall()) {  
-      return FromConstructorTemplate(constructor_template, args);                                                         } 
+      return FromConstructorTemplate(constructor_template, args);                                                             } 
     HandleScope scope;
     GTTimestamp *timestamp;
    
@@ -205,35 +212,52 @@ public:
 
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
-                String::New("TimeSignature is blank")));
-    if (!Buffer::HasInstance(args[0])) {
-      return ThrowException(Exception::Error(
-                String::New("First argument needs to be a Buffer containing binary digest")));
+            String::New("TimeSignature is blank")));
+        
+    if (args.Length() < 1 || args.Length() > 2) {
+      return ThrowException(Exception::TypeError(String::New("Bad parameter")));
     }
+    ASSERT_IS_STRING_OR_BUFFER(args[0]);
+        
     if (args.Length() == 2 && !args[1]->IsString()) {
-      return ThrowException(Exception::Error(String::New(
+      return ThrowException(Exception::TypeError(String::New(
           "Optional 2nd argument must be hash type as string")));
     }
+    ssize_t len = DecodeBytes(args[0], BINARY);
+    if (len < 0) {
+      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
+      return ThrowException(exception);
+    }    
     
     int hashalg_gt_id = 1;
     if (args.Length() == 2)
-      hashalg_gt_id = getAlgoID(*String::AsciiValue(args[1]->ToString()));
-
-    Local<Object> buffer_obj = args[0]->ToObject();                                                           
+      hashalg_gt_id = getAlgoID(*String::Utf8Value(args[1]->ToString()));
     
     GTDataHash dh;
-    dh.digest = NULL;
-    dh.digest = (unsigned char *) Buffer::Data(buffer_obj);
-    dh.digest_length = Buffer::Length(buffer_obj);
     dh.context = NULL;
     dh.algorithm = hashalg_gt_id;
-  
-    int res = GTTimestamp_checkDocumentHash(ts->timestamp, &dh);
+    int res;
+    if (Buffer::HasInstance(args[0])) {
+      Local<Object> buffer_obj = args[0]->ToObject();
+      dh.digest = (unsigned char *) Buffer::Data(buffer_obj);
+      dh.digest_length = len;
+      res = GTTimestamp_checkDocumentHash(ts->timestamp, &dh);
+    } else {  // string
+      char* buf = new char[len];
+      ssize_t written = DecodeWrite(buf, len, args[0], BINARY);
+      assert(written == len);
+      dh.digest = (unsigned char*) buf;
+      dh.digest_length = len;
+      res = GTTimestamp_checkDocumentHash(ts->timestamp, &dh);
+      delete [] buf;
+    }
+    
     if (res != GT_OK) 
       return ThrowException(Exception::Error(
                 String::New(GT_getErrorString(res))));               
     return scope.Close(Integer::New(GT_DOCUMENT_HASH_CHECKED));
   }
+  
   
     // ts.checkPublication(pub. file content in Buffer) -> true/exception
   static Handle<Value> CheckPublication(const Arguments& args)
@@ -244,16 +268,29 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
             String::New("TimeSignature is blank")));
-    if (!Buffer::HasInstance(args[0])) {
-      return ThrowException(Exception::Error(
-            String::New("First argument needs to be a Buffer with publications")));
+        
+    if (args.Length() != 1)
+      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
+        
+    ASSERT_IS_STRING_OR_BUFFER(args[0]);
+    ssize_t len = DecodeBytes(args[0], BINARY);
+    if (len < 0) {
+      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
+      return ThrowException(exception);
     }
-    Local<Object> buffer_obj = args[0]->ToObject();
-    char *buffer_data = Buffer::Data(buffer_obj);                                                             
-    size_t buffer_length = Buffer::Length(buffer_obj);
-  
-    GTPublicationsFile *pub;
-    int res = GTPublicationsFile_DERDecode(buffer_data, buffer_length, &pub);
+    int res;
+    GTPublicationsFile *pub;   
+    if (Buffer::HasInstance(args[0])) {
+      Local<Object> buffer_obj = args[0]->ToObject();
+      char *buffer_data = Buffer::Data(buffer_obj);
+      res = GTPublicationsFile_DERDecode(buffer_data, len, &pub);
+    } else {
+      char* buf = new char[len];
+      ssize_t written = DecodeWrite(buf, len, args[0], BINARY);
+      assert(written == len);
+      res = GTPublicationsFile_DERDecode(buf, len, &pub);
+      delete [] buf;
+    }        
     if (res != GT_OK) 
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
@@ -299,6 +336,7 @@ public:
       
     return scope.Close(Integer::New(GT_PUBLICATION_CHECKED));
   }
+  
   
   static Handle<Value> GetSignerName(const Arguments& args)
   {
@@ -381,17 +419,31 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
             String::New("TimeSignature is blank")));
-                
-    if (!Buffer::HasInstance(args[0])) {
-      return ThrowException(Exception::Error(
-            String::New("First argument needs to be a Buffer containing binary digest")));
+        
+    if (args.Length() != 1) {
+      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
     }
-    
-    Local<Object> buffer_obj = args[0]->ToObject();
-    char *buffer_data = Buffer::Data(buffer_obj);                                                             
-    size_t buffer_length = Buffer::Length(buffer_obj);
+
+    ASSERT_IS_STRING_OR_BUFFER(args[0]);
+    ssize_t len = DecodeBytes(args[0], BINARY);
+    if (len < 0) {
+      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
+      return ThrowException(exception);
+    }
+    int res;
     GTTimestamp *new_ts;
-    int res = GTTimestamp_createExtendedTimestamp(ts->timestamp, buffer_data, buffer_length, &new_ts);
+    if (Buffer::HasInstance(args[0])) {   
+      Local<Object> buffer_obj = args[0]->ToObject();
+      char *buffer_data = Buffer::Data(buffer_obj);                                                             
+      size_t buffer_length = Buffer::Length(buffer_obj);
+      res = GTTimestamp_createExtendedTimestamp(ts->timestamp, buffer_data, buffer_length, &new_ts);
+    } else {
+      char* buf = new char[len];
+      ssize_t written = DecodeWrite(buf, len, args[0], BINARY);
+      assert(written == len);      
+      res = GTTimestamp_createExtendedTimestamp(ts->timestamp, buf, len, &new_ts);
+      delete [] buf;
+    }
     if (res == GT_ALREADY_EXTENDED || res == GT_NONSTD_EXTEND_LATER || res == GT_NONSTD_EXTENSION_OVERDUE)
       return scope.Close(Integer::New(res));
     
@@ -441,35 +493,56 @@ public:
   static Handle<Value> ComposeRequest(const Arguments& args)
   {
     HandleScope scope;
-
-    if (!Buffer::HasInstance(args[0])) {
-      return ThrowException(Exception::Error(
-            String::New("First argument needs to be a Buffer containing binary digest")));
+    
+    if (args.Length() < 1 || args.Length() > 2) {
+      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
     }
+    ASSERT_IS_STRING_OR_BUFFER(args[0]);
+
     if (args.Length() == 2 && !args[1]->IsString()) {
-      return ThrowException(Exception::Error(String::New(
+      return ThrowException(Exception::TypeError(String::New(
             "Optional 2nd argument must be hash algorithm name as string")));
+    }          
+    ssize_t len = DecodeBytes(args[0], BINARY);
+    if (len < 0) {
+      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
+      return ThrowException(exception);
     }
     
     int hashalg_gt_id = 1;
     if (args.Length() == 2)
-      hashalg_gt_id = getAlgoID(*String::AsciiValue(args[1]->ToString()));
-
-    Local<Object> buffer_obj = args[0]->ToObject();                                                           
+      hashalg_gt_id = getAlgoID(*String::Utf8Value(args[1]->ToString()));
     
     GTDataHash dh;
-    dh.digest = NULL;
-    dh.digest = (unsigned char *) Buffer::Data(buffer_obj);
-    dh.digest_length = Buffer::Length(buffer_obj);
     dh.context = NULL;
     dh.algorithm = hashalg_gt_id;
-    unsigned char *request = NULL;                                                                      
+    unsigned char *request = NULL;
     size_t request_length;
-    int res = GTTimestamp_prepareTimestampRequest(&dh, &request, &request_length);
+    int res;
+    if (Buffer::HasInstance(args[0])) {
+      Local<Object> buffer_obj = args[0]->ToObject();
+      dh.digest = (unsigned char *) Buffer::Data(buffer_obj);
+      dh.digest_length = Buffer::Length(buffer_obj);
+      res = GTTimestamp_prepareTimestampRequest(&dh, &request, &request_length);
+    } else {  // string
+      char* buf = new char[len];
+      ssize_t written = DecodeWrite(buf, len, args[0], BINARY);
+      assert(written == len);
+      dh.digest = (unsigned char*) buf;
+      dh.digest_length = len;
+      res = GTTimestamp_prepareTimestampRequest(&dh, &request, &request_length);
+      delete [] buf;
+    }
     if (res != GT_OK) 
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-                
+        
+        // return string:
+    //Local<Value> outString;
+    //outString = Encode(request, request_length, BINARY);
+    //GT_free(request);
+    //return scope.Close(outString);
+     // return Buffer:
     Buffer *result = Buffer::New((char *)request, request_length);
     GT_free(request);
     return scope.Close(result->handle_);
@@ -480,18 +553,30 @@ public:
   static Handle<Value> ProcessResponse(const Arguments& args)
   {
     HandleScope scope;
-    if (!Buffer::HasInstance(args[0])) {
-      return ThrowException(Exception::Error(
-            String::New("First argument needs to be a Buffer")));
+    
+    if (args.Length() != 1) {
+      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
     }
-    Local<Object> buffer_obj = args[0]->ToObject();
-    char *buffer_data = Buffer::Data(buffer_obj);                                                             
-    size_t buffer_length = Buffer::Length(buffer_obj);
-  
+    
+    ASSERT_IS_STRING_OR_BUFFER(args[0]);
+    ssize_t len = DecodeBytes(args[0], BINARY);
+    if (len < 0) {
+      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
+      return ThrowException(exception);
+    }
+    int res;
     GTTimestamp *timestamp;
-
-    int res = GTTimestamp_createTimestamp(buffer_data, buffer_length, &timestamp);
-
+    if (Buffer::HasInstance(args[0])) {
+      Local<Object> buffer_obj = args[0]->ToObject();
+      char *buffer_data = Buffer::Data(buffer_obj);
+      res = GTTimestamp_createTimestamp(buffer_data, len, &timestamp);
+    } else {
+      char* buf = new char[len];
+      ssize_t written = DecodeWrite(buf, len, args[0], BINARY);
+      assert(written == len);
+      res = GTTimestamp_createTimestamp(buf, len, &timestamp);
+      delete [] buf;
+    }    
     if (res != GT_OK) 
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
@@ -514,16 +599,32 @@ public:
   static Handle<Value> VerifyPublications(const Arguments& args)
   {
     HandleScope scope;
-    if (!Buffer::HasInstance(args[0])) {
-      return ThrowException(Exception::Error(
-            String::New("First argument needs to be a Buffer")));
+    
+    if (args.Length() != 1)
+      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));    
+    ASSERT_IS_STRING_OR_BUFFER(args[0]);
+    ssize_t len = DecodeBytes(args[0], BINARY);
+    if (len < 0) {
+      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
+      return ThrowException(exception);
     }
-    Local<Object> buffer_obj = args[0]->ToObject();
-    char *buffer_data = Buffer::Data(buffer_obj);                                                             
-    size_t buffer_length = Buffer::Length(buffer_obj);
+    
+    bool bufferAllocated = false;
+    char *buf;
+    if (Buffer::HasInstance(args[0])) {
+      Local<Object> buffer_obj = args[0]->ToObject();
+      buf = Buffer::Data(buffer_obj);
+    } else {
+      buf = new char[len];
+      bufferAllocated = true;
+      ssize_t written = DecodeWrite(buf, len, args[0], BINARY);
+      assert(written == len);
+    }
     
     GTPublicationsFile *pub;
-    int res = GTPublicationsFile_DERDecode(buffer_data, buffer_length, &pub);
+    int res = GTPublicationsFile_DERDecode(buf, len, &pub);
+    if (bufferAllocated)
+      delete [] buf; 
     if (res != GT_OK) 
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));

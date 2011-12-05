@@ -1,22 +1,8 @@
 var crypto = require('crypto'),
   util = require('util'),
   http = require('http'),
+  url = require('url'),
   fs = require('fs');
-
-
-function parseUri(sourceUri){
-  var uriPartNames = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"];
-  var uriParts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)?((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri);
-  var uri = {};    
-  for(var i = 0; i < 10; i++){
-     uri[uriPartNames[i]] = (uriParts[i] ? uriParts[i] : "");
-  }
-  if(uri.directoryPath.length > 0){
-    uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
-  }    
-  return uri;
-}
-
 
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
@@ -41,16 +27,15 @@ var GuardTime = module.exports = {
     last: ''
   },
   service: {
-    signer: parseUri('http://stamper.guardtime.net/gt-signingservice'),
-    verifier: parseUri('http://verifier.guardtime.net/gt-extendingservice'),
-    publications: parseUri('http://verify.guardtime.com/gt-controlpublications.bin')
+    signer: url.parse('http://stamper.guardtime.net/gt-signingservice'),
+    verifier: url.parse('http://verifier.guardtime.net/gt-extendingservice'),
+    publications: url.parse('http://verify.guardtime.com/gt-controlpublications.bin')
   },
   
   sign: function (data, callback) {
     var hash = crypto.createHash(GuardTime.default_hashalg);
     hash.update(data);
-    GuardTime.signHash(new Buffer(hash.digest(), encoding='binary'), 
-          GuardTime.default_hashalg, callback);        
+    GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);        
   },
   
   signFile: function (filename, callback) {
@@ -62,35 +47,41 @@ var GuardTime = module.exports = {
       rs.destroy();                                                                              
     });
     rs.on('end', function() {
-      GuardTime.signHash(new Buffer(hash.digest(), encoding='binary'), 
-            GuardTime.default_hashalg, callback);  
+      GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);  
     });
   },
   
-  signHash: function (hash, alg) {  // hash must be binary Buffer!
+  signHash: function (hash, alg) {
     var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function') 
       callback = function (){};
 
+    // Using legacy http to maintain compatibility with node 0.3.x
     var sserver = http.createClient(
-          GuardTime.service.signer.port == ''? 80 : GuardTime.service.signer.port, GuardTime.service.signer.domain);
+          GuardTime.service.signer.port ? GuardTime.service.signer.port : 80, 
+          GuardTime.service.signer.hostname);
     var reqdata = GuardTime.TimeSignature.composeRequest(hash, alg);
-    var request = sserver.request('POST', GuardTime.service.signer.path, 
-          {'host': GuardTime.service.signer.domain, 
-           'Content-Length': reqdata.length});
+    var headers = {'host': GuardTime.service.signer.hostname, 
+         'Content-Length': reqdata.length};
+    if (GuardTime.service.signer.auth)
+      headers.Authorization = 'Basic ' + 
+          new Buffer(GuardTime.service.signer.auth).toString('base64');
+    var request = sserver.request('POST', GuardTime.service.signer.pathname, headers);
     request.write(reqdata);
     request.end();
 
     request.on('response', function (response) {
-      //console.log('STATUS: ' + response.statusCode);
+      if (response.statusCode != 200)
+        return callback(new Error("Signing service error: " + response.statusCode + 
+              " (" + http.STATUS_CODES[response.statusCode] + ")"));
       var resp = "";
       response.on('data', function(chunk){
         resp += chunk.toString('binary');
       });
       response.on('end', function(){
         try{
-          ts = new GuardTime.TimeSignature(GuardTime.TimeSignature.processResponse(
-                new Buffer(resp, encoding='binary')));
+          ts = new GuardTime.TimeSignature(
+                GuardTime.TimeSignature.processResponse(resp));
         } catch (er) {
           return callback(er);
         }
@@ -123,22 +114,27 @@ var GuardTime = module.exports = {
       callback = function (){};
     
     var sserver = http.createClient(
-          GuardTime.service.publications.port == ''? 80 : GuardTime.service.publications.port, 
-          GuardTime.service.publications.domain);
-    var request = sserver.request('GET', GuardTime.service.publications.path, 
-          {'host': GuardTime.service.publications.domain});
+          GuardTime.service.publications.port ? GuardTime.service.publications.port : 80, 
+          GuardTime.service.publications.hostname);
+    var headers = {'host': GuardTime.service.publications.hostname};
+    if (GuardTime.service.publications.auth)
+      headers.Authorization = 'Basic ' + 
+          new Buffer(GuardTime.service.publications.auth).toString('base64');
+    var request = sserver.request('GET', GuardTime.service.publications.pathname, headers);
     request.end();
     request.on('response', function (response) {
+      if (response.statusCode != 200)
+        return callback(new Error("Publications download: " + response.statusCode + 
+              " (" + http.STATUS_CODES[response.statusCode] + ")"));
       var resp = "";
       response.on('data', function(chunk){
         resp += chunk.toString('binary');
       });
       response.on('end', function(){
         try {
-          var pub = new Buffer(resp, encoding='binary');
-          var d = GuardTime.TimeSignature.verifyPublications(pub); // exception on error
+          var d = GuardTime.TimeSignature.verifyPublications(resp); // exception on error
           GuardTime.publications.last = d;
-          GuardTime.publications.data = pub;
+          GuardTime.publications.data = resp;
         } catch (er) { 
           return callback(er); 
         }
@@ -153,17 +149,22 @@ var GuardTime = module.exports = {
       callback = function (){};
       
     var sserver = http.createClient(
-          GuardTime.service.verifier.port == ''? 80 : GuardTime.service.verifier.port, 
-          GuardTime.service.verifier.domain);
+          GuardTime.service.verifier.port ? GuardTime.service.verifier.port : 80,
+          GuardTime.service.verifier.hostname);
     var reqdata = ts.composeExtendingRequest();
-    var request = sserver.request('POST', GuardTime.service.verifier.path, 
-          {'host': GuardTime.service.verifier.domain, 
-           'Content-Length': reqdata.length});
+    var headers = {'host': GuardTime.service.verifier.hostname, 
+        'Content-Length': reqdata.length};
+    if (GuardTime.service.verifier.auth)
+      headers.Authorization = 'Basic ' + 
+          new Buffer(GuardTime.service.verifier.auth).toString('base64');
+    var request = sserver.request('POST', GuardTime.service.verifier.pathname, headers);
     request.write(reqdata);
     request.end();
   
     request.on('response', function (response) {
-      // console.log('STATUS: ' + response.statusCode);
+      if (response.statusCode != 200)
+        return callback(new Error("Verification service error: " + response.statusCode + 
+              " (" + http.STATUS_CODES[response.statusCode] + ")"));
       var resp = "";
       response.on('data', function(chunk){
         resp += chunk.toString('binary');
@@ -171,7 +172,7 @@ var GuardTime = module.exports = {
       response.on('end', function(){
         var result = 0;
         try{
-          result = ts.extend(new Buffer(resp, ecoding='binary'));
+          result = ts.extend(resp);
         } catch (er) {
           return callback(er);
         }
@@ -187,8 +188,7 @@ var GuardTime = module.exports = {
       callback = function (){}; 
     var hash = crypto.createHash(ts.getHashAlgorithm());
     hash.update(data);
-    GuardTime.verifyHash(new Buffer(hash.digest(), encoding='binary'), ts.getHashAlgorithm(),
-          ts, callback);     
+    GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);     
   },
 
   verifyHash: function(hash, alg, ts) {
@@ -244,8 +244,7 @@ var GuardTime = module.exports = {
       // beware, no return!
     });
     rs.on('end', function() {
-      GuardTime.verifyHash(new Buffer(hash.digest(), encoding='binary'), 
-            ts.getHashAlgorithm(), ts, callback);  
+      GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);  
     });   
   }    
 }

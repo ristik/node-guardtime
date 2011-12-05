@@ -4,7 +4,7 @@
 //   > 40 days old, non-extended signature file cat.gif.gtts
 //   signed file cat.gif
 //   internet connectivity
-//   GW with public identity is used.
+//   GW with public identity must be used.
 //   run in module build directory
 
 var gt = require('./guardtime'), 
@@ -76,5 +76,17 @@ gt.loadPublications(function(err) {
               gt.VER_RES.PUBLICATION_CHECKED);
       });
     });
+  });
+  var crypto = require('crypto');
+  var h = crypto.createHash('sha512');
+  h.update('Hi there!');
+  var hd = h.digest();
+  gt.signHash(hd, 'sha512', function(e, ts) {
+    assert.ok(e == null, e);
+    assert.equal(ts.verify(), gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
+  });
+  gt.signHash(new Buffer(hd, encoding='binary'), 'SHA512', function(e, ts) {
+    assert.ok(e == null, e);
+    assert.equal(ts.verify(), gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
   });
 });
