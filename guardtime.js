@@ -4,6 +4,14 @@ var crypto = require('crypto'),
   url = require('url'),
   fs = require('fs');
 
+ // workaround for bug in node 0.4.x
+function url_parse(u) {
+  var o = url.parse(u);
+  if (o.path == null)
+    o.path = o.pathname;
+  return o;
+}
+
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
   VER_ERR : {
@@ -27,9 +35,9 @@ var GuardTime = module.exports = {
     last: ''
   },
   service: {
-    signer: url.parse('http://stamper.guardtime.net/gt-signingservice'),
-    verifier: url.parse('http://verifier.guardtime.net/gt-extendingservice'),
-    publications: url.parse('http://verify.guardtime.com/gt-controlpublications.bin')
+    signer: url_parse('http://stamper.guardtime.net/gt-signingservice'),
+    verifier: url_parse('http://verifier.guardtime.net/gt-extendingservice'),
+    publications: url_parse('http://verify.guardtime.com/gt-controlpublications.bin')
   },
   
   sign: function (data, callback) {
@@ -108,7 +116,6 @@ var GuardTime = module.exports = {
     var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function') 
       callback = function (){};
-    
     var req = http.get(GuardTime.service.publications, function(res) {
       if (res.statusCode != 200) {
         return callback(new Error("Publications download: " + res.statusCode + 

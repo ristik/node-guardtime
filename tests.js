@@ -60,20 +60,23 @@ gt.loadPublications(function(err) {
     if (!old.isExtended()) {
       gt.extend(old, function(err, xold) {
         assert.ok(err == null, err);
-        assert.equal(xold.verify(), 0);
+        assert.equal(xold.verify() | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT, 
+              gt.VER_RES.PUBLICATION_REFERENCE_PRESENT);
         assert.ok(xold.isExtended());
         gt.verifyFile('cat.gif', xold, function(err, res) {
           assert.ok(err == null, err);
-          assert.equal(res, gt.VER_RES.DOCUMENT_HASH_CHECKED + 
-                gt.VER_RES.PUBLICATION_CHECKED); 
+          assert.equal(res | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT, 
+                gt.VER_RES.DOCUMENT_HASH_CHECKED + 
+                gt.VER_RES.PUBLICATION_CHECKED + gt.VER_RES.PUBLICATION_REFERENCE_PRESENT); 
         });
       });
     }
     gt.load('cat.gif.gtts', function(err, ts) {
       gt.verifyFile('cat.gif', ts, function(err, res) {
         assert.ok(err == null, err);
-        assert.equal(res, gt.VER_RES.DOCUMENT_HASH_CHECKED + 
-              gt.VER_RES.PUBLICATION_CHECKED);
+        assert.equal(res | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT, 
+              gt.VER_RES.DOCUMENT_HASH_CHECKED + 
+              gt.VER_RES.PUBLICATION_CHECKED + gt.VER_RES.PUBLICATION_REFERENCE_PRESENT);
       });
     });
   });
