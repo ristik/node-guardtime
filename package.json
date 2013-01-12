@@ -1,6 +1,6 @@
 {
   "name": "guardtime",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "GuardTime signing service access/verification API for node.js",
   "author": "Risto Laanoja",
   "email": "info@guardtime.com",

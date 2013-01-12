@@ -1,8 +1,14 @@
+// bastards have depreciated openssl
+#define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_0
+
 #include <gt_base.h>
 #include <v8.h>
 #include <node.h>
 #include <node_buffer.h>
 #include <string.h>
+
+#include <openssl/crypto.h>
+#include <openssl/opensslv.h>
 
 
 // from node_crypo.cc
@@ -26,6 +32,11 @@ public:
   static void Init(Handle<Object> target)
   {
     HandleScope scope;
+
+    if (SSLeay() != OPENSSL_VERSION_NUMBER) {
+        printf("OpenSSL version mismatch. Built against %lx, you have %lx\n", OPENSSL_VERSION_NUMBER, SSLeay());
+        exit(-1);
+    }
 
     Local<FunctionTemplate> t = FunctionTemplate::New(New);
 
