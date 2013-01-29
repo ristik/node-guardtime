@@ -10,8 +10,9 @@ or
 
 
 Hello world:
+
     var gt = require('guardtime');
-    
+
     gt.sign('Hello world!', function(err, ts) {
       if(err) {
         return console.error(err);
@@ -30,8 +31,10 @@ As You are already here - this is the essence:
 GuardTime service adds hash of your doc to giant hash tree with globally unique
 root value; and regularily publishes these root values in FT.
 
-Needs Node.JS >= 0.3.0; Windows is not supported.
+Needs Node.JS >= 0.4.0; Windows is not supported.
+
+[![build status](https://secure.travis-ci.org/ristik/node-guardtime.png)](http://travis-ci.org/ristik/node-guardtime)
 
 ---
 Published under Apache license v. 2.0.
-Copyright GuardTime AS 2010-2011
+Copyright GuardTime AS 2010-2012

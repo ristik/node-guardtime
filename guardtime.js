@@ -4,6 +4,14 @@ var crypto = require('crypto'),
   url = require('url'),
   fs = require('fs');
 
+ // workaround for bug in node 0.4.x
+function url_parse(u) {
+  var o = url.parse(u);
+  if (o.path == null)
+    o.path = o.pathname;
+  return o;
+}
+
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
   VER_ERR : {
@@ -27,9 +35,9 @@ var GuardTime = module.exports = {
     last: ''
   },
   service: {
-    signer: url.parse('http://stamper.guardtime.net/gt-signingservice'),
-    verifier: url.parse('http://verifier.guardtime.net/gt-extendingservice'),
-    publications: url.parse('http://verify.guardtime.com/gt-controlpublications.bin')
+    signer: url_parse('http://stamper.guardtime.net/gt-signingservice'),
+    verifier: url_parse('http://verifier.guardtime.net/gt-extendingservice'),
+    publications: url_parse('http://verify.guardtime.com/gt-controlpublications.bin')
   },
   
   sign: function (data, callback) {
@@ -55,39 +63,35 @@ var GuardTime = module.exports = {
     var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function') 
       callback = function (){};
-
-    // Using legacy http to maintain compatibility with node 0.3.x
-    var sserver = http.createClient(
-          GuardTime.service.signer.port ? GuardTime.service.signer.port : 80, 
-          GuardTime.service.signer.hostname);
+      
     var reqdata = GuardTime.TimeSignature.composeRequest(hash, alg);
-    var headers = {'host': GuardTime.service.signer.hostname, 
-         'Content-Length': reqdata.length};
-    if (GuardTime.service.signer.auth)
-      headers.Authorization = 'Basic ' + 
-          new Buffer(GuardTime.service.signer.auth).toString('base64');
-    var request = sserver.request('POST', GuardTime.service.signer.pathname, headers);
-    request.write(reqdata);
-    request.end();
-
-    request.on('response', function (response) {
-      if (response.statusCode != 200)
-        return callback(new Error("Signing service error: " + response.statusCode + 
-              " (" + http.STATUS_CODES[response.statusCode] + ")"));
-      var resp = "";
-      response.on('data', function(chunk){
-        resp += chunk.toString('binary');
+    GuardTime.service.signer.method = 'POST';
+    GuardTime.service.signer.headers = {'Content-Length': reqdata.length};
+    var req = http.request(GuardTime.service.signer, function(res) {
+      if (res.statusCode != 200) {
+        return callback(new Error("Signing service error: " + res.statusCode + 
+            " (" + http.STATUS_CODES[res.statusCode] + ")"));
+      }
+      var data = "";
+      res.on('data', function (chunk) {
+        data += chunk.toString('binary');
       });
-      response.on('end', function(){
-        try{
+      res.on('end', function(){
+        try {
           ts = new GuardTime.TimeSignature(
-                GuardTime.TimeSignature.processResponse(resp));
+            GuardTime.TimeSignature.processResponse(data));
         } catch (er) {
           return callback(er);
-        }
-        callback(null, ts);
+      }
+      callback(null, ts);
       });
-    });  
+    });
+
+    req.on('error', function(e) {
+      return callback(new Error("Signing service error: " + e.message));
+    });
+    req.write(reqdata);
+    req.end();
   },
   
   save: function (filename, ts, cb) {
@@ -112,34 +116,29 @@ var GuardTime = module.exports = {
     var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function') 
       callback = function (){};
-    
-    var sserver = http.createClient(
-          GuardTime.service.publications.port ? GuardTime.service.publications.port : 80, 
-          GuardTime.service.publications.hostname);
-    var headers = {'host': GuardTime.service.publications.hostname};
-    if (GuardTime.service.publications.auth)
-      headers.Authorization = 'Basic ' + 
-          new Buffer(GuardTime.service.publications.auth).toString('base64');
-    var request = sserver.request('GET', GuardTime.service.publications.pathname, headers);
-    request.end();
-    request.on('response', function (response) {
-      if (response.statusCode != 200)
-        return callback(new Error("Publications download: " + response.statusCode + 
-              " (" + http.STATUS_CODES[response.statusCode] + ")"));
-      var resp = "";
-      response.on('data', function(chunk){
-        resp += chunk.toString('binary');
+    var req = http.get(GuardTime.service.publications, function(res) {
+      if (res.statusCode != 200) {
+        return callback(new Error("Publications download: " + res.statusCode + 
+            " (" + http.STATUS_CODES[res.statusCode] + ")"));
+      }
+      var data = "";
+      res.on('data', function (chunk) {
+        data += chunk.toString('binary');
       });
-      response.on('end', function(){
+      res.on('end', function(){
         try {
-          var d = GuardTime.TimeSignature.verifyPublications(resp); // exception on error
+          var d = GuardTime.TimeSignature.verifyPublications(data); // exception on error
           GuardTime.publications.last = d;
-          GuardTime.publications.data = resp;
+          GuardTime.publications.data = data;
         } catch (er) { 
           return callback(er); 
         }
         callback(null);
       });
+    });
+
+    req.on('error', function(e) {
+      return callback(new Error("Publications download: " + e.message));
     });
   },
   
@@ -147,32 +146,23 @@ var GuardTime = module.exports = {
     var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function') 
       callback = function (){};
-      
-    var sserver = http.createClient(
-          GuardTime.service.verifier.port ? GuardTime.service.verifier.port : 80,
-          GuardTime.service.verifier.hostname);
+
     var reqdata = ts.composeExtendingRequest();
-    var headers = {'host': GuardTime.service.verifier.hostname, 
-        'Content-Length': reqdata.length};
-    if (GuardTime.service.verifier.auth)
-      headers.Authorization = 'Basic ' + 
-          new Buffer(GuardTime.service.verifier.auth).toString('base64');
-    var request = sserver.request('POST', GuardTime.service.verifier.pathname, headers);
-    request.write(reqdata);
-    request.end();
-  
-    request.on('response', function (response) {
-      if (response.statusCode != 200)
-        return callback(new Error("Verification service error: " + response.statusCode + 
-              " (" + http.STATUS_CODES[response.statusCode] + ")"));
-      var resp = "";
-      response.on('data', function(chunk){
-        resp += chunk.toString('binary');
+    GuardTime.service.verifier.method = 'POST';
+    GuardTime.service.verifier.headers = {'Content-Length': reqdata.length};
+    var req = http.request(GuardTime.service.verifier, function(res) {
+      if (res.statusCode != 200) {
+        return callback(new Error("Verification service error: " + res.statusCode + 
+            " (" + http.STATUS_CODES[res.statusCode] + ")"));
+      }
+      var data = "";
+      res.on('data', function (chunk) {
+        data += chunk.toString('binary');
       });
-      response.on('end', function(){
+      res.on('end', function(){
         var result = 0;
         try{
-          result = ts.extend(resp);
+          result = ts.extend(data);
         } catch (er) {
           return callback(er);
         }
@@ -180,10 +170,15 @@ var GuardTime = module.exports = {
           callback(null, ts);
       });
     });
+    req.on('error', function(e) {
+      return callback(new Error("Verification service error: " + e.message));
+    });
+    req.write(reqdata);
+    req.end();
   },
    
   verify: function(data, ts) {
-    var callback = arguments[arguments.length - 1];
+  var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function') 
       callback = function (){}; 
     var hash = crypto.createHash(ts.getHashAlgorithm());
@@ -211,9 +206,9 @@ var GuardTime = module.exports = {
       if (!ts.isExtended() && !is_new) {
         return GuardTime.extend(ts, function(err, xts) {
           if (err) {
-              //no failover:
+            //no failover:
             // return callback(err);
-              //failover:
+            //with failover:
             xts = ts;
           }
           try {
