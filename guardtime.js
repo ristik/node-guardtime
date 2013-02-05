@@ -12,6 +12,18 @@ function url_parse(u) {
   return o;
 }
 
+var timeSignature;
+var builds = ['Release', 'default', 'Debug'];
+
+for (var i in builds) {
+  try {
+    timeSignature = require('./build/' + builds[i] + '/timesignature');
+    break;
+  } catch (e) {
+    console.log(e);
+  }
+}
+ 
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
   VER_ERR : {
@@ -29,7 +41,7 @@ var GuardTime = module.exports = {
     DOCUMENT_HASH_CHECKED : 16,
     PUBLICATION_CHECKED : 32
   },
-  TimeSignature: require('./timesignature').TimeSignature,
+  TimeSignature: timeSignature.TimeSignature,
   publications: {
     data: '',
     last: ''
