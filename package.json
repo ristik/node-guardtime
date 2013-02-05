@@ -9,9 +9,9 @@
   },
   "main": "./guardtime",
   "scripts": {
-    "install": "node-waf configure build",
+    "install": "node-gyp rebuild",
     "test": "node tests.js",
-    "clean": "node-waf distclean"
+    "clean": "node-gyp clean"
   },
   "repository": {
     "type": "git",
