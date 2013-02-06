@@ -4,7 +4,7 @@
     {
       'target_name': 'http',
       'include_dirs': [
-			  '../base'
+        '../base'
       ],
       'sources': [
         'http_create.c',
@@ -19,17 +19,16 @@
     # libgthttp
     {
       'target_name': 'libgthttp',
-      'type': 'shared_library',
+      'type': 'static_library',
       'include_dirs': [
-			  '../base'
+        '../base'
       ],
       'sources': [
         'gt_http.c',
         'gt_http.h'
-      ], 
+      ],
       'direct_dependent_settings': {
         'defines': [
-				  'PIC'
         ],
         'linkflags': [
         ],

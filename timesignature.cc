@@ -25,10 +25,10 @@ class TimeSignature: ObjectWrap
 {
 private:
   GTTimestamp *timestamp;
-  
+
 public:
   static Persistent<FunctionTemplate> constructor_template;
-  
+
   static void Init(Handle<Object> target)
   {
     HandleScope scope;
@@ -43,13 +43,13 @@ public:
     constructor_template = Persistent<FunctionTemplate>::New(t);
     constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
     constructor_template->SetClassName(String::NewSymbol("TimeSignature"));
-    
+
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "verify", Verify);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "isExtended", IsExtended);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "getHashAlgorithm", GetHashAlgorithm);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "compareHash", CompareHash);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "checkPublication", CheckPublication);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "getSignerName", GetSignerName);   
+    NODE_SET_PROTOTYPE_METHOD(constructor_template, "getSignerName", GetSignerName);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "getContent", GetContent);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "composeExtendingRequest", ComposeExtendingRequest);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "extend", Extend);
@@ -60,7 +60,7 @@ public:
     NODE_SET_METHOD(constructor_template->GetFunction(), "processResponse", ProcessResponse);
     NODE_SET_METHOD(constructor_template->GetFunction(), "verifyPublications", VerifyPublications);
 
-    
+
     target->Set(String::NewSymbol("TimeSignature"), constructor_template->GetFunction());
 
   }
@@ -79,29 +79,29 @@ public:
     if(timestamp != NULL)
       GTTimestamp_free(timestamp);
   }
-  
+
   static Handle<Value> New(const Arguments& args)
   {
-    if (!args.IsConstructCall()) {  
-      return FromConstructorTemplate(constructor_template, args);                                                             } 
+    if (!args.IsConstructCall()) {
+      return FromConstructorTemplate(constructor_template, args);                                                             }
     HandleScope scope;
     GTTimestamp *timestamp;
-   
+
     if (!Buffer::HasInstance(args[0])) {
       return ThrowException(Exception::Error(
         String::New("First argument needs to be a Buffer")));
-    }                                                                                                                 
-    Local<Object> buffer_obj = args[0]->ToObject();                                                           
-    char *buffer_data = Buffer::Data(buffer_obj);                                                             
+    }
+    Local<Object> buffer_obj = args[0]->ToObject();
+    char *buffer_data = Buffer::Data(buffer_obj);
     size_t buffer_length = Buffer::Length(buffer_obj);
-    
+
     int res = GTTimestamp_DERDecode(buffer_data, buffer_length, &timestamp);
-    if (res != GT_OK) 
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
                 String::New(GT_getErrorString(res))));
 
     TimeSignature *ts = new TimeSignature(timestamp);
-    
+
     ts->Wrap(args.This()); // or args.Holder()?
     return args.This();
   }
@@ -115,25 +115,25 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
                 String::New("TimeSignature is blank")));
-            
+
     GTVerificationInfo *verification_info = NULL;
     int res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
-    if (res != GT_OK) 
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
                 String::New(GT_getErrorString(res))));
-                
+
     if (verification_info->verification_errors != GT_NO_FAILURES) {
         GTVerificationInfo_free(verification_info);
     return ThrowException(Exception::Error(
                 String::New("TimeSignature verification error")));
-    }  
-  
+    }
+
     int result = verification_info->verification_status; // bitmap of checks done
     GTVerificationInfo_free(verification_info);
 
     return scope.Close(Integer::New(result));
   }
-  
+
 
   static Handle<Value> IsExtended(const Arguments& args)
   {
@@ -143,7 +143,7 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
                 String::New("TimeSignature is blank")));
-                
+
     int res = GTTimestamp_isExtended(ts->timestamp);
 
     switch (res) {
@@ -153,11 +153,11 @@ public:
           return scope.Close(False());
       default:
            return ThrowException(Exception::Error(
-                  String::New(GT_getErrorString(res))));                
+                  String::New(GT_getErrorString(res))));
     }
   }
-  
- 
+
+
   // return openssl style hash alg name
   static Handle<Value> GetHashAlgorithm(const Arguments& args)
   {
@@ -167,15 +167,15 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
                 String::New("TimeSignature is blank")));
-    
+
     int alg;
     int res = GTTimestamp_getAlgorithm(ts->timestamp, &alg);
-    if (res != GT_OK) 
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));               
-    
+                String::New(GT_getErrorString(res))));
+
     // ids copied from gt_base.h -> enum GTHashAlgorithm
-    switch(alg) {  
+    switch(alg) {
       case 1: return scope.Close(String::New("SHA256"));
       case 0: return scope.Close(String::New("SHA1"));
       case 2: return scope.Close(String::New("RIPEMD160"));
@@ -185,7 +185,7 @@ public:
       default:
           return ThrowException(Exception::Error(
                 String::New("Unknown hash algorithm ID")));
-     } 
+     }
      // there is static func in gt_info.c: hashAlgName(alg));
   }
 
@@ -197,24 +197,24 @@ public:
     if (ts->timestamp == NULL)
     return ThrowException(Exception::Error(
                 String::New("TimeSignature is blank")));
-               
+
     GTVerificationInfo *verification_info = NULL;
     int res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
-    if (res != GT_OK) 
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
                 String::New(GT_getErrorString(res))));
-                
+
     if (verification_info->verification_errors != GT_NO_FAILURES) {
       GTVerificationInfo_free(verification_info);
       return ThrowException(Exception::Error(
                 String::New("TimeSignature verification error")));
-    }  
-  
+    }
+
     double result = verification_info->implicit_data->registered_time;
     GTVerificationInfo_free(verification_info);
-    return scope.Close(NODE_UNIXTIME_V8(result));   
+    return scope.Close(NODE_UNIXTIME_V8(result));
   }
-  
+
     // ts.compareHash(binary hash in Buffer, algo)  -> bit flag
   static Handle<Value> CompareHash(const Arguments& args)
   {
@@ -224,12 +224,12 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
             String::New("TimeSignature is blank")));
-        
+
     if (args.Length() < 1 || args.Length() > 2) {
       return ThrowException(Exception::TypeError(String::New("Bad parameter")));
     }
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
-        
+
     if (args.Length() == 2 && !args[1]->IsString()) {
       return ThrowException(Exception::TypeError(String::New(
           "Optional 2nd argument must be hash type as string")));
@@ -238,12 +238,12 @@ public:
     if (len < 0) {
       Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
       return ThrowException(exception);
-    }    
-    
+    }
+
     int hashalg_gt_id = 1;
     if (args.Length() == 2)
       hashalg_gt_id = getAlgoID(*String::Utf8Value(args[1]->ToString()));
-    
+
     GTDataHash dh;
     dh.context = NULL;
     dh.algorithm = hashalg_gt_id;
@@ -262,14 +262,14 @@ public:
       res = GTTimestamp_checkDocumentHash(ts->timestamp, &dh);
       delete [] buf;
     }
-    
-    if (res != GT_OK) 
+
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));               
+                String::New(GT_getErrorString(res))));
     return scope.Close(Integer::New(GT_DOCUMENT_HASH_CHECKED));
   }
-  
-  
+
+
     // ts.checkPublication(pub. file content in Buffer) -> true/exception
   static Handle<Value> CheckPublication(const Arguments& args)
   {
@@ -279,10 +279,10 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
             String::New("TimeSignature is blank")));
-        
+
     if (args.Length() != 1)
       return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-        
+
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
     ssize_t len = DecodeBytes(args[0], BINARY);
     if (len < 0) {
@@ -290,7 +290,7 @@ public:
       return ThrowException(exception);
     }
     int res;
-    GTPublicationsFile *pub;   
+    GTPublicationsFile *pub;
     if (Buffer::HasInstance(args[0])) {
       Local<Object> buffer_obj = args[0]->ToObject();
       char *buffer_data = Buffer::Data(buffer_obj);
@@ -301,17 +301,17 @@ public:
       assert(written == len);
       res = GTPublicationsFile_DERDecode(buf, len, &pub);
       delete [] buf;
-    }        
-    if (res != GT_OK) 
+    }
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
 
-    int ext = GTTimestamp_isExtended(ts->timestamp);  
-    if (ext == GT_EXTENDED) 
+    int ext = GTTimestamp_isExtended(ts->timestamp);
+    if (ext == GT_EXTENDED)
     {
-      res = GTTimestamp_checkPublication(ts->timestamp, pub);    
-    } 
-    else if (ext == GT_NOT_EXTENDED) 
+      res = GTTimestamp_checkPublication(ts->timestamp, pub);
+    }
+    else if (ext == GT_NOT_EXTENDED)
     {
       GTVerificationInfo *verification_info = NULL;
       res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
@@ -320,35 +320,35 @@ public:
         return ThrowException(Exception::Error(
               String::New(GT_getErrorString(res))));
       }
-          
+
       if (verification_info->verification_errors != GT_NO_FAILURES) {
         GTVerificationInfo_free(verification_info);
         GTPublicationsFile_free(pub);
         return ThrowException(Exception::Error(
               String::New("TimeSignature verification error")));
-      }  
-    
+      }
+
       GT_Time_t64 history_id = verification_info->implicit_data->registered_time;
-      GTVerificationInfo_free(verification_info);    
-      res = GTTimestamp_checkPublicKey(ts->timestamp, history_id, pub);  
-    } 
-    else 
+      GTVerificationInfo_free(verification_info);
+      res = GTTimestamp_checkPublicKey(ts->timestamp, history_id, pub);
+    }
+    else
     {
       GTPublicationsFile_free(pub);
       return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(ext))));  
+            String::New(GT_getErrorString(ext))));
     }
-  
+
     GTPublicationsFile_free(pub);
-  
+
     if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-      
+
     return scope.Close(Integer::New(GT_PUBLICATION_CHECKED));
   }
-  
-  
+
+
   static Handle<Value> GetSignerName(const Arguments& args)
   {
     HandleScope scope;
@@ -357,26 +357,26 @@ public:
     if (ts->timestamp == NULL)
     return ThrowException(Exception::Error(
           String::New("TimeSignature is blank")));
-               
+
     GTVerificationInfo *verification_info = NULL;
     int res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
-    if (res != GT_OK) 
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-                
+
     if (verification_info->verification_errors != GT_NO_FAILURES) {
       GTVerificationInfo_free(verification_info);
     return ThrowException(Exception::Error(
                 String::New("TimeSignature verification error")));
     }
     Local<String> result = String::New(
-          (verification_info->implicit_data->location_name != NULL) ? 
+          (verification_info->implicit_data->location_name != NULL) ?
             verification_info->implicit_data->location_name :
             "");
     GTVerificationInfo_free(verification_info);
     return scope.Close(result);
   }
- 
+
   // returns DER encoded ts token
   static Handle<Value> GetContent(const Arguments& args)
   {
@@ -386,19 +386,19 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
             String::New("TimeSignature is blank")));
-                
+
     unsigned char *data;
     size_t data_length;
     int res = GTTimestamp_getDEREncoded(ts->timestamp, &data, &data_length);
-    if (res != GT_OK) 
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-                
+
     Buffer *result = Buffer::New((char *)data, data_length);
     GT_free(data);
     return scope.Close(result->handle_);
   }
-  
+
   // Buffer = composeExtendingRequest()
   static Handle<Value> ComposeExtendingRequest(const Arguments& args)
   {
@@ -408,19 +408,19 @@ public:
     return ThrowException(Exception::Error(
           String::New("TimeSignature is blank")));
 
-    unsigned char *request = NULL;                                                                      
+    unsigned char *request = NULL;
     size_t request_length;
-    
+
     int res = GTTimestamp_prepareExtensionRequest(ts->timestamp, &request, &request_length);
-    if (res != GT_OK) 
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-                
+
     Buffer *result = Buffer::New((char *)request, request_length);
     GT_free(request);
     return scope.Close(result->handle_);
   }
-  
+
     // ts.extend(extending response)
     // returns true or throws an exception
   static Handle<Value> Extend(const Arguments& args)
@@ -430,7 +430,7 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
             String::New("TimeSignature is blank")));
-        
+
     if (args.Length() != 1) {
       return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
     }
@@ -443,32 +443,32 @@ public:
     }
     int res;
     GTTimestamp *new_ts;
-    if (Buffer::HasInstance(args[0])) {   
+    if (Buffer::HasInstance(args[0])) {
       Local<Object> buffer_obj = args[0]->ToObject();
-      char *buffer_data = Buffer::Data(buffer_obj);                                                             
+      char *buffer_data = Buffer::Data(buffer_obj);
       size_t buffer_length = Buffer::Length(buffer_obj);
       res = GTTimestamp_createExtendedTimestamp(ts->timestamp, buffer_data, buffer_length, &new_ts);
     } else {
       char* buf = new char[len];
       ssize_t written = DecodeWrite(buf, len, args[0], BINARY);
-      assert(written == len);      
+      assert(written == len);
       res = GTTimestamp_createExtendedTimestamp(ts->timestamp, buf, len, &new_ts);
       delete [] buf;
     }
     if (res == GT_ALREADY_EXTENDED || res == GT_NONSTD_EXTEND_LATER || res == GT_NONSTD_EXTENSION_OVERDUE)
       return scope.Close(Integer::New(res));
-    
-    if (res != GT_OK) 
+
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-                
+
     GTTimestamp_free(ts->timestamp);
     ts->timestamp = new_ts;
-    
+
     return scope.Close(True());
   }
-  
-  
+
+
   static Handle<Value> IsEarlierThan(const Arguments& args)
   {
     HandleScope scope;
@@ -476,12 +476,12 @@ public:
     if (ts->timestamp == NULL)
       return ThrowException(Exception::Error(
             String::New("TimeSignature is blank")));
-                
+
     if (!TimeSignature::HasInstance(args[0])) {
       return ThrowException(Exception::Error(
             String::New("First argument needs to be a TimeSignature")));
-    }    
-    TimeSignature *ts2 = ObjectWrap::Unwrap<TimeSignature>(args[0]->ToObject());    
+    }
+    TimeSignature *ts2 = ObjectWrap::Unwrap<TimeSignature>(args[0]->ToObject());
     int res = GTTimestamp_isEarlierThan(ts->timestamp, ts2->timestamp);
     switch (res) {
       case GT_EARLIER:
@@ -490,13 +490,13 @@ public:
           return scope.Close(False());
       default:
           return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));                
+                String::New(GT_getErrorString(res))));
     }
   }
-   
 
-  // 'static class methods' below: ---------------- 
- 
+
+  // 'static class methods' below: ----------------
+
   //   req = TimeSignature.composeRequest(hash);
   // binary string will be represented as utf8, needs DecodeBytes/DecodeWrite. \0 is ok.
   // arg: binary hash as a Buffer; hashing or interaction of Hash object should be done in JS layer
@@ -504,7 +504,7 @@ public:
   static Handle<Value> ComposeRequest(const Arguments& args)
   {
     HandleScope scope;
-    
+
     if (args.Length() < 1 || args.Length() > 2) {
       return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
     }
@@ -513,17 +513,17 @@ public:
     if (args.Length() == 2 && !args[1]->IsString()) {
       return ThrowException(Exception::TypeError(String::New(
             "Optional 2nd argument must be hash algorithm name as string")));
-    }          
+    }
     ssize_t len = DecodeBytes(args[0], BINARY);
     if (len < 0) {
       Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
       return ThrowException(exception);
     }
-    
+
     int hashalg_gt_id = 1;
     if (args.Length() == 2)
       hashalg_gt_id = getAlgoID(*String::Utf8Value(args[1]->ToString()));
-    
+
     GTDataHash dh;
     dh.context = NULL;
     dh.algorithm = hashalg_gt_id;
@@ -544,10 +544,10 @@ public:
       res = GTTimestamp_prepareTimestampRequest(&dh, &request, &request_length);
       delete [] buf;
     }
-    if (res != GT_OK) 
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-        
+
         // return string:
     //Local<Value> outString;
     //outString = Encode(request, request_length, BINARY);
@@ -558,17 +558,17 @@ public:
     GT_free(request);
     return scope.Close(result->handle_);
   }
-  
-  
+
+
     // input: raw timestamper response in Buffer, output - DER token to be fed to constructor
   static Handle<Value> ProcessResponse(const Arguments& args)
   {
     HandleScope scope;
-    
+
     if (args.Length() != 1) {
       return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
     }
-    
+
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
     ssize_t len = DecodeBytes(args[0], BINARY);
     if (len < 0) {
@@ -587,39 +587,39 @@ public:
       assert(written == len);
       res = GTTimestamp_createTimestamp(buf, len, &timestamp);
       delete [] buf;
-    }    
-    if (res != GT_OK) 
+    }
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-        
+
     unsigned char *data;
     size_t data_length;
     res = GTTimestamp_getDEREncoded(timestamp, &data, &data_length);
     GTTimestamp_free(timestamp);
-    if (res != GT_OK) 
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-                
+
     Buffer *result = Buffer::New((char *)data, data_length);
     GT_free(data);
     return scope.Close(result->handle_);
   }
-  
-  
+
+
    // verifies and returns latest pub. date
   static Handle<Value> VerifyPublications(const Arguments& args)
   {
     HandleScope scope;
-    
+
     if (args.Length() != 1)
-      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));    
+      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
     ssize_t len = DecodeBytes(args[0], BINARY);
     if (len < 0) {
       Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
       return ThrowException(exception);
     }
-    
+
     bool bufferAllocated = false;
     char *buf;
     if (Buffer::HasInstance(args[0])) {
@@ -631,15 +631,15 @@ public:
       ssize_t written = DecodeWrite(buf, len, args[0], BINARY);
       assert(written == len);
     }
-    
+
     GTPublicationsFile *pub;
     int res = GTPublicationsFile_DERDecode(buf, len, &pub);
     if (bufferAllocated)
-      delete [] buf; 
-    if (res != GT_OK) 
+      delete [] buf;
+    if (res != GT_OK)
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
-    
+
     GTPubFileVerificationInfo *vi;
     res = GTPublicationsFile_verify(pub,  &vi);
     if (res != GT_OK) {
@@ -647,7 +647,7 @@ public:
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
     }
-    
+
     GTPublicationsFile_free(pub);
     double result = vi->last_publication_time;
     GTPubFileVerificationInfo_free(vi);
@@ -655,7 +655,7 @@ public:
     return scope.Close(NODE_UNIXTIME_V8(result));
 
   }
-  
+
 private:
   static int getAlgoID(const char *algoName) {
       return (
@@ -667,17 +667,17 @@ private:
           strcasecmp(algoName, "ripemd160") == 0 ? GT_HASHALG_RIPEMD160 :
           -1);
   }
-   
+
   static bool HasInstance(v8::Handle<v8::Value> val) {
     if (!val->IsObject()) return false;
     Local<Object> obj = val->ToObject();
 
     if (obj->GetIndexedPropertiesExternalArrayDataType() == kExternalUnsignedByteArray)
       return true;
-    if (constructor_template->HasInstance(obj)) 
+    if (constructor_template->HasInstance(obj))
       return true;
     return false;
-  }  
+  }
 };
 
 Persistent<FunctionTemplate> TimeSignature::constructor_template;
@@ -686,7 +686,7 @@ extern "C" {
   static void init (Handle<Object> target)
   {
     GT_init();
-    TimeSignature::Init(target);      
+    TimeSignature::Init(target);
   }
 
   NODE_MODULE(timesignature, init);

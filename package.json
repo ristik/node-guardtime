@@ -2,11 +2,24 @@
   "name": "guardtime",
   "version": "0.0.8",
   "description": "GuardTime signing service access/verification API for node.js",
-  "author": "Risto Laanoja",
-  "email": "info@guardtime.com",
-  "homepage": "http://www.guardtime.com/",
   "dependencies": {
+    "bindings": "1.0.0"
   },
+  "author": {
+    "name": "Risto Laanoja",
+    "email": "info@guardtime.com"
+  },
+  "contributors": [
+    {
+      "name": "Carlos Cardenas",
+      "email": "cardenas12@gmail.com"
+    },
+    {
+      "name": "Farhan Patwa",
+      "email": "fpatwa@yahoo.com"
+    }
+  ],
+  "homepage": "http://www.guardtime.com/",
   "main": "./guardtime",
   "scripts": {
     "install": "node-gyp rebuild",

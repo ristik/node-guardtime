@@ -18,14 +18,7 @@
         'libraries': [
           '-lcrypto',
           '-lcurl'
-        ],
-        # Ensure the library path is recorded into the module to be able
-        # find the shared libraries without specifying LD_LIBRARY_PATH
-        'ldflags': [
-          '-Rbuild/Release',
-          '-Rbuild/default',
-          '-Rbuild/Debug'
-        ],
+        ]
       },
       'variables': {
         # node v0.6.x doesn't give us its build variables,

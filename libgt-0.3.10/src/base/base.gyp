@@ -3,43 +3,42 @@
     # libgtbase
     {
       'target_name': 'libgtbase',
-      'type': 'shared_library',
-			'cflags': [
-				'-Wno-pointer-sign'
+      'type': 'static_library',
+      'cflags': [
+        '-Wno-pointer-sign'
       ],
       'sources': [
-				'asn1_time_get.c',
-				'asn1_time_get.h',
-				'base32.c',
-				'base32.h',
-				'gt_asn1.c',
-				'gt_asn1.h',
-				'gt_base.c',
-				'gt_base.h',
-				'gt_crc32.c',
-				'gt_crc32.h',
-				'gt_datahash.c',
-				'gt_fileio.c',
-				'gt_info.c',
-				'gt_internal.c',
-				'gt_internal.h',
-				'gt_publicationsfile.c',
-				'gt_publicationsfile.h',
-				'gt_timestamp.c',
-				'hashchain.c',
-				'hashchain.h',
-				'gt_base.h'
-			], 
+        'asn1_time_get.c',
+        'asn1_time_get.h',
+        'base32.c',
+        'base32.h',
+        'gt_asn1.c',
+        'gt_asn1.h',
+        'gt_base.c',
+        'gt_base.h',
+        'gt_crc32.c',
+        'gt_crc32.h',
+        'gt_datahash.c',
+        'gt_fileio.c',
+        'gt_info.c',
+        'gt_internal.c',
+        'gt_internal.h',
+        'gt_publicationsfile.c',
+        'gt_publicationsfile.h',
+        'gt_timestamp.c',
+        'hashchain.c',
+        'hashchain.h',
+        'gt_base.h'
+      ],
       'direct_dependent_settings': {
         'defines': [
- 				  'PIC'
         ],
         'linkflags': [
         ],
         'cflags': [
         ],
       },
-			'variables': {
+      'variables': {
         # node v0.6.x doesn't give us its build variables,
         # but on Unix it was only possible to use the system OpenSSL library,
         # so default the variable to "true", v0.8.x node and up will overwrite it.

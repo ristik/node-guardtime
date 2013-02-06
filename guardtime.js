@@ -4,6 +4,8 @@ var crypto = require('crypto'),
   url = require('url'),
   fs = require('fs');
 
+var timeSignature = require('bindings')('timesignature.node');
+
  // workaround for bug in node 0.4.x
 function url_parse(u) {
   var o = url.parse(u);
@@ -12,18 +14,6 @@ function url_parse(u) {
   return o;
 }
 
-var timeSignature;
-var builds = ['Release', 'default', 'Debug'];
-
-for (var i in builds) {
-  try {
-    timeSignature = require('./build/' + builds[i] + '/timesignature');
-    break;
-  } catch (e) {
-    console.log(e);
-  }
-}
- 
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
   VER_ERR : {
@@ -51,37 +41,37 @@ var GuardTime = module.exports = {
     verifier: url_parse('http://verifier.guardtime.net/gt-extendingservice'),
     publications: url_parse('http://verify.guardtime.com/gt-controlpublications.bin')
   },
-  
+
   sign: function (data, callback) {
     var hash = crypto.createHash(GuardTime.default_hashalg);
     hash.update(data);
-    GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);        
+    GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);
   },
-  
+
   signFile: function (filename, callback) {
     var hash = crypto.createHash(GuardTime.default_hashalg);
     var rs = fs.createReadStream(filename, {'bufferSize': 128*1024});
-    rs.on('data', function(chunk) { hash.update(chunk); });  
-    rs.on('error', function(er) {                                                                
-      callback(er);                                                                                      
-      rs.destroy();                                                                              
+    rs.on('data', function(chunk) { hash.update(chunk); });
+    rs.on('error', function(er) {
+      callback(er);
+      rs.destroy();
     });
     rs.on('end', function() {
-      GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);  
+      GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);
     });
   },
-  
+
   signHash: function (hash, alg) {
     var callback = arguments[arguments.length - 1];
-    if (typeof(callback) !== 'function') 
+    if (typeof(callback) !== 'function')
       callback = function (){};
-      
+
     var reqdata = GuardTime.TimeSignature.composeRequest(hash, alg);
     GuardTime.service.signer.method = 'POST';
     GuardTime.service.signer.headers = {'Content-Length': reqdata.length};
     var req = http.request(GuardTime.service.signer, function(res) {
       if (res.statusCode != 200) {
-        return callback(new Error("Signing service error: " + res.statusCode + 
+        return callback(new Error("Signing service error: " + res.statusCode +
             " (" + http.STATUS_CODES[res.statusCode] + ")"));
       }
       var data = "";
@@ -105,11 +95,11 @@ var GuardTime = module.exports = {
     req.write(reqdata);
     req.end();
   },
-  
+
   save: function (filename, ts, cb) {
     fs.writeFile(filename, ts.getContent(), 'binary', cb);
   },
-  
+
   load: function (filename, cb) {
     fs.readFile(filename, function (err, data) {
       if (err) cb(err);
@@ -117,20 +107,20 @@ var GuardTime = module.exports = {
         var ts = new GuardTime.TimeSignature(data);
         cb(null, ts);
       } catch (err) {return cb(err);}
-    });  
+    });
   },
-  
+
   loadSync: function (filename) {
     return new GuardTime.TimeSignature(fs.readFileSync(filename));
   },
-  
+
   loadPublications: function () {
     var callback = arguments[arguments.length - 1];
-    if (typeof(callback) !== 'function') 
+    if (typeof(callback) !== 'function')
       callback = function (){};
     var req = http.get(GuardTime.service.publications, function(res) {
       if (res.statusCode != 200) {
-        return callback(new Error("Publications download: " + res.statusCode + 
+        return callback(new Error("Publications download: " + res.statusCode +
             " (" + http.STATUS_CODES[res.statusCode] + ")"));
       }
       var data = "";
@@ -142,8 +132,8 @@ var GuardTime = module.exports = {
           var d = GuardTime.TimeSignature.verifyPublications(data); // exception on error
           GuardTime.publications.last = d;
           GuardTime.publications.data = data;
-        } catch (er) { 
-          return callback(er); 
+        } catch (er) {
+          return callback(er);
         }
         callback(null);
       });
@@ -153,10 +143,10 @@ var GuardTime = module.exports = {
       return callback(new Error("Publications download: " + e.message));
     });
   },
-  
+
   extend: function (ts) {
     var callback = arguments[arguments.length - 1];
-    if (typeof(callback) !== 'function') 
+    if (typeof(callback) !== 'function')
       callback = function (){};
 
     var reqdata = ts.composeExtendingRequest();
@@ -164,7 +154,7 @@ var GuardTime = module.exports = {
     GuardTime.service.verifier.headers = {'Content-Length': reqdata.length};
     var req = http.request(GuardTime.service.verifier, function(res) {
       if (res.statusCode != 200) {
-        return callback(new Error("Verification service error: " + res.statusCode + 
+        return callback(new Error("Verification service error: " + res.statusCode +
             " (" + http.STATUS_CODES[res.statusCode] + ")"));
       }
       var data = "";
@@ -178,7 +168,7 @@ var GuardTime = module.exports = {
         } catch (er) {
           return callback(er);
         }
-        if (callback) 
+        if (callback)
           callback(null, ts);
       });
     });
@@ -188,19 +178,19 @@ var GuardTime = module.exports = {
     req.write(reqdata);
     req.end();
   },
-   
+
   verify: function(data, ts) {
   var callback = arguments[arguments.length - 1];
-    if (typeof(callback) !== 'function') 
-      callback = function (){}; 
+    if (typeof(callback) !== 'function')
+      callback = function (){};
     var hash = crypto.createHash(ts.getHashAlgorithm());
     hash.update(data);
-    GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);     
+    GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);
   },
 
   verifyHash: function(hash, alg, ts) {
     var callback = arguments[arguments.length - 1];
-    if (typeof(callback) !== 'function') 
+    if (typeof(callback) !== 'function')
       callback = function (){};
     var result = 0;
     // if publications file is not yet downloaded - download and recall itself
@@ -231,28 +221,28 @@ var GuardTime = module.exports = {
           callback(null, result);
         });
       }
-      result |= ts.checkPublication(GuardTime.publications.data);     
+      result |= ts.checkPublication(GuardTime.publications.data);
     } catch (err) {
       return callback(err);
     }
-    callback(null, result);   
+    callback(null, result);
   },
-   
+
   verifyFile: function(filename, ts) {
     var callback = arguments[arguments.length - 1];
-    if (typeof(callback) !== 'function') 
-      callback = function (){};     
+    if (typeof(callback) !== 'function')
+      callback = function (){};
     var hash = crypto.createHash(ts.getHashAlgorithm());
     var rs = fs.createReadStream(filename, {'bufferSize': 128*1024});
-    rs.on('data', function(chunk) { hash.update(chunk); });  
-    rs.on('error', function(er) {                                                                
-      callback(er);                                                                                      
+    rs.on('data', function(chunk) { hash.update(chunk); });
+    rs.on('error', function(er) {
+      callback(er);
       rs.destroy();
       // beware, no return!
     });
     rs.on('end', function() {
-      GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);  
-    });   
-  }    
+      GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);
+    });
+  }
 }
-    
+

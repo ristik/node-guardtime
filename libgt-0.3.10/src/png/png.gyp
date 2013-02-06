@@ -4,8 +4,8 @@
     {
       'target_name': 'png',
       'include_dirs': [
-			  '../base',
-			  '../http'
+        '../base',
+        '../http'
       ],
       'sources': [
         'png_insert.c',
@@ -22,20 +22,19 @@
     # libgtpng
     {
       'target_name': 'libgtpng',
-      'type': 'shared_library',
+      'type': 'static_library',
       'include_dirs': [
-			  '../base',
-			  '../http'
+        '../base',
+        '../http'
       ],
       'sources': [
         'gt_png.c',
         'gt_png.h',
         'gtpng_crc32.c',
         'gtpng_crc32.h'
-      ], 
+      ],
       'direct_dependent_settings': {
         'defines': [
-				  'PIC'
         ],
         'linkflags': [
         ],
