@@ -2,6 +2,7 @@
   "name": "guardtime",
   "version": "0.0.8",
   "description": "GuardTime signing service access/verification API for node.js",
+  "license": "Apache License v2.0",
   "dependencies": {
     "bindings": "1.0.0"
   },
