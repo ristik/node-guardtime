@@ -14,15 +14,6 @@ function url_parse(u) {
 
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
-  VER_ERR : {
-    NO_FAILURES : 0,
-    SYNTACTIC_CHECK_FAILURE : 1,
-    HASHCHAIN_VERIFICATION_FAILURE : 2,
-    PUBLIC_KEY_SIGNATURE_FAILURE : 16,
-    NOT_VALID_PUBLIC_KEY_FAILURE : 64,
-    WRONG_DOCUMENT_FAILURE : 128,
-    NOT_VALID_PUBLICATION : 256
-  },
   VER_RES : {
     PUBLIC_KEY_SIGNATURE_PRESENT : 1,
     PUBLICATION_REFERENCE_PRESENT : 2,
@@ -32,7 +23,9 @@ var GuardTime = module.exports = {
   TimeSignature: require('./timesignature').TimeSignature,
   publications: {
     data: '',
-    last: ''
+    last: '',
+    updatedat: 0,
+    lifetime: 60*60*7
   },
   service: {
     signer: url_parse('http://stamper.guardtime.net/gt-signingservice'),
@@ -40,6 +33,26 @@ var GuardTime = module.exports = {
     publications: url_parse('http://verify.guardtime.com/gt-controlpublications.bin')
   },
   
+  conf: function (data) {
+    if (data.signeruri)
+      GuardTime.service.signer = url_parse(data.signeruri);
+    if (data.verifieruri)
+      GuardTime.service.verifier = url_parse(data.verifieruri);
+    if (data.publicationsuri)
+      GuardTime.service.publications = url_parse(data.publicationsuri);
+    if (data.publicationsdata) {
+      var d = GuardTime.TimeSignature.verifyPublications(data.publicationsdata); // exception on error
+      GuardTime.publications.last = d;
+      GuardTime.publications.data = data;
+      GuardTime.publications.updatedat = Date.now();
+    }
+    if (data.publicationslifetime) {
+      if (! isFinite(data.publicationslifetime) || data.publicationslifetime <= 0)
+          throw new Error("Publications data lifetime must be a positive number.");
+      GuardTime.publications.lifetime = data.publicationslifetime;
+    }
+  },
+
   sign: function (data, callback) {
     var hash = crypto.createHash(GuardTime.default_hashalg);
     hash.update(data);
@@ -130,6 +143,7 @@ var GuardTime = module.exports = {
           var d = GuardTime.TimeSignature.verifyPublications(data); // exception on error
           GuardTime.publications.last = d;
           GuardTime.publications.data = data;
+          GuardTime.publications.updatedat = Date.now();
         } catch (er) { 
           return callback(er); 
         }
@@ -190,9 +204,10 @@ var GuardTime = module.exports = {
     var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function') 
       callback = function (){};
-    var result = 0;
-    // if publications file is not yet downloaded - download and recall itself
-    if (!GuardTime.publications.data) {
+    var properties = {};
+    // if publications file is not yet downloaded or data too old - download and recall itself
+    if (!GuardTime.publications.data || 
+          (GuardTime.publications.updatedat + GuardTime.publications.lifetime * 1000 < Date.now())) {
       return GuardTime.loadPublications(function(err){
         if (err)
           return callback(err);
@@ -200,8 +215,8 @@ var GuardTime = module.exports = {
       });
     }
     try {
-      result = ts.verify();
-      result |= ts.compareHash(hash, alg);
+      properties = ts.verify();
+      properties.verification_status |= ts.compareHash(hash, alg);
       var is_new = ts.getRegisteredTime().getTime() > GuardTime.publications.last.getTime();
       if (!ts.isExtended() && !is_new) {
         return GuardTime.extend(ts, function(err, xts) {
@@ -212,18 +227,18 @@ var GuardTime = module.exports = {
             xts = ts;
           }
           try {
-            result = xts.verify();
-            result |= xts.compareHash(hash, alg);
-            result |= xts.checkPublication(GuardTime.publications.data);
+            properties = xts.verify();
+            properties.verification_status |= xts.compareHash(hash, alg);
+            properties.verification_status |= xts.checkPublication(GuardTime.publications.data);
           } catch (err) { return callback(err); }
-          callback(null, result);
+          callback(null, properties.verification_status, properties);
         });
       }
-      result |= ts.checkPublication(GuardTime.publications.data);     
+      properties.verification_status |= ts.checkPublication(GuardTime.publications.data);     
     } catch (err) {
       return callback(err);
     }
-    callback(null, result);   
+    callback(null, properties.verification_status, properties);   
   },
    
   verifyFile: function(filename, ts) {

@@ -1,4 +1,18 @@
-// bastards have depreciated openssl
+/*
+ * Copyright 2013 GuardTime AS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
+// openssl is depreciated on a closing up platform.
 #define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_0
 
 #include <gt_base.h>
@@ -106,6 +120,35 @@ public:
     return args.This();
   }
 
+  static Local<String> format_location_id(GT_UInt64 l)
+  {
+    char buf[32];
+    if (l == 0)
+      return String::New("");
+    snprintf(buf, sizeof(buf), "%u.%u.%u.%u",
+            (unsigned) (l >> 48 & 0xffff),
+            (unsigned) (l >> 32 & 0xffff),
+            (unsigned) (l >> 16 & 0xffff),
+            (unsigned) (l & 0xffff)); 
+    return String::New(buf);
+  }
+  
+  static Local<String> hash_algorithm_name_as_String(int alg) 
+  {
+      // ids copied from gt_base.h -> enum GTHashAlgorithm
+      // there is static func in gt_info.c: hashAlgName(alg));
+    switch(alg) {  
+      case 1: return String::New("SHA256");
+      case 0: return String::New("SHA1");
+      case 2: return String::New("RIPEMD160");
+      case 3: return String::New("SHA224");
+      case 4: return String::New("SHA384");
+      case 5: return String::New("SHA512");
+      default:
+        return String::New("<unknown or untrusted hash algorithm>");
+    }    
+  }
+
   // no arguments, just syntax check
   static Handle<Value> Verify(const Arguments& args)
   {
@@ -117,21 +160,51 @@ public:
                 String::New("TimeSignature is blank")));
             
     GTVerificationInfo *verification_info = NULL;
-    int res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
+    int res = GTTimestamp_verify(ts->timestamp, 1, &verification_info);
     if (res != GT_OK) 
       return ThrowException(Exception::Error(
                 String::New(GT_getErrorString(res))));
                 
     if (verification_info->verification_errors != GT_NO_FAILURES) {
         GTVerificationInfo_free(verification_info);
-    return ThrowException(Exception::Error(
+        return ThrowException(Exception::Error(
                 String::New("TimeSignature verification error")));
     }  
   
-    int result = verification_info->verification_status; // bitmap of checks done
-    GTVerificationInfo_free(verification_info);
+    Handle<Object> result = Object::New();
+    result->Set(String::New("verification_status"), Integer::New(verification_info->verification_status));
+    result->Set(String::New("location_id"), format_location_id(verification_info->implicit_data->location_id));
+    // result->Set(String::New("location_id"), Number::New(verification_info->implicit_data->location_id));
+    if (verification_info->implicit_data->location_name != NULL)
+      result->Set(String::New("location_name"), String::New(verification_info->implicit_data->location_name));
+    result->Set(String::New("registered_time"), NODE_UNIXTIME_V8(verification_info->implicit_data->registered_time));
 
-    return scope.Close(Integer::New(result));
+    if (verification_info->explicit_data->policy != NULL)
+      result->Set(String::New("policy"), String::New(verification_info->explicit_data->policy));
+    result->Set(String::New("hash_algorithm"), hash_algorithm_name_as_String(verification_info->explicit_data->hash_algorithm));
+    if (verification_info->explicit_data->hash_value != NULL)
+      result->Set(String::New("hash_value"), String::New(verification_info->explicit_data->hash_value));
+    if (verification_info->explicit_data->issuer_name != NULL)
+      result->Set(String::New("issuer_name"), String::New(verification_info->explicit_data->issuer_name));
+
+    // not extended:
+    if (verification_info->implicit_data->public_key_fingerprint != NULL)
+      result->Set(String::New("public_key_fingerprint"), String::New(verification_info->implicit_data->public_key_fingerprint));
+
+    // extended:
+    if (verification_info->implicit_data->publication_string != NULL) {
+      result->Set(String::New("publication_string"), String::New(verification_info->implicit_data->publication_string));
+      result->Set(String::New("publication_identifier"), Number::New(verification_info->explicit_data->publication_identifier));
+      result->Set(String::New("publication_time"), NODE_UNIXTIME_V8(verification_info->explicit_data->publication_identifier));
+
+      Handle<Array> refarr = Array::New(verification_info->explicit_data->pub_reference_count);
+      for (int i = 0; i < verification_info->explicit_data->pub_reference_count; i++)
+        refarr->Set(i, String::New(verification_info->explicit_data->pub_reference_list[i]));
+      result->Set(String::New("pub_reference_list"), refarr);
+    }
+
+    GTVerificationInfo_free(verification_info);
+    return scope.Close(result);
   }
   
 
@@ -156,7 +229,6 @@ public:
                   String::New(GT_getErrorString(res))));                
     }
   }
-  
  
   // return openssl style hash alg name
   static Handle<Value> GetHashAlgorithm(const Arguments& args)
@@ -172,21 +244,9 @@ public:
     int res = GTTimestamp_getAlgorithm(ts->timestamp, &alg);
     if (res != GT_OK) 
       return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));               
-    
-    // ids copied from gt_base.h -> enum GTHashAlgorithm
-    switch(alg) {  
-      case 1: return scope.Close(String::New("SHA256"));
-      case 0: return scope.Close(String::New("SHA1"));
-      case 2: return scope.Close(String::New("RIPEMD160"));
-      case 3: return scope.Close(String::New("SHA224"));
-      case 4: return scope.Close(String::New("SHA384"));
-      case 5: return scope.Close(String::New("SHA512"));
-      default:
-          return ThrowException(Exception::Error(
-                String::New("Unknown hash algorithm ID")));
-     } 
-     // there is static func in gt_info.c: hashAlgName(alg));
+                String::New(GT_getErrorString(res)))); 
+
+    return scope.Close(hash_algorithm_name_as_String(alg));    
   }
 
   static Handle<Value> GetRegisteredTime(const Arguments& args)

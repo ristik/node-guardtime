@@ -15,16 +15,17 @@ gt.loadPublications(function(err) {
   assert.ok(err == null, err);
   var lastpubdate = TimeSignature.verifyPublications(gt.publications.data);
   var now = new Date();
-  assert.ok(lastpubdate.getTime() < now.getTime(), "last publication must be older than wall clock");
+  assert.ok(lastpubdate.getTime() < now.getTime(), "last publication must be older than wall clock time");
   assert.ok(lastpubdate.getTime() + 1000*60*60*24*40 > now.getTime(), "last publication must be no older than 40 days");
 
   gt.sign('Hello!', function(err, ts) {
     assert.ok(err == null, err);
-    gt.verify('Hello!', ts, function(err, res){
+    gt.verify('Hello!', ts, function(err, res, props){
       assert.ok(err == null, err);
       assert.equal(res, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT +
             gt.VER_RES.DOCUMENT_HASH_CHECKED + 
             gt.VER_RES.PUBLICATION_CHECKED);
+      assert.ok(props.verification_status == res);
     });
     var tsdate = ts.getRegisteredTime();
     assert.ok(tsdate.getTime() + 1000*60*10 > now.getTime(), 
@@ -34,9 +35,10 @@ gt.loadPublications(function(err) {
     
     assert.ok(ts.getSignerName().match(/public/));
     
-    gt.verify('UnHello!', ts, function(err, res) {
+    gt.verify('UnHello!', ts, function(err, res, properties) {
       assert.ok(err.message.match(/different document/));
       assert.ok(res == null); 
+      assert.ok(properties == null); 
     });
     
     assert.throws(function(){
@@ -52,7 +54,7 @@ gt.loadPublications(function(err) {
     assert.equal(ts.getHashAlgorithm().toUpperCase(), gt.default_hashalg.toUpperCase());
     var old = gt.loadSync('cat.gif.gtts');
     assert.ok(! old.isExtended(), "please make sure that testdata is not extended");
-    assert.equal(old.verify(), gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
+    assert.equal(old.verify().verification_status, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
     assert.ok(old.isEarlierThan(ts));
     assert.ok(!ts.isEarlierThan(old));
     assert.ok(old.getSignerName() != null);  // blank if not present
@@ -86,10 +88,10 @@ gt.loadPublications(function(err) {
   var hd = h.digest();
   gt.signHash(hd, 'sha512', function(e, ts) {
     assert.ok(e == null, e);
-    assert.equal(ts.verify(), gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
+    assert.equal(ts.verify().verification_status, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
   });
   gt.signHash(new Buffer(hd, encoding='binary'), 'SHA512', function(e, ts) {
     assert.ok(e == null, e);
-    assert.equal(ts.verify(), gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
+    assert.equal(ts.verify().verification_status, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
   });
 });

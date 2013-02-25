@@ -37,4 +37,4 @@ Needs Node.JS >= 0.4.0; Windows is not supported.
 
 ---
 Published under Apache license v. 2.0.
-Copyright GuardTime AS 2010-2012
+Copyright GuardTime AS 2010-2013
