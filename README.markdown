@@ -14,22 +14,25 @@ Hello world:
     var gt = require('guardtime');
 
     gt.sign('Hello world!', function(err, ts) {
-      if(err) {
-        return console.error(err);
-      } else {
-        gt.verify('Hello world!', ts, function(err, res){
-          console.log('Ver result: ' + err, res);});
-      }
+      if (err)
+        throw err;
+      gt.verify('Hello world!', ts, function(err, checkflags, props){
+        if (err) 
+          throw err;
+        console.log('All ok; signed by ' + props.location_name + ' at ' + props.registered_time);
+      });
     });
 
-For API documentation please see file [node-guardtime-api.markdown]
+For API documentation please see file (/node-guardtime-api.markdown)
 
 For more information about GuardTime Keyless Signature service please go to
-[http://www.guardtime.com/].
+http://www.guardtime.com/signatures/technology-overview
 
 As You are already here - this is the essence:
-GuardTime service adds hash of your doc to giant hash tree with globally unique
-root value; and regularily publishes these root values in FT.
+GuardTime service adds hash of your doc to a giant hash tree with globally unique
+root value; and regularily publishes this root value in widely witnessed media.
+This allows you to prove that your document did exist at certain point of time, you
+used certain service endpoint, and this document was not modified ever after.
 
 Needs Node.JS >= 0.4.0; Windows is not supported.
 

@@ -27,8 +27,8 @@ Optionally change service configuration, all parameters are optional. Defaults:
             signeruri: 'http://stamper.guardtime.net/gt-signingservice',       // or private GW here
             verifieruri: 'http://verifier.guardtime.net/gt-extendingservice',  // or private GW here
             publicationsuri: 'http://verify.guardtime.com/gt-controlpublications.bin',  // ok for most scenarios
-            publicationsdata: <automatically loaded from publicationsuri if not present>,
-            publicationslifetime: 60*60*7      // seconds; if publicationsdata is older then it will be reloaded
+            publicationsdata: ''              // automatically loaded from publicationsuri if blank or expired
+            publicationslifetime: 60*60*7     // seconds; if publicationsdata is older then it will be reloaded
         });
 
 ### gt.sign(String data, function(Exception error, TimeSignature ts){});
@@ -37,14 +37,14 @@ Optionally change service configuration, all parameters are optional. Defaults:
   
 Signs data, creates TimeSignature token and returns it as 2nd argument to the callback.
 
-### gt.save(String filename, TimeSignature ts, function(Exception error)[]);
+### gt.save(String filename, TimeSignature ts, function(Exception error){});
 Saves signature token to file, asyncronously.
 
 ### gt.load(String filename, function(Exception error, TimeSignature ts){});
 Loads and creates signature token from file.
 
 ### TimeSignature ts = gt.loadSync(String filename);
-Loads and creates signature token from file, asynchronously.
+Loads and creates signature token from file, synchronously.
 
 ### gt.verify(String data, TimeSignature ts, function(Exception err, Integer resultflags, properties){});
 ### gt.verifyFile(String filename, TimeSignature ts, function(Exception err, Integer resultflags, properties){});
