@@ -1,5 +1,5 @@
 #
-# $Id: configure.ac 113 2011-06-01 09:58:12Z ahto.truu $
+# $Id: configure.ac 123 2011-12-07 23:05:50Z ahto.truu $
 #
 # Copyright 2009-2010 GuardTime AS
 #
@@ -22,10 +22,10 @@
 #     aclocal && automake -a && autoconf
 #
 
-AC_INIT(libgt, 0.3.10, beta_support@guardtime.com)
+AC_INIT(libgt, 0.3.11, beta_support@guardtime.com)
 AC_CONFIG_AUX_DIR(config)
 
-AM_INIT_AUTOMAKE(libgt, 0.3.10)
+AM_INIT_AUTOMAKE(libgt, 0.3.11)
 
 # Checks for programs.
 AC_PROG_CC

@@ -1,5 +1,5 @@
 /*
- * $Id: http_verify.c 98 2010-12-01 13:19:04Z ahto.truu $
+ * $Id: http_verify.c 117 2011-09-15 15:39:41Z ahto.truu $
  *
  * Copyright 2008-2010 GuardTime AS
  *
@@ -117,6 +117,8 @@ int main(int argc, char* argv[])
 	/* Hash data file. */
 	res = GTTimestamp_getAlgorithm(timestamp, &hash_algo);
 	if (res != GT_OK) {
+		fprintf(stderr, "GTTimestamp_getAlgorithm() failed: %d (%s)\n",
+				res, GT_getErrorString(res));
 		goto cleanup;
 	}
 	res = GT_hashFile(data_file, hash_algo, &data_hash);

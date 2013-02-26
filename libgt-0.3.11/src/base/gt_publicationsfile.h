@@ -1,5 +1,5 @@
 /*
- * $Id: gt_publicationsfile.h 74 2010-02-22 11:42:26Z ahto.truu $
+ * $Id: gt_publicationsfile.h 122 2011-12-07 23:05:31Z ahto.truu $
  *
  * Copyright 2008-2010 GuardTime AS
  *
@@ -210,7 +210,7 @@ int GTPublicationsFile_getBase32PublishedData(
 		GT_HashDBIndex publication_identifier, char **publication);
 
 /**
- * Extracts DER-encoded signing certificate from the given publicatin file.
+ * Extracts DER-encoded signing certificate from the given publications file.
  *
  * \param publications_file \c (in) - Pointer to publications file.
  *

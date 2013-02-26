@@ -1,5 +1,8 @@
 Version 0.3
 
+2011-12-08 release (0.3.11)
+* Minor improvements in timestamp parsing.
+
 2011-06-01 release (0.3.10)
 * Support for authenticated GW names.
 

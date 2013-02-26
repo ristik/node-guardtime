@@ -1,5 +1,5 @@
 /*
- * $Id: gt_timestamp.c 112 2011-06-01 09:11:56Z ahto.truu $
+ * $Id: gt_timestamp.c 122 2011-12-07 23:05:31Z ahto.truu $
  *
  * Copyright 2008-2010 GuardTime AS
  *
@@ -915,7 +915,7 @@ static unsigned collectBits(const unsigned char buf[], int *len, int num)
 	assert(len != NULL);
 	assert(*len >= num);
 	assert(num <= 8 * sizeof(res));
-	while (num-- > 0) {
+	while (num-- > 0 && *len > 0) {
 		res <<= 1;
 		res |= buf[--*len];
 	}
@@ -932,7 +932,7 @@ static void checkName(const unsigned char *steps[], int *len,
 	size_t i;
 	assert(len != NULL);
 	assert(*len >= 0);
-	if (*len == 0) {
+	if (*len <= 0) {
 		/* No hash step. */
 		return;
 	}
@@ -969,6 +969,7 @@ static void checkName(const unsigned char *steps[], int *len,
 static int extractLocation(const ASN1_OCTET_STRING *hash_chain,
 		GT_UInt64 *location_id, unsigned char **location_name)
 {
+	static const int hasher = 80;
 	static const int gdepth_top = 60;
 	static const int gdepth_national = 39;
 	static const int gdepth_state = 19;
@@ -1056,21 +1057,16 @@ static int extractLocation(const ASN1_OCTET_STRING *hash_chain,
 		hash_level = *p;
 		p += 1; /* now we point to the beginning of the next entry */
 
-		if (p - hash_chain->data == hash_chain->length) {
-			/* extract hasher level; I would use named constants instead
-			 * of magic numbers, if I could think of meaningful names */
+		if (hash_level > hasher && last_level <= hasher) {
 			if (hash_level == 0xff) {
-				/* old, 2007-2010 core architecture: exactly two hashers;
+				/* old, 2007-2011 core architecture: exactly two hashers;
 				 * direction bit of last hashing step shows, which one */
-				bits[num_bits++] = hash_bit;
-				loc.hasher = 1 + collectBits(bits, &num_bits, 1);
+				loc.hasher = 1 + hash_bit;
 			} else {
-				/* new, 2010+ core architecture in compatibility mode:
-				 * any number of hashers; level value of last hashing
-				 * step shows, which one; next-to-last step is to be
-				 * ignored in id extraction */
-				loc.hasher = hash_level - 0x80;
-				collectBits(bits, &num_bits, 1);
+				/* new, 2011+ core architecture: any number of hashers;
+				 * first sufficiently high level value shows, which one;
+				 * remaining steps ignored in id extraction */
+				loc.hasher = hash_level - hasher;
 			}
 			loc.national_cluster = collectBits(bits, &num_bits, num_bits);
 			break;

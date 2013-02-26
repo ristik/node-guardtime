@@ -1,5 +1,5 @@
 /*
- * $Id: gt_http.h 113 2011-06-01 09:58:12Z ahto.truu $
+ * $Id: gt_http.h 123 2011-12-07 23:05:50Z ahto.truu $
  *
  * Copyright 2008-2010 GuardTime AS
  *
@@ -104,7 +104,7 @@
  *
  * \see GTHTTP_getVersion, GT_VERSION
  */
-#define GTHTTP_VERSION (0 << 24 | 3 << 16 | 10)
+#define GTHTTP_VERSION (0 << 24 | 3 << 16 | 11)
 
 #ifdef __cplusplus
 extern "C" {

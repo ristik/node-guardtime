@@ -1,5 +1,5 @@
 /*
- * $Id: overview.dox 98 2010-12-01 13:19:04Z ahto.truu $
+ * $Id: overview.dox 124 2011-12-07 23:13:01Z ahto.truu $
  *
  * Copyright 2008-2010 GuardTime AS
  *
@@ -94,7 +94,7 @@ To compile the example under Linux, use a command along the lines of
 	-L/usr/local/gt/lib -L/usr/local/curl/lib -L/usr/local/ssl/lib \
 	-lgthttp -lgtbase -lcurl -lcrypto -lrt
 \endcode
-(either with the backslashes or all on a single line) replacing \c /usr/local/gt, \c /usr/local/curl and \c /usr/local/ssl with the directories where you unpacked the GuardTime, cURL and OpenSSL libraries (you can skip the \c /I and \c /L options if you installed everything in standard system locations).
+(either with the backslashes or all on a single line) replacing \c /usr/local/gt, \c /usr/local/curl and \c /usr/local/ssl with the directories where you unpacked the GuardTime, cURL and OpenSSL libraries (you can skip the \c -I and \c -L options if you installed everything in standard system locations).
 
 To compile the example under Windows, use a command along the lines of
 \code
@@ -139,7 +139,7 @@ To compile the example under Linux, use a command along the lines of
 	-L/usr/local/gt/lib -L/usr/local/curl/lib -L/usr/local/ssl/lib \
 	-lgthttp -lgtbase -lcurl -lcrypto -lrt
 \endcode
-(either with the backslashes or all on a single line) replacing \c /usr/local/gt, \c /usr/local/curl and \c /usr/local/ssl with the directories where you unpacked the GuardTime, cURL and OpenSSL libraries (you can skip the \c /I and \c /L option if you installed everything in standard system locations).
+(either with the backslashes or all on a single line) replacing \c /usr/local/gt, \c /usr/local/curl and \c /usr/local/ssl with the directories where you unpacked the GuardTime, cURL and OpenSSL libraries (you can skip the \c -I and \c -L option if you installed everything in standard system locations).
 
 To compile the example under Windows, use a command along the lines of
 \code

@@ -1,11 +1,13 @@
 // informal unit-tests to test GuardTime node.js API.
 // expectations:
 //   computer's wall clock drift < 5 minutes;
-//   > 40 days old, non-extended signature file cat.gif.gtts
-//   signed file cat.gif
+//   > 40 days old, non-extended signature file (TestData.txt.gtts1)
+//   signed file (TestData.txt)
 //   internet connectivity
 //   GW with public identity must be used.
 //   run in module build directory
+var testsigfile  = 'libgt-0.3.11/test/TestData.txt.gtts1',
+    testdatafile = 'libgt-0.3.11/test/TestData.txt';
 
 var gt = require('./guardtime'), 
   TimeSignature = gt.TimeSignature,
@@ -42,17 +44,17 @@ gt.loadPublications(function(err) {
     });
     
     assert.throws(function(){
-      var invalid = gt.loadSync('cat.gif');
+      var invalid = gt.loadSync(testdatafile);
       }, /Invalid format/i
     );
-    gt.load('cat.gif', function(err, ts) {
+    gt.load(testdatafile, function(err, ts) {
       assert.ok(err.message.match(/Invalid format/i));
       assert.ok(ts == null);
     });
     
     assert.ok(!ts.isExtended());
     assert.equal(ts.getHashAlgorithm().toUpperCase(), gt.default_hashalg.toUpperCase());
-    var old = gt.loadSync('cat.gif.gtts');
+    var old = gt.loadSync(testsigfile);
     assert.ok(! old.isExtended(), "please make sure that testdata is not extended");
     assert.equal(old.verify().verification_status, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
     assert.ok(old.isEarlierThan(ts));
@@ -65,7 +67,7 @@ gt.loadPublications(function(err) {
         assert.equal(xold.verify() | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT, 
               gt.VER_RES.PUBLICATION_REFERENCE_PRESENT);
         assert.ok(xold.isExtended());
-        gt.verifyFile('cat.gif', xold, function(err, res) {
+        gt.verifyFile(testdatafile, xold, function(err, res) {
           assert.ok(err == null, err);
           assert.equal(res | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT, 
                 gt.VER_RES.DOCUMENT_HASH_CHECKED + 
@@ -73,8 +75,8 @@ gt.loadPublications(function(err) {
         });
       });
     }
-    gt.load('cat.gif.gtts', function(err, ts) {
-      gt.verifyFile('cat.gif', ts, function(err, res) {
+    gt.load(testsigfile, function(err, ts) {
+      gt.verifyFile(testdatafile, ts, function(err, res) {
         assert.ok(err == null, err);
         assert.equal(res | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT, 
               gt.VER_RES.DOCUMENT_HASH_CHECKED + 

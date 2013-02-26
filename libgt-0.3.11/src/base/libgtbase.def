@@ -1,5 +1,5 @@
 ;
-; $Id: libgtbase.def 74 2010-02-22 11:42:26Z ahto.truu $
+; $Id: libgtbase.def 121 2011-12-07 23:03:40Z ahto.truu $
 ;
 ; Copyright 2008-2010 GuardTime AS
 ;
@@ -54,3 +54,4 @@ EXPORTS GT_realloc
 EXPORTS GT_free
 EXPORTS GT_loadFile
 EXPORTS GT_saveFile
+EXPORTS GT_hashFile

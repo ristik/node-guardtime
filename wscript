@@ -2,8 +2,8 @@ import Utils
 import os, sys
 
 APPNAME = 'node-guardtime'
-VERSION = '0.0.4'
-libgt = 'libgt-0.3.10'
+VERSION = '0.0.7'
+libgt = 'libgt-0.3.11'
 
 def set_options(opt):
   opt.tool_options("compiler_cxx")
