@@ -4,9 +4,12 @@
 Includes GuardTime C API in subdirectory libgt-x.y
 
 How to build:
+
+    npm install .
     npm link
 or 
-    node-waf configure build test install
+
+    node-gyp rebuild 
 
 
 Hello world:
@@ -35,7 +38,7 @@ root value; and regularily publishes this root value in widely witnessed media.
 This allows you to prove that your document did exist at certain point of time, you
 used certain service endpoint, and this document was not modified ever after.
 
-Needs Node.JS >= 0.4.0; Windows is not supported.
+Needs Node.JS >= 0.6.0; Windows is not supported.
 
 Note: Node.JS 0.8.x comes with bundled / statically linked OpenSSL library; Our API 
 must use exactly the same instance. In order to achieve this either compile 
