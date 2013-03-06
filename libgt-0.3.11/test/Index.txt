@@ -8,11 +8,11 @@ TestData.txt - A plain text file for timestamping.
 TestData.txt.gtts1 - An unextended timestamp for
 	TestData.txt. Rename to TestData.txt.gtts
 	to test verification using the standalone
-	timstamping and verification tool.
+	timestamping and verification tool.
 TestData.txt.gtts2 - An extended timestamp for
 	TestData.txt. Rename to TestData.txt.gtts
 	to test verification using the standalone
-	timstamping and verification tool.
+	timestamping and verification tool.
 
 TestData.png - A PNG image file for timestamping.
 	Since PNG files can have embedded custom
@@ -25,14 +25,14 @@ TestData.png - A PNG image file for timestamping.
 TestData.png.gtts1 - An unextended timestamp for
 	TestData.png. Rename to TestData.png.gtts
 	to test verification using the standalone
-	timstamping and verification tool.
+	timestamping and verification tool.
 TestData.gtts1.png - The same image as in the file
 	TestData.png, but with timestamp from the
 	file TestData.png.gtts1 embedded in it.
 TestData.png.gtts2 - An extended timestamp for
 	TestData.png. Rename to TestData.png.gtts
 	to test verification using the standalone
-	timstamping and verification tool.
+	timestamping and verification tool.
 TestData.gtts2.png - The same image as in the file
 	TestData.png, but with timestamp from the
 	file TestData.png.gtts2 embedded in it.
