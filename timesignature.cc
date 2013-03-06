@@ -47,8 +47,10 @@ public:
   {
     HandleScope scope;
 
+    /* Until the code segfaults because of bundled and statically linked openssl in node
+     * distribution we'll leave this warning here. */
     if (SSLeay() != OPENSSL_VERSION_NUMBER) {
-        printf("OpenSSL version mismatch. Built against %lx, you have %lx\n", OPENSSL_VERSION_NUMBER, SSLeay());
+        fprintf(stderr, "OpenSSL version mismatch. Built against %lx, you have %lx\n", OPENSSL_VERSION_NUMBER, SSLeay());
         exit(-1);
     }
 

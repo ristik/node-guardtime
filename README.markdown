@@ -23,9 +23,10 @@ Hello world:
       });
     });
 
-For API documentation please see file (/node-guardtime-api.markdown)
+For API documentation please refer to
+[node-guardtime-api.markdown](https://github.com/ristik/node-guardtime/blob/master/node-guardtime-api.markdown)
 
-For more information about GuardTime Keyless Signature service please go to
+For more information about the GuardTime Keyless Signature service please have a look at
 http://www.guardtime.com/signatures/technology-overview
 
 As You are already here - this is the essence:
@@ -35,6 +36,11 @@ This allows you to prove that your document did exist at certain point of time, 
 used certain service endpoint, and this document was not modified ever after.
 
 Needs Node.JS >= 0.4.0; Windows is not supported.
+
+Note: Node.JS 0.8.x comes with bundled / statically linked OpenSSL library; Our API 
+must use exactly the same instance. In order to achieve this either compile 
+node 0.8 with system openssl (./configure --shared-openssl && make && sudo make install), 
+or compile guardtime API against the OpenSSL copy inside node.js source tree.
 
 [![build status](https://secure.travis-ci.org/ristik/node-guardtime.png)](http://travis-ci.org/ristik/node-guardtime)
 
