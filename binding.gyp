@@ -4,15 +4,15 @@
     {
       'target_name': 'timesignature',
       'include_dirs': [
-        'libgt-0.3.10/src/base'
+        'libgt-0.3.11/src/base'
       ],
       'sources': [
         'timesignature.cc',
       ],
       'dependencies': [
-        'libgt-0.3.10/src/base/base.gyp:libgtbase',
-        'libgt-0.3.10/src/http/http.gyp:libgthttp',
-        'libgt-0.3.10/src/png/png.gyp:libgtpng',
+        'libgt-0.3.11/src/base/base.gyp:libgtbase',
+        'libgt-0.3.11/src/http/http.gyp:libgthttp',
+        'libgt-0.3.11/src/png/png.gyp:libgtpng',
       ],
       'link_settings': {
         'libraries': [
