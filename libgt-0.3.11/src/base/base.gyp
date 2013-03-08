@@ -5,7 +5,9 @@
       'target_name': 'libgtbase',
       'type': 'static_library',
       'cflags': [
-        '-Wno-pointer-sign'
+            # silence warnings
+            '-Wno-sign-compare',
+            '-Wno-pointer-sign'
       ],
       'sources': [
         'asn1_time_get.c',
@@ -30,14 +32,6 @@
         'hashchain.h',
         'gt_base.h'
       ],
-      'direct_dependent_settings': {
-        'defines': [
-        ],
-        'linkflags': [
-        ],
-        'cflags': [
-        ],
-      },
       'variables': {
         # node v0.6.x doesn't give us its build variables,
         # but on Unix it was only possible to use the system OpenSSL library,
@@ -45,6 +39,16 @@
         'node_shared_openssl%': 'true',
       },
       'conditions': [
+        ['OS=="mac"', {
+          'xcode_settings': {
+            'OTHER_CFLAGS': [
+              # silence warnings
+              '-Wno-sign-compare',
+              '-Wno-pointer-sign',
+              '-Wmissing-field-initializers'
+            ],
+          }
+        }],
         ['node_shared_openssl=="false"', {
           # so when "node_shared_openssl" is "false", then OpenSSL has been
           # bundled into the node executable. So we need to include the same

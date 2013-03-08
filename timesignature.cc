@@ -307,6 +307,10 @@ public:
     if (args.Length() == 2)
       hashalg_gt_id = getAlgoID(*String::Utf8Value(args[1]->ToString()));
 
+    if (hashalg_gt_id < 0) {
+      Local<Value> exception = Exception::TypeError(String::New("Unsupported hash algorithm"));
+      return ThrowException(exception);
+    }
     GTDataHash dh;
     dh.context = NULL;
     dh.algorithm = hashalg_gt_id;
@@ -586,7 +590,11 @@ public:
     int hashalg_gt_id = 1;
     if (args.Length() == 2)
       hashalg_gt_id = getAlgoID(*String::Utf8Value(args[1]->ToString()));
-
+    if (hashalg_gt_id < 0) {
+      Local<Value> exception = Exception::TypeError(String::New("Unsupported hash algorithm"));
+      return ThrowException(exception);
+    }
+    
     GTDataHash dh;
     dh.context = NULL;
     dh.algorithm = hashalg_gt_id;
@@ -611,12 +619,12 @@ public:
       return ThrowException(Exception::Error(
             String::New(GT_getErrorString(res))));
 
-        // return string:
+    //   How to return  String:
     //Local<Value> outString;
     //outString = Encode(request, request_length, BINARY);
     //GT_free(request);
     //return scope.Close(outString);
-     // return Buffer:
+    //   instead we return Buffer:
     Buffer *result = Buffer::New((char *)request, request_length);
     GT_free(request);
     return scope.Close(result->handle_);

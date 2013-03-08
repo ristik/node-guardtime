@@ -35,7 +35,7 @@ gt.loadPublications(function(err) {
     assert.ok(tsdate.getTime() - 1000*60*10 < now.getTime(), 
           "signing time is not within 5 minutes (check your wall clock?)");
     
-    assert.ok(ts.getSignerName().match(/public/));
+    assert.ok(ts.getSignerName().match(/^GT :/));
     
     gt.verify('UnHello!', ts, function(err, res, properties) {
       assert.ok(err.message.match(/different document/));
