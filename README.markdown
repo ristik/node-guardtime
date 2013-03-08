@@ -40,11 +40,6 @@ used certain service endpoint, and this document was not modified ever after.
 
 Needs Node.JS >= 0.6.0; Windows is not tested.
 
-Note: Node.JS 0.8.x comes with bundled / statically linked OpenSSL library; Our API 
-must use exactly the same instance. In order to achieve this either compile 
-node 0.8 with system openssl (./configure --shared-openssl && make && sudo make install), 
-or compile guardtime API against the OpenSSL copy inside node.js source tree.
-
 [![build status](https://secure.travis-ci.org/ristik/node-guardtime.png)](http://travis-ci.org/ristik/node-guardtime)
 
 ---

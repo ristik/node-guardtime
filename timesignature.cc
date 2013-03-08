@@ -47,13 +47,6 @@ public:
   {
     HandleScope scope;
 
-    /* Until the code segfaults because of bundled and statically linked openssl in node
-     * distribution we'll leave this warning here. */
-    if (SSLeay() != OPENSSL_VERSION_NUMBER) {
-        fprintf(stderr, "OpenSSL version mismatch. Built against %lx, you have %lx\n", OPENSSL_VERSION_NUMBER, SSLeay());
-        exit(-1);
-    }
-
     Local<FunctionTemplate> t = FunctionTemplate::New(New);
 
     constructor_template = Persistent<FunctionTemplate>::New(t);
