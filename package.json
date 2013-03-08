@@ -7,6 +7,9 @@
     "bindings": "1.0.0",
     "node-gyp": "0.0.1"
   },
+  "devDependencies": {
+    "nodeunit": ">=0.6.4"
+  },
   "author": {
     "name": "Risto Laanoja",
     "email": "info@guardtime.com"
@@ -25,7 +28,7 @@
   "main": "./guardtime",
   "scripts": {
     "install": "node-gyp rebuild",
-    "test": "node tests.js",
+    "test": "node-gyp configure build && nodeunit test",
     "clean": "node-gyp clean"
   },
   "repository": {
