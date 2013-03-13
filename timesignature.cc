@@ -91,27 +91,42 @@ public:
 
   static Handle<Value> New(const Arguments& args)
   {
-    if (!args.IsConstructCall()) {
-      return FromConstructorTemplate(constructor_template, args);                                                             }
     HandleScope scope;
     GTTimestamp *timestamp;
+    int res;
 
-    if (!Buffer::HasInstance(args[0])) {
-      return ThrowException(Exception::Error(
-        String::New("First argument needs to be a Buffer")));
+    if (!args.IsConstructCall())
+      return ThrowException(String::New("Please use 'new' to instantiate a TimeSignature class"));
+
+    if (args.Length() != 1)
+      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
+
+    ASSERT_IS_STRING_OR_BUFFER(args[0]);
+
+    ssize_t len = DecodeBytes(args[0], BINARY);
+    if (len < 0) {
+      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
+      return ThrowException(exception);
     }
-    Local<Object> buffer_obj = args[0]->ToObject();
-    char *buffer_data = Buffer::Data(buffer_obj);
-    size_t buffer_length = Buffer::Length(buffer_obj);
-
-    int res = GTTimestamp_DERDecode(buffer_data, buffer_length, &timestamp);
+    if (Buffer::HasInstance(args[0])) {
+      Local<Object> buffer_obj = args[0]->ToObject();
+      char *buffer_data = Buffer::Data(buffer_obj);
+      size_t buffer_length = Buffer::Length(buffer_obj);
+      res = GTTimestamp_DERDecode(buffer_data, buffer_length, &timestamp);
+    } else {
+      char* buf = new char[len];
+      ssize_t written = DecodeWrite(buf, len, args[0], BINARY);
+      assert(written == len);
+      res = GTTimestamp_DERDecode(buf, len, &timestamp);
+      delete [] buf;
+    }
     if (res != GT_OK)
       return ThrowException(Exception::Error(
                 String::New(GT_getErrorString(res))));
 
     TimeSignature *ts = new TimeSignature(timestamp);
 
-    ts->Wrap(args.This()); // or args.Holder()?
+    ts->Wrap(args.This());
     return args.This();
   }
 

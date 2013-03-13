@@ -92,7 +92,7 @@ module.exports = {
     old = gt.loadSync(testsigfile);
     test.ok(! old.isExtended(), "please make sure that testdata is not extended");
     test.equal(old.verify().verification_status, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
-    test.ok(old.isEarlierThan(ts));
+    test.ok(old.isEarlierThan(sig));
     test.ok(!sig.isEarlierThan(old));
     test.ok(old.getSignerName() !== null);  // blank if not present
     test.done();
@@ -128,7 +128,7 @@ module.exports = {
   },
   test_file_verify: function (test) {
     test.expect(3);
-    gt.load(testsigfile, function(err, ts) {
+    gt.load(testsigfile, function (err, ts) {
       test.ok(err === null, err);
       gt.verifyFile(testdatafile, ts, function(err, res) {
         test.ok(err === null, err);
@@ -144,7 +144,7 @@ module.exports = {
     var h = crypto.createHash('sha512');
     h.update('Hi there!');
     var hd = h.digest();
-    gt.signHash(hd, 'sha512', function(e, ts) {
+    gt.signHash(hd, 'sha512', function (e, ts) {
       test.ok(e === null, e);
       test.ok(ts instanceof TimeSignature, 'signing did not return an instance of TimeSignature');
       test.equal(ts.verify().verification_status, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);

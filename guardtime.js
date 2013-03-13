@@ -6,14 +6,6 @@ var crypto = require('crypto'),
 
 var timeSignature = require('bindings')('timesignature.node');
 
- // workaround for bug in node 0.4.x
-function url_parse(u) {
-  var o = url.parse(u);
-  if (o.path == null)
-    o.path = o.pathname;
-  return o;
-}
-
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
   VER_RES : {
@@ -30,9 +22,9 @@ var GuardTime = module.exports = {
     lifetime: 60*60*7
   },
   service: {
-    signer: url_parse('http://stamper.guardtime.net/gt-signingservice'),
-    verifier: url_parse('http://verifier.guardtime.net/gt-extendingservice'),
-    publications: url_parse('http://verify.guardtime.com/gt-controlpublications.bin')
+    signer: url.parse('http://stamper.guardtime.net/gt-signingservice'),
+    verifier: url.parse('http://verifier.guardtime.net/gt-extendingservice'),
+    publications: url.parse('http://verify.guardtime.com/gt-controlpublications.bin')
   },
   
   conf: function (data) {
@@ -259,5 +251,5 @@ var GuardTime = module.exports = {
       GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);
     });
   }
-}
+};
 
