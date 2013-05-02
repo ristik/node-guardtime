@@ -5,16 +5,35 @@ Module is split into two classes:
   * `TimeSignature` encapsulates signature token and offers some low-level 'static' methods;
   * `GuardTime` is service layer bridging tokens to GuardTime services.
 
-TimeSignature is exported as guardtime.TimeSignature. Initialize like:
+TimeSignature is exported as guardtime.TimeSignature. Initialize and use like:
 
     var gt = require('guardtime');
     gt.conf({signeruri: 'http://my.gateway/gt-signingservice',
             verifieruri: 'http://my.gateway/gt-extendingservice'});
-    gt.sign('some data', function(error, token){
+
+    gt.sign('some data', function (error, token){
         if (error)
-            throw error;
-        else
-            console.log('Very secure time: ', token.getRegisteredTime());
+            throw error;        
+        console.log('Very secure time: ', token.getRegisteredTime());
+        gt.verify('some data', token, function(error, checkflags, properties){
+            if (error) throw error;
+            console.log('Signature OK, signed by ' + properties.location_name);
+        })
+    });
+
+If you need to store and retrieve the TimeSignature token then use something like
+
+    arbitraryDatabase.putBlob(id, token.getContent());
+    retrievedToken = new gt.TimeSignature(arbitraryDatabase.getBlob(id));
+
+or
+
+    gt.save('file.gtts', token, function (error){
+        if (error) throw error;
+        gt.load('file.gtts', function (error, retrievedToken){
+            if (error) throw error;
+            console.log('Loaded' + retrievedToken);
+        });
     });
 
 

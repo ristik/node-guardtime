@@ -11,7 +11,7 @@
   },
   "author": {
     "name": "Risto Laanoja",
-    "email": "info@guardtime.com"
+    "email": "ristik@gmail.com"
   },
   "contributors": [
     {
@@ -26,7 +26,7 @@
   "homepage": "http://www.guardtime.com/",
   "main": "./guardtime",
   "scripts": {
-    "install": "node-gyp rebuild",
+    "install": "node-gyp configure build",
     "test": "node-gyp configure build && nodeunit test",
     "clean": "node-gyp clean"
   },

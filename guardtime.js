@@ -1,11 +1,15 @@
 var crypto = require('crypto'),
-  util = require('util'),
   http = require('http'),
   url = require('url'),
   fs = require('fs');
 
 var timeSignature = require('bindings')('timesignature.node');
-
+timeSignature.TimeSignature.prototype.inspect = function inspect() {
+  return '<' + this.constructor.name + ' ' + JSON.stringify(this.verify(), null, '\t') + '>';
+};
+timeSignature.TimeSignature.prototype.valueOf = function valueOf() {
+  return this.getContent().toString();
+};
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
   VER_RES : {
@@ -26,14 +30,14 @@ var GuardTime = module.exports = {
     verifier: url.parse('http://verifier.guardtime.net/gt-extendingservice'),
     publications: url.parse('http://verify.guardtime.com/gt-controlpublications.bin')
   },
-  
+
   conf: function (data) {
     if (data.signeruri)
-      GuardTime.service.signer = url_parse(data.signeruri);
+      GuardTime.service.signer = url.parse(data.signeruri);
     if (data.verifieruri)
-      GuardTime.service.verifier = url_parse(data.verifieruri);
+      GuardTime.service.verifier = url.parse(data.verifieruri);
     if (data.publicationsuri)
-      GuardTime.service.publications = url_parse(data.publicationsuri);
+      GuardTime.service.publications = url.parse(data.publicationsuri);
     if (data.publicationsdata) {
       var d = GuardTime.TimeSignature.verifyPublications(data.publicationsdata); // exception on error
       GuardTime.publications.last = d;
@@ -138,8 +142,8 @@ var GuardTime = module.exports = {
           GuardTime.publications.last = d;
           GuardTime.publications.data = data;
           GuardTime.publications.updatedat = Date.now();
-        } catch (er) { 
-          return callback(er); 
+        } catch (er) {
+          return callback(er);
         }
         callback(null);
       });
@@ -200,7 +204,7 @@ var GuardTime = module.exports = {
       callback = function (){};
     var properties = {};
     // if publications file is not yet downloaded or data too old - download and recall itself
-    if (!GuardTime.publications.data || 
+    if (!GuardTime.publications.data ||
           (GuardTime.publications.updatedat + GuardTime.publications.lifetime * 1000 < Date.now())) {
       return GuardTime.loadPublications(function(err){
         if (err)
@@ -232,7 +236,7 @@ var GuardTime = module.exports = {
     } catch (err) {
       return callback(err);
     }
-    callback(null, properties.verification_status, properties);   
+    callback(null, properties.verification_status, properties);
   },
 
   verifyFile: function(filename, ts) {
@@ -252,4 +256,3 @@ var GuardTime = module.exports = {
     });
   }
 };
-
