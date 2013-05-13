@@ -4,12 +4,15 @@ var crypto = require('crypto'),
   fs = require('fs');
 
 var timeSignature = require('bindings')('timesignature.node');
+// support console.log(ts)
 timeSignature.TimeSignature.prototype.inspect = function inspect() {
   return '<' + this.constructor.name + ' ' + JSON.stringify(this.verify(), null, '\t') + '>';
 };
+// conversion to primitive value, eg. when accessed in String context
 timeSignature.TimeSignature.prototype.valueOf = function valueOf() {
   return this.getContent().toString();
 };
+
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
   VER_RES : {
@@ -52,30 +55,44 @@ var GuardTime = module.exports = {
   },
 
   sign: function (data, callback) {
-    var hash = crypto.createHash(GuardTime.default_hashalg);
-    hash.update(data);
+    var hash;
+    try {
+      hash = crypto.createHash(GuardTime.default_hashalg);
+      hash.update(data);
+    } catch (err) {
+      return callback(err);
+    }
     GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);
   },
 
   signFile: function (filename, callback) {
-    var hash = crypto.createHash(GuardTime.default_hashalg);
-    var rs = fs.createReadStream(filename, {'bufferSize': 128*1024});
-    rs.on('data', function(chunk) { hash.update(chunk); });
-    rs.on('error', function(er) {
-      callback(er);
-      rs.destroy();
-    });
-    rs.on('end', function() {
-      GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);
-    });
+    var hash, rs;
+    try {
+      hash = crypto.createHash(GuardTime.default_hashalg);
+      rs = fs.createReadStream(filename, {'bufferSize': 128*1024});
+      rs.on('data', function(chunk) { hash.update(chunk); });
+      rs.on('error', function(err) {
+        callback(err);
+        rs.destroy();
+      });
+      rs.on('end', function() {
+        GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);
+      });
+    } catch (err) {
+      return callback(err);
+    }
   },
 
   signHash: function (hash, alg) {
     var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function')
       callback = function (){};
-
-    var reqdata = GuardTime.TimeSignature.composeRequest(hash, alg);
+    var reqdata;
+    try {
+      reqdata = GuardTime.TimeSignature.composeRequest(hash, alg);
+    } catch (err) {
+      return callback(err);
+    }
     GuardTime.service.signer.method = 'POST';
     GuardTime.service.signer.headers = {'Content-Length': reqdata.length};
     var req = http.request(GuardTime.service.signer, function(res) {
@@ -91,8 +108,8 @@ var GuardTime = module.exports = {
         try {
           ts = new GuardTime.TimeSignature(
             GuardTime.TimeSignature.processResponse(data));
-        } catch (er) {
-          return callback(er);
+        } catch (err) {
+          return callback(err);
       }
       callback(null, ts);
       });
@@ -106,7 +123,11 @@ var GuardTime = module.exports = {
   },
 
   save: function (filename, ts, cb) {
-    fs.writeFile(filename, ts.getContent(), 'binary', cb);
+    try {
+      fs.writeFile(filename, ts.getContent(), 'binary', cb);
+    } catch (err) {
+      return cb(err);
+    }
   },
 
   load: function (filename, cb) {
@@ -115,7 +136,7 @@ var GuardTime = module.exports = {
       try {
         var ts = new GuardTime.TimeSignature(data);
         cb(null, ts);
-      } catch (err) {return cb(err);}
+      } catch (err) { return cb(err); }
     });
   },
 
@@ -142,8 +163,8 @@ var GuardTime = module.exports = {
           GuardTime.publications.last = d;
           GuardTime.publications.data = data;
           GuardTime.publications.updatedat = Date.now();
-        } catch (er) {
-          return callback(er);
+        } catch (err) {
+          return callback(err);
         }
         callback(null);
       });
@@ -159,7 +180,12 @@ var GuardTime = module.exports = {
     if (typeof(callback) !== 'function')
       callback = function (){};
 
-    var reqdata = ts.composeExtendingRequest();
+    var reqdata;
+    try {
+      reqdata = ts.composeExtendingRequest();
+    } catch (err) {
+      return callback(err);
+    }
     GuardTime.service.verifier.method = 'POST';
     GuardTime.service.verifier.headers = {'Content-Length': reqdata.length};
     var req = http.request(GuardTime.service.verifier, function(res) {
@@ -167,19 +193,17 @@ var GuardTime = module.exports = {
         return callback(new Error("Verification service error: " + res.statusCode +
             " (" + http.STATUS_CODES[res.statusCode] + ")"));
       }
-      var data = "";
+      var extendingresponse = "";
       res.on('data', function (chunk) {
-        data += chunk.toString('binary');
+        extendingresponse += chunk.toString('binary');
       });
       res.on('end', function(){
-        var result = 0;
         try{
-          result = ts.extend(data);
-        } catch (er) {
-          return callback(er);
+          ts.extend(extendingresponse);
+        } catch (err) {
+          return callback(err);
         }
-        if (callback)
-          callback(null, ts);
+        callback(null, ts);
       });
     });
     req.on('error', function(e) {
@@ -193,9 +217,13 @@ var GuardTime = module.exports = {
   var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function')
       callback = function (){};
-    var hash = crypto.createHash(ts.getHashAlgorithm());
-    hash.update(data);
-    GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);
+    try {
+      var hash = crypto.createHash(ts.getHashAlgorithm());
+      hash.update(data);
+      GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);
+    } catch (er) {
+      return callback(er);
+    }
   },
 
   verifyHash: function(hash, alg, ts) {
@@ -243,16 +271,19 @@ var GuardTime = module.exports = {
     var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function')
       callback = function (){};
-    var hash = crypto.createHash(ts.getHashAlgorithm());
-    var rs = fs.createReadStream(filename, {'bufferSize': 128*1024});
-    rs.on('data', function(chunk) { hash.update(chunk); });
-    rs.on('error', function(er) {
-      callback(er);
-      rs.destroy();
-      // beware, no return!
-    });
-    rs.on('end', function() {
-      GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);
-    });
+    try {
+      var hash = crypto.createHash(ts.getHashAlgorithm());
+      fs.createReadStream(filename, {'bufferSize': 128*1024})
+        .on('data', function(chunk) { hash.update(chunk); })
+        .on('error', function(er) {
+          callback(er);
+          rs.destroy();
+        })
+        .on('end', function() {
+          GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);
+      });
+    } catch (err) {
+      return callback(err);
+    }
   }
 };
