@@ -106,12 +106,12 @@ var GuardTime = module.exports = {
       });
       res.on('end', function(){
         try {
-          ts = new GuardTime.TimeSignature(
-            GuardTime.TimeSignature.processResponse(data));
+          var ts = new GuardTime.TimeSignature(
+              GuardTime.TimeSignature.processResponse(data));
+          callback(null, ts);
         } catch (err) {
           return callback(err);
-      }
-      callback(null, ts);
+        }
       });
     });
 
