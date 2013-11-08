@@ -245,7 +245,7 @@ var GuardTime = module.exports = {
         else
           GuardTime.verifyHash(hash, alg, ts, callback);
       });
-      if (EventEmitter.listenerCount(pubok, 'pubOK') <= 1)
+      if (pubok.listeners('pubOK').length <= 1)
         GuardTime.loadPublications( function(err){ pubok.emit('pubOK', err); } );
       return;
     }
