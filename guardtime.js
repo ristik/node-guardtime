@@ -44,7 +44,7 @@ var GuardTime = module.exports = {
     if (data.publicationsdata) {
       var d = GuardTime.TimeSignature.verifyPublications(data.publicationsdata); // exception on error
       GuardTime.publications.last = d;
-      GuardTime.publications.data = data;
+      GuardTime.publications.data = data.publicationsdata;
       GuardTime.publications.updatedat = Date.now();
     }
     if (data.publicationslifetime) {
