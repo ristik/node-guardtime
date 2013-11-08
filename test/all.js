@@ -126,6 +126,25 @@ module.exports = {
       });
     });
   },
+  test_verifying_old_stuff_with_pub_dl: function (test) {
+    test.expect(4);
+    gt.publications.updatedat = 0;
+    gt.load(testsigfile, function (err, ts) {
+      test.ok(err === null, err);
+      // two async verifications after pub. file download
+      gt.verifyFile(testdatafile, ts, function (err, res) {
+        if (err) throw err; // test.done() may be called before this line, thus throw.
+      });
+      gt.verifyFile(testdatafile, ts, function (err, res) {
+        test.ok(err === null, err);
+        test.ok(gt.publications.updatedat > 0, 'oops, publications not refreshed');
+        test.equal(res | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT,
+              gt.VER_RES.DOCUMENT_HASH_CHECKED +
+              gt.VER_RES.PUBLICATION_CHECKED + gt.VER_RES.PUBLICATION_REFERENCE_PRESENT);
+        test.done();
+      });
+    });
+  },
   test_file_verify: function (test) {
     test.expect(3);
     gt.load(testsigfile, function (err, ts) {

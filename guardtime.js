@@ -1,9 +1,14 @@
 var crypto = require('crypto'),
   http = require('http'),
   url = require('url'),
-  fs = require('fs');
+  fs = require('fs'),
+  EventEmitter = require('events').EventEmitter;
 
 var timeSignature = require('bindings')('timesignature.node');
+
+var pubok = new EventEmitter();
+pubok.setMaxListeners(0);
+
 // support console.log(ts)
 timeSignature.TimeSignature.prototype.inspect = function inspect() {
   return '<' + this.constructor.name + ' ' + JSON.stringify(this.verify(), null, '\t') + '>';
@@ -231,14 +236,18 @@ var GuardTime = module.exports = {
     if (typeof(callback) !== 'function')
       callback = function (){};
     var properties = {};
-    // if publications file is not yet downloaded or data too old - download and recall itself
+    // if publications file is not yet downloaded or data too old - download once and recall itself
     if (!GuardTime.publications.data ||
           (GuardTime.publications.updatedat + GuardTime.publications.lifetime * 1000 < Date.now())) {
-      return GuardTime.loadPublications(function(err){
+      pubok.once('pubOK', function(err){
         if (err)
-          return callback(err);
-        return GuardTime.verifyHash(hash, alg, ts, callback);
+          callback(err);
+        else
+          GuardTime.verifyHash(hash, alg, ts, callback);
       });
+      if (EventEmitter.listenerCount(pubok, 'pubOK') <= 1)
+        GuardTime.loadPublications( function(err){ pubok.emit('pubOK', err); } );
+      return;
     }
     try {
       properties = ts.verify();
