@@ -40,14 +40,17 @@ or
 ## module GuardTime
 
 ### gt.conf(properties)
-Optionally change service configuration, all parameters are optional. Defaults:
+Change the service configuration, all fields are optional. Defaults:
 
     gt.conf({
             signeruri: 'http://stamper.guardtime.net/gt-signingservice',       // or private GW here
             verifieruri: 'http://verifier.guardtime.net/gt-extendingservice',  // or private GW here
             publicationsuri: 'http://verify.guardtime.com/gt-controlpublications.bin',  // ok for most scenarios
-            publicationsdata: ''              // automatically loaded from publicationsuri if blank or expired
-            publicationslifetime: 60*60*7     // seconds; if publicationsdata is older then it will be reloaded
+            signerthreads: 16,    // Service connection pool size limit,
+            verifierthreads: 2,   //   ie. max number of parallel network connections
+            publicationsthreads: 1,
+            publicationsdata: '',            // automatically loaded from publicationsuri if blank or expired
+            publicationslifetime: 60*60*7    // seconds; if publicationsdata is older then it will be reloaded
         });
 
 ### gt.sign(String data, function(Exception error, TimeSignature ts){});

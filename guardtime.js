@@ -4,19 +4,38 @@ var crypto = require('crypto'),
   fs = require('fs'),
   EventEmitter = require('events').EventEmitter;
 
-var timeSignature = require('bindings')('timesignature.node');
+var TimeSignature = require('bindings')('timesignature.node').TimeSignature;
 
 var pubok = new EventEmitter();
 pubok.setMaxListeners(0);
 
 // support console.log(ts)
-timeSignature.TimeSignature.prototype.inspect = function inspect() {
+TimeSignature.prototype.inspect = function inspect() {
   return '<' + this.constructor.name + ' ' + JSON.stringify(this.verify(), null, '\t') + '>';
 };
 // conversion to primitive value, eg. when accessed in String context
-timeSignature.TimeSignature.prototype.valueOf = function valueOf() {
+TimeSignature.prototype.valueOf = function valueOf() {
   return this.getContent().toString();
 };
+
+var defaultconf = {
+  signeruri:       'http://stamper.guardtime.net/gt-signingservice',
+  verifieruri:     'http://verifier.guardtime.net/gt-extendingservice',
+  publicationsuri: 'http://verify.guardtime.com/gt-controlpublications.bin',
+  signerthreads:       16,
+  verifierthreads:     2,
+  publicationsthreads: 1,
+  publicationsdata: '',
+  publicationslifetime: 60*60*7
+};
+
+function addprops(a, p){
+  for(var key in p) {
+    if (p[key])
+      a[key] = p[key];
+  }
+  return a;
+}
 
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
@@ -26,36 +45,54 @@ var GuardTime = module.exports = {
     DOCUMENT_HASH_CHECKED : 16,
     PUBLICATION_CHECKED : 32
   },
-  TimeSignature: timeSignature.TimeSignature,
+  TimeSignature: TimeSignature,
   publications: {
     data: '',
     last: '',
     updatedat: 0,
     lifetime: 60*60*7
   },
+
   service: {
-    signer: url.parse('http://stamper.guardtime.net/gt-signingservice'),
-    verifier: url.parse('http://verifier.guardtime.net/gt-extendingservice'),
-    publications: url.parse('http://verify.guardtime.com/gt-controlpublications.bin')
+    signer: addprops(url.parse(defaultconf.signeruri),
+                  { method: 'POST',
+                    agent: addprops(new http.Agent(),
+                                    { maxSockets: defaultconf.signerthreads })
+                  }),
+    verifier: addprops(url.parse(defaultconf.verifieruri),
+                    { method: 'POST',
+                      agent: addprops(new http.Agent(),
+                                     { maxSockets: defaultconf.verifierthreads })
+                    }),
+    publications: addprops(url.parse(defaultconf.publicationsuri),
+                        { agent: addprops(new http.Agent(),
+                                        { maxSockets: defaultconf.publicationsthreads })
+                        })
   },
 
-  conf: function (data) {
-    if (data.signeruri)
-      GuardTime.service.signer = url.parse(data.signeruri);
-    if (data.verifieruri)
-      GuardTime.service.verifier = url.parse(data.verifieruri);
-    if (data.publicationsuri)
-      GuardTime.service.publications = url.parse(data.publicationsuri);
-    if (data.publicationsdata) {
-      var d = GuardTime.TimeSignature.verifyPublications(data.publicationsdata); // exception on error
-      GuardTime.publications.last = d;
-      GuardTime.publications.data = data.publicationsdata;
+  conf: function (options) {  // prettify me!
+    if (options.signeruri)
+      addprops(GuardTime.service.signer, url.parse(options.signeruri));
+    if (options.signerthreads)
+      GuardTime.service.signer.agent.maxSockets = options.signerthreads;
+    if (options.verifieruri)
+      addprops(GuardTime.service.verifier, url.parse(options.verifieruri));
+    if (options.verifierthreads)
+      GuardTime.service.verifier.agent.maxSockets = options.verifierthreads;
+    if (options.publicationsuri)
+      addprops(GuardTime.service.publications, url.parse(options.publicationsuri));
+    if (options.publicationsthreads)
+      GuardTime.service.publications.agent.maxSockets = options.publicationsthreads;
+    if (options.publicationsdata) {
+      var d = TimeSignature.verifyPublications(options.publicationsdata); // exception on error
+      GuardTime.publications.last = d; // last publication datum
+      GuardTime.publications.data = options.publicationsdata;
       GuardTime.publications.updatedat = Date.now();
     }
-    if (data.publicationslifetime) {
-      if (! isFinite(data.publicationslifetime) || data.publicationslifetime <= 0)
+    if (options.publicationslifetime) {
+      if (! isFinite(options.publicationslifetime) || options.publicationslifetime <= 0)
           throw new Error("Publications data lifetime must be a positive number.");
-      GuardTime.publications.lifetime = data.publicationslifetime;
+      GuardTime.publications.lifetime = options.publicationslifetime;
     }
   },
 
@@ -94,11 +131,10 @@ var GuardTime = module.exports = {
       callback = function (){};
     var reqdata;
     try {
-      reqdata = GuardTime.TimeSignature.composeRequest(hash, alg);
+      reqdata = TimeSignature.composeRequest(hash, alg);
     } catch (err) {
       return callback(err);
     }
-    GuardTime.service.signer.method = 'POST';
     GuardTime.service.signer.headers = {'Content-Length': reqdata.length};
     var req = http.request(GuardTime.service.signer, function(res) {
       if (res.statusCode != 200) {
@@ -111,8 +147,7 @@ var GuardTime = module.exports = {
       });
       res.on('end', function(){
         try {
-          var ts = new GuardTime.TimeSignature(
-              GuardTime.TimeSignature.processResponse(data));
+          var ts = new TimeSignature(TimeSignature.processResponse(data));
           callback(null, ts);
         } catch (err) {
           return callback(err);
@@ -139,14 +174,14 @@ var GuardTime = module.exports = {
     fs.readFile(filename, function (err, data) {
       if (err) cb(err);
       try {
-        var ts = new GuardTime.TimeSignature(data);
+        var ts = new TimeSignature(data);
         cb(null, ts);
       } catch (err) { return cb(err); }
     });
   },
 
   loadSync: function (filename) {
-    return new GuardTime.TimeSignature(fs.readFileSync(filename));
+    return new TimeSignature(fs.readFileSync(filename));
   },
 
   loadPublications: function () {
@@ -164,7 +199,7 @@ var GuardTime = module.exports = {
       });
       res.on('end', function(){
         try {
-          var d = GuardTime.TimeSignature.verifyPublications(data); // exception on error
+          var d = TimeSignature.verifyPublications(data); // exception on error
           GuardTime.publications.last = d;
           GuardTime.publications.data = data;
           GuardTime.publications.updatedat = Date.now();
@@ -191,7 +226,6 @@ var GuardTime = module.exports = {
     } catch (err) {
       return callback(err);
     }
-    GuardTime.service.verifier.method = 'POST';
     GuardTime.service.verifier.headers = {'Content-Length': reqdata.length};
     var req = http.request(GuardTime.service.verifier, function(res) {
       if (res.statusCode != 200) {

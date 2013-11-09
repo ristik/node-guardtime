@@ -14,6 +14,17 @@ var gt = require('../guardtime'),
     TimeSignature = gt.TimeSignature,
     crypto = require('crypto');
 
+var newconf = {
+  signeruri:       'http://stamper.us.guardtime.net/gt-signingservice',
+  verifieruri:     'http://verifier.us.guardtime.net/gt-extendingservice',
+  publicationsuri: 'http://verify.guardtime.com/gt-controlpublications.bin',
+  signerthreads:       4,
+  verifierthreads:     1, // changed
+  publicationsthreads: 1,
+  publicationsdata: '',
+  publicationslifetime: 60*60*7
+};
+
 module.exports = {
   test_publications_download: function (test) {
     test.expect(3);
@@ -125,6 +136,13 @@ module.exports = {
         test.done();
       });
     });
+  },
+  test_changing_conf: function (test) {
+    test.expect(2);
+    gt.conf(newconf);
+    test.equal(gt.service.signer.method, 'POST');
+    test.equal(gt.service.verifier.agent.maxSockets, newconf.verifierthreads);
+    test.done();
   },
   test_verifying_old_stuff_with_pub_dl: function (test) {
     test.expect(4);
