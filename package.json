@@ -1,7 +1,7 @@
 {
   "name": "guardtime",
   "version": "0.1.0",
-  "description": "GuardTime signing service access/verification API for node.js",
+  "description": "Guardtime signing service access/verification API for node.js",
   "license": "Apache License v2.0",
   "dependencies": {
     "bindings": ">=1.0.0"

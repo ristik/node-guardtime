@@ -1,9 +1,9 @@
-# GuardTime Node.js API
+# Guardtime Node.js API
 
 Module is split into two classes:
 
   * `TimeSignature` encapsulates signature token and offers some low-level 'static' methods;
-  * `GuardTime` is service layer bridging tokens to GuardTime services.
+  * `GuardTime` is service layer bridging tokens to Guardtime services.
 
 TimeSignature is exported as guardtime.TimeSignature. Initialize and use like:
 
@@ -120,7 +120,7 @@ Note that depending on data availability some fields may be not present.
 
 
 ### gt.loadPublications(function(Exception error){});
-Loads publications data form network and saves it in GuardTime object for future verification use.
+Loads publications data form network and saves it in Guardtime object for future verification use.
 Note that all verification functions need this data and call this function if it is not done explicitly.
 It is advised to refresh publications data after approx. every 6 hours.
 Callback will be called when loading is done; error is null in the case of success.
