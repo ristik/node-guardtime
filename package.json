@@ -7,7 +7,7 @@
     "bindings": ">=1.0.0"
   },
   "devDependencies": {
-    "nodeunit": ">=0.6.4"
+    "mocha": ">=1.7.0"
   },
   "author": {
     "name": "Risto Laanoja",
@@ -27,7 +27,7 @@
   "main": "./guardtime",
   "scripts": {
     "install": "node-gyp configure build",
-    "test": "node-gyp configure build && nodeunit test",
+    "test": "node-gyp configure build && mocha test",
     "clean": "node-gyp clean"
   },
   "repository": {

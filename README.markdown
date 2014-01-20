@@ -1,7 +1,7 @@
-# API to access GuardTime services.
+# API to access Guardtime services.
 
 
-Includes GuardTime C API in subdirectory libgt-x.y
+Includes Guardtime C API in subdirectory libgt-x.y
 
 How to build:
 
@@ -29,11 +29,11 @@ Hello world:
 For API documentation please refer to
 [node-guardtime-api.markdown](https://github.com/ristik/node-guardtime/blob/master/node-guardtime-api.markdown)
 
-For more information about the GuardTime Keyless Signature service please have a look at
+For more information about the Guardtime Keyless Signature service please have a look at
 http://www.guardtime.com/signatures/technology-overview
 
 As You are already here - this is the essence:
-GuardTime service adds hash of your doc to a giant hash tree with globally unique
+Guardtime service adds hash of your doc to a giant hash tree with globally unique
 root value; and regularily publishes this root value in widely witnessed media.
 This allows you to prove that your document did exist at certain point of time, you
 used certain service endpoint, and this document was not modified ever after.
@@ -44,4 +44,4 @@ Needs Node.JS >= 0.6.0; Windows is not tested.
 
 ---
 Published under Apache license v. 2.0.
-Copyright GuardTime AS 2010-2013
+Copyright Guardtime AS 2014
