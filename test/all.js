@@ -7,8 +7,8 @@
 //   GW with public identity must be used.
 //   run in module build directory
 
-var testsigfile  = __dirname + '/../libgt-0.3.12/test/TestData.txt.gtts1',
-    testdatafile = __dirname + '/../libgt-0.3.12/test/TestData.txt';
+var testsigfile  = __dirname + '/../libgt-0.3.11/test/TestData.txt.gtts1',
+    testdatafile = __dirname + '/../libgt-0.3.11/test/TestData.txt';
 
 var gt = require('../guardtime'),
     TimeSignature = gt.TimeSignature,
