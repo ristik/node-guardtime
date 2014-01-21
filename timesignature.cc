@@ -777,10 +777,8 @@ extern "C" {
     // publications file.
 #ifdef BUNDLED_LIBGT
     //GTTruststore_init(0); // triggers assert() if called
-    if (!GT_truststore) {
+    if (!GT_truststore)
       GT_truststore = X509_STORE_new();
-      printf("debug: truststore init\n");      
-    }
 
     for (int i = 0; root_certs[i]; i++) {
       BIO *bp = BIO_new(BIO_s_mem());
