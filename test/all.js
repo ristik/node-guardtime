@@ -7,8 +7,8 @@
 //   GW with public identity must be used.
 //   run in module build directory
 
-var testsigfile  = __dirname + '/../libgt-0.3.11/test/TestData.txt.gtts1',
-    testdatafile = __dirname + '/../libgt-0.3.11/test/TestData.txt';
+var testsigfile  = __dirname + '/../libgt-0.3.12/test/TestData.txt.gtts1',
+    testdatafile = __dirname + '/../libgt-0.3.12/test/TestData.txt';
 
 var gt = require('../guardtime'),
     TimeSignature = gt.TimeSignature,
@@ -35,24 +35,21 @@ describe('GuardTime', function(){
 
   describe('loadPublications()', function(){
     it('downloads publications data for verification', function(done){
-      gt.loadPublications(done);
-    });
-  });
-
-  describe('publications.data', function(){
-    it('does basic checks on publications data', function(done){
-      var lastpubdate = TimeSignature.verifyPublications(gt.publications.data);
-      var now = new Date();
-      assert.ok(lastpubdate.getTime() < now.getTime(), "last publication must be older than wall clock time");
-      assert.ok(lastpubdate.getTime() + 1000*60*60*24*40 > now.getTime(), "last publication must be no older than 40 days");
-      done();
+      gt.loadPublications( function (err, ts) {
+        assert.ifError(err);
+        var lastpubdate = TimeSignature.verifyPublications(gt.publications.data);
+        var now = new Date();
+        assert.ok(lastpubdate.getTime() < now.getTime(), "last publication must be older than wall clock time");
+        assert.ok(lastpubdate.getTime() + 1000*60*60*24*40 > now.getTime(), "last publication must be no older than 40 days");
+        done();
+      });
     });
   });
 
   describe('sign()', function(){
     it('signs a text string', function(done){
       gt.sign('Hello!', function (err, ts) {
-        assert.ok(err === null, err);
+        assert.ifError(err);
         assert.ok(ts instanceof TimeSignature, 'signing did not return an instance of TimeSignature');
         sig = ts;
         done();
@@ -63,7 +60,7 @@ describe('GuardTime', function(){
   describe('verify()', function(){
     it('verifies the signature on freshly signed text string', function(done){
       gt.verify('Hello!', sig, function(err, res, props){
-        assert.ok(err === null, err);
+        assert.ifError(err);
         assert.equal(res, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT +
               gt.VER_RES.DOCUMENT_HASH_CHECKED +
               gt.VER_RES.PUBLICATION_CHECKED);
@@ -95,7 +92,7 @@ describe('GuardTime', function(){
   describe('verify()', function(){
     it('checks if data tampering is detected', function(done){
       gt.verify('NotHello!', sig, function (err, res, properties) {
-        assert.ok(err.message.match(/different document/));
+        assert.ok(err.message.match(/different document/), "unexpected error message");
         assert.ok(res === undefined);
         assert.ok(properties === undefined);
         done();
@@ -141,15 +138,16 @@ describe('GuardTime', function(){
   describe('extend() and verify()', function(){
     it('extends a old signature token, and then verifies it', function(done){
       gt.extend(old, function (err, xold) {
-        assert.ok(err === null, err);
+        assert.ifError(err);
         assert.ok(xold.isExtended());
         assert.equal(xold.verify() | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT,
                 gt.VER_RES.PUBLICATION_REFERENCE_PRESENT);
         gt.verifyFile(testdatafile, xold, function (err, res) {
-          assert.ok(err === null, err);
+          assert.ifError(err);
           assert.equal(res | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT,
                   gt.VER_RES.DOCUMENT_HASH_CHECKED +
-                  gt.VER_RES.PUBLICATION_CHECKED + gt.VER_RES.PUBLICATION_REFERENCE_PRESENT);
+                  gt.VER_RES.PUBLICATION_CHECKED + gt.VER_RES.PUBLICATION_REFERENCE_PRESENT,
+                  "unexpected verification result code");
           done();
         });
       });
@@ -159,12 +157,13 @@ describe('GuardTime', function(){
   describe('verify()', function(){
     it('verifies old signature token, this includes automatic extending', function(done){
       gt.load(testsigfile, function (err, ts) {
-        assert.ok(err === null, err);
+        assert.ifError(err);
         gt.verifyFile(testdatafile, ts, function (err, res) {
-          assert.ok(err === null, err);
+          assert.ifError(err);
           assert.equal(res | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT,
                 gt.VER_RES.DOCUMENT_HASH_CHECKED +
-                gt.VER_RES.PUBLICATION_CHECKED + gt.VER_RES.PUBLICATION_REFERENCE_PRESENT);
+                gt.VER_RES.PUBLICATION_CHECKED + gt.VER_RES.PUBLICATION_REFERENCE_PRESENT,
+                "unexpected verification result code");
           done();
         });
       });
@@ -184,16 +183,16 @@ describe('GuardTime', function(){
     it('test_verifying_old_stuff_with_pub_dl', function(done){
       gt.publications.updatedat = 0;
       gt.load(testsigfile, function (err, ts) {
-        assert.ok(err === null, err);
+        assert.ifError(err);
         // two async verifications after pub. file download
         var cntr = 0;
         gt.verifyFile(testdatafile, ts, function (err, res) {
-          assert.ok(err === null, err);
+          assert.ifError(err);
           if (++cntr == 2)
             done();
         });
         gt.verifyFile(testdatafile, ts, function (err, res) {
-          assert.ok(err === null, err);
+          assert.ifError(err);
           assert.ok(gt.publications.updatedat > 0, 'oops, publications not refreshed');
           assert.equal(res | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT,
                 gt.VER_RES.DOCUMENT_HASH_CHECKED +
@@ -208,7 +207,7 @@ describe('GuardTime', function(){
   describe('verifyFile()', function(){
     it('test_file_verify', function(done){
       gt.load(testsigfile, function (err, ts) {
-        assert.ok(err === null, err);
+        assert.ifError(err);
         gt.verifyFile(testdatafile, ts, function(err, res) {
           assert.ok(err === null, err);
           assert.equal(res | gt.VER_RES.PUBLICATION_REFERENCE_PRESENT,
@@ -225,8 +224,8 @@ describe('GuardTime', function(){
       var h = crypto.createHash('sha512');
       h.update('Hi there!');
       var hd = h.digest();
-      gt.signHash(hd, 'sha512', function (e, ts) {
-        assert.ok(e === null, e);
+      gt.signHash(hd, 'sha512', function (err, ts) {
+        assert.ifError(err);
         assert.ok(ts instanceof TimeSignature, 'signing did not return an instance of TimeSignature');
         assert.equal(ts.verify().verification_status, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
         done();
@@ -239,8 +238,8 @@ describe('GuardTime', function(){
       var h = crypto.createHash('sha1');
       h.update('Hi there again');
       var hd = h.digest();
-      gt.signHash(new Buffer(hd, 'binary'), 'sha1', function(e, ts) {
-        assert.ok(e === null, e);
+      gt.signHash(new Buffer(hd, 'binary'), 'sha1', function(err, ts) {
+        assert.ifError(err);
         assert.ok(ts !== undefined);
         assert.ok(ts instanceof TimeSignature, 'signing did not return an instance of TimeSignature');
         assert.equal(ts.verify().verification_status, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 GuardTime AS
+ * Copyright 2014 Guardtime AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  */
 
 // openssl is depreciated on a closing up platform.
-#define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_0
+#define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_5
 
 #include <gt_base.h>
 #include <v8.h>
@@ -23,7 +23,11 @@
 
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
+#include <openssl/pem.h>
 
+#ifdef BUNDLED_LIBGT
+  #include "node_root_certs.h"
+#endif
 
 // from node_crypo.cc
 #define ASSERT_IS_STRING_OR_BUFFER(val) \
@@ -762,10 +766,43 @@ private:
 Persistent<FunctionTemplate> TimeSignature::constructor_template;
 
 extern "C" {
+  extern X509_STORE *GT_truststore;
+
   static void init (Handle<Object> target)
   {
     GT_init();
     TimeSignature::Init(target);
+
+    // If using bundled GT C API then use Node's root certificates to validate signature on
+    // publications file.
+#ifdef BUNDLED_LIBGT
+    //GTTruststore_init(0); // triggers assert() if called
+    if (!GT_truststore) {
+      GT_truststore = X509_STORE_new();
+      printf("debug: truststore init\n");      
+    }
+
+    for (int i = 0; root_certs[i]; i++) {
+      BIO *bp = BIO_new(BIO_s_mem());
+
+      if (!BIO_write(bp, root_certs[i], strlen(root_certs[i]))) {
+        BIO_free(bp);
+        return;
+      }
+
+      X509 *x509 = PEM_read_bio_X509(bp, NULL, NULL, NULL);
+
+      if (x509 == NULL) {
+        BIO_free(bp);
+        return;
+      }
+
+      X509_STORE_add_cert(GT_truststore, x509);
+
+      BIO_free(bp);
+      X509_free(x509);
+    }
+#endif
   }
 
   NODE_MODULE(timesignature, init);

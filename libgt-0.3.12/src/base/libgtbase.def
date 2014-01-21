@@ -1,0 +1,65 @@
+;
+; $Id: libgtbase.def 163 2014-01-14 20:41:54Z ahto.truu $
+;
+; Copyright 2008-2010 GuardTime AS
+;
+; This file is part of the GuardTime client SDK.
+;
+; Licensed under the Apache License, Version 2.0 (the "License");
+; you may not use this file except in compliance with the License.
+; You may obtain a copy of the License at
+;     http://www.apache.org/licenses/LICENSE-2.0
+; Unless required by applicable law or agreed to in writing, software
+; distributed under the License is distributed on an "AS IS" BASIS,
+; WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+; implied. See the License for the specific language governing
+; permissions and limitations under the License. 
+;
+
+LIBRARY libgtbase
+
+EXPORTS GTTimestamp_getDEREncoded
+EXPORTS GTTimestamp_DERDecode
+EXPORTS GTTimestamp_prepareTimestampRequest
+EXPORTS GTTimestamp_createTimestamp
+EXPORTS GTTimestamp_prepareExtensionRequest
+EXPORTS GTTimestamp_createExtendedTimestamp
+EXPORTS GTTimestamp_getAlgorithm
+EXPORTS GTTimestamp_isExtended
+EXPORTS GTTimestamp_isEarlierThan
+EXPORTS GTTimestamp_verify
+EXPORTS GTTimestamp_checkDocumentHash
+EXPORTS GTTimestamp_checkPublication
+EXPORTS GTTimestamp_checkPublicKey
+EXPORTS GTTimestamp_free
+EXPORTS GTDataHash_create
+EXPORTS GTDataHash_free
+EXPORTS GTHash_oid
+EXPORTS GTPublicationsFile_DERDecode
+EXPORTS GTPublicationsFile_getByIndex
+EXPORTS GTPublicationsFile_getKeyHashByIndex
+EXPORTS GTPublicationsFile_verify
+EXPORTS GTPublicationsFile_free
+EXPORTS GTPublicationsFile_extractTimeFromRawPublication
+EXPORTS GTVerificationInfo_print
+EXPORTS GTVerificationInfo_free
+EXPORTS GTPubFileVerificationInfo_free
+EXPORTS GT_getErrorString
+EXPORTS GT_getVersion
+EXPORTS GT_init
+EXPORTS GT_finalize
+EXPORTS GT_malloc
+EXPORTS GT_calloc
+EXPORTS GT_realloc
+EXPORTS GT_free
+EXPORTS GT_loadFile
+EXPORTS GT_saveFile
+EXPORTS GT_hashFile
+EXPORTS GTDataHash_open
+EXPORTS GTDataHash_add
+EXPORTS GTDataHash_close
+EXPORTS GTTruststore_init
+EXPORTS GTTruststore_finalize
+EXPORTS GTTruststore_addLookupFile
+EXPORTS GTTruststore_addLookupDir
+EXPORTS GTTruststore_reset

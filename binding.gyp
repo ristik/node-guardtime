@@ -2,9 +2,9 @@
   # optional parameter --libgt=/location/of/libgt
   # NOTE: libgt and node runtime must be built with exactly same copy of OpenSSL
   'variables': {
-      'libgt%': 'internal',
+      'libgt%': 'notspecified',
       'module_name': 'timesignature',
-      'bundled_libgt': 'libgt-0.3.11'
+      'bundled_libgt': 'libgt-0.3.12'
   },
   'targets': [
     {
@@ -34,11 +34,11 @@
             'openssl_missing_bits_0.8/pk7_smime.c'
           ]
         }],
-        ['libgt == "internal"', 
+        ['libgt == "notspecified"', 
           {
             'conditions': [
               # use preinstalled libgt if available
-              [ '"ok" == "<!@(which pkg-config 2>/dev/null && pkg-config --exists libgt && echo ok || true)"', 
+              [ '"ok" == "<!@(which pkg-config >/dev/null 2>&1 && pkg-config --exists libgt && echo ok || true)"', 
                 {
                   'include_dirs': [
                     '<!@(pkg-config libgt --cflags-only-I | sed s/-I//g)' ],
@@ -47,7 +47,8 @@
                     '-lgtbase' ]
                 },
                 { 'include_dirs': ['<@(bundled_libgt)/src/base'],
-                  'dependencies': ['<@(bundled_libgt)/src/base/base.gyp:libgtbase'] 
+                  'dependencies': ['<@(bundled_libgt)/src/base/base.gyp:libgtbase'],
+                  'defines':      ['BUNDLED_LIBGT']
                 }
               ]
             ]
