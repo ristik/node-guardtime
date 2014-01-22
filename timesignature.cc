@@ -12,7 +12,7 @@
  * permissions and limitations under the License.
  */
 
-// openssl is depreciated on a closing up platform.
+// openssl is deprecated on a closing up platform.
 #define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_5
 
 #include <gt_base.h>

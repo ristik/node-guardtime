@@ -17,7 +17,7 @@ var gt = require('../guardtime'),
 
 
 describe('GuardTime', function(){
-  this.timeout(6000); // note that signing takes usually 1..2 seconds, thus increase limit
+  this.timeout(10000); // note that signing takes usually 1..2 seconds plus network latency, thus increase the default.
 
   var newconf = {
     signeruri:       'http://stamper.us.guardtime.net/gt-signingservice',
