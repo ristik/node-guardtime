@@ -11,7 +11,7 @@
 #define HAVE_LIBCRYPTO 1
 
 /* Define to 1 if you have the `curl' library (-lcurl). */
-#define HAVE_LIBCURL 1
+#define HAVE_LIBCURL 0
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
@@ -42,10 +42,10 @@
 #define LT_OBJDIR ".libs/"
 
 /* Path to the trusted CA certificate directory */
-#define OPENSSL_CA_DIR "/etc/ssl/certs/"
+#undef OPENSSL_CA_DIR
 
 /* Location of the trusted CA certificate bundle file */
-#define OPENSSL_CA_FILE "/etc/ssl/certs/ca-certificates.crt"
+#undef OPENSSL_CA_FILE
 
 /* Name of package */
 #define PACKAGE "libgt"

@@ -35,6 +35,9 @@ if (!val->IsString() && !Buffer::HasInstance(val)) { \
 return ThrowException(Exception::TypeError(String::New("Not a string or buffer"))); \
 }
 
+#define THROW_GT_ERROR(err) \
+  ThrowException(Exception::Error(String::New(GT_getErrorString(err))))
+
 using namespace node;
 using namespace v8;
 
@@ -125,8 +128,7 @@ public:
       delete [] buf;
     }
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     TimeSignature *ts = new TimeSignature(timestamp);
 
@@ -176,8 +178,7 @@ public:
     GTVerificationInfo *verification_info = NULL;
     int res = GTTimestamp_verify(ts->timestamp, 1, &verification_info);
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     if (verification_info->verification_errors != GT_NO_FAILURES) {
         GTVerificationInfo_free(verification_info);
@@ -239,8 +240,7 @@ public:
       case GT_NOT_EXTENDED:
           return scope.Close(False());
       default:
-           return ThrowException(Exception::Error(
-                  String::New(GT_getErrorString(res))));
+           return THROW_GT_ERROR(res);
     }
   }
 
@@ -258,8 +258,7 @@ public:
     int alg;
     int res = GTTimestamp_getAlgorithm(ts->timestamp, &alg);
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     return scope.Close(hash_algorithm_name_as_String(alg));    
   }
@@ -276,8 +275,7 @@ public:
     GTVerificationInfo *verification_info = NULL;
     int res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     if (verification_info->verification_errors != GT_NO_FAILURES) {
       GTVerificationInfo_free(verification_info);
@@ -343,8 +341,7 @@ public:
     }
 
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
     return scope.Close(Integer::New(GT_DOCUMENT_HASH_CHECKED));
   }
 
@@ -382,8 +379,7 @@ public:
       delete [] buf;
     }
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     int ext = GTTimestamp_isExtended(ts->timestamp);
     if (ext == GT_EXTENDED)
@@ -396,8 +392,7 @@ public:
       res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
       if (res != GT_OK) {
         GTPublicationsFile_free(pub);
-        return ThrowException(Exception::Error(
-              String::New(GT_getErrorString(res))));
+        return THROW_GT_ERROR(res);
       }
 
       if (verification_info->verification_errors != GT_NO_FAILURES) {
@@ -414,15 +409,13 @@ public:
     else
     {
       GTPublicationsFile_free(pub);
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(ext))));
+      return THROW_GT_ERROR(ext);
     }
 
     GTPublicationsFile_free(pub);
 
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     return scope.Close(Integer::New(GT_PUBLICATION_CHECKED));
   }
@@ -440,8 +433,7 @@ public:
     GTVerificationInfo *verification_info = NULL;
     int res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     if (verification_info->verification_errors != GT_NO_FAILURES) {
       GTVerificationInfo_free(verification_info);
@@ -470,8 +462,7 @@ public:
     size_t data_length;
     int res = GTTimestamp_getDEREncoded(ts->timestamp, &data, &data_length);
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     Buffer *result = Buffer::New((char *)data, data_length);
     GT_free(data);
@@ -492,8 +483,7 @@ public:
 
     int res = GTTimestamp_prepareExtensionRequest(ts->timestamp, &request, &request_length);
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     Buffer *result = Buffer::New((char *)request, request_length);
     GT_free(request);
@@ -538,8 +528,7 @@ public:
       return scope.Close(Integer::New(res));
 
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     GTTimestamp_free(ts->timestamp);
     ts->timestamp = new_ts;
@@ -568,8 +557,7 @@ public:
       case GT_NOT_EARLIER:
           return scope.Close(False());
       default:
-          return ThrowException(Exception::Error(
-                String::New(GT_getErrorString(res))));
+          return THROW_GT_ERROR(res);
     }
   }
 
@@ -628,8 +616,7 @@ public:
       delete [] buf;
     }
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     //   How to return  String:
     //Local<Value> outString;
@@ -672,16 +659,14 @@ public:
       delete [] buf;
     }
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     unsigned char *data;
     size_t data_length;
     res = GTTimestamp_getDEREncoded(timestamp, &data, &data_length);
     GTTimestamp_free(timestamp);
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     Buffer *result = Buffer::New((char *)data, data_length);
     GT_free(data);
@@ -720,15 +705,13 @@ public:
     if (bufferAllocated)
       delete [] buf;
     if (res != GT_OK)
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
 
     GTPubFileVerificationInfo *vi;
     res = GTPublicationsFile_verify(pub,  &vi);
     if (res != GT_OK) {
       GTPublicationsFile_free(pub);
-      return ThrowException(Exception::Error(
-            String::New(GT_getErrorString(res))));
+      return THROW_GT_ERROR(res);
     }
 
     GTPublicationsFile_free(pub);
@@ -770,28 +753,43 @@ extern "C" {
 
   static void init (Handle<Object> target)
   {
-    GT_init();
+    int res;
+    res = GT_init();
+    if (res != GT_OK) {
+      ThrowException(Exception::Error(
+            String::Concat(String::New("Error initializing Guardtime C API: "),
+                           String::New(GT_getErrorString(res)))));
+      return;
+    }
     TimeSignature::Init(target);
 
     // If using bundled GT C API then use Node's root certificates to validate signature on
     // publications file.
 #ifdef BUNDLED_LIBGT
-    //GTTruststore_init(0); // triggers assert() if called
     if (!GT_truststore)
       GT_truststore = X509_STORE_new();
+    if (!GT_truststore) {
+      THROW_GT_ERROR(GT_OUT_OF_MEMORY);
+      return;
+    }
 
     for (int i = 0; root_certs[i]; i++) {
       BIO *bp = BIO_new(BIO_s_mem());
+      if (bp == NULL) {
+        THROW_GT_ERROR(GT_OUT_OF_MEMORY);
+        return;        
+      }
 
-      if (!BIO_write(bp, root_certs[i], strlen(root_certs[i]))) {
+      if (BIO_write(bp, root_certs[i], strlen(root_certs[i])) <= 0) {
         BIO_free(bp);
+        THROW_GT_ERROR(GT_OUT_OF_MEMORY);
         return;
       }
 
       X509 *x509 = PEM_read_bio_X509(bp, NULL, NULL, NULL);
-
       if (x509 == NULL) {
         BIO_free(bp);
+        THROW_GT_ERROR(GT_PKI_BAD_DATA_FORMAT);
         return;
       }
 
