@@ -1,4 +1,5 @@
 {
+  'includes': [ '../../truststore.gypi' ],  # defines variables ca_f and ca_d
   'targets': [
     # libgtbase
     {
@@ -7,7 +8,7 @@
       'cflags': [
             # silence warnings
             '-Wno-sign-compare',
-            '-Wno-pointer-sign',
+            '-Wno-pointer-sign'
       ],
       'sources': [
         'asn1_time_get.c',
@@ -39,17 +40,28 @@
         'node_shared_openssl%': 'true',
       },
       'conditions': [
+        [ 'ca_f != ""',
+          {'defines': ['OPENSSL_CA_FILE="<(ca_f)"'],
+            'direct_dependent_settings': {'defines': ['OPENSSL_CA_FILE="<(ca_f)"']}},
+          {
+            'conditions': [[ 'ca_d != ""',
+              {'defines': ['OPENSSL_CA_DIR="<(ca_d)"'],
+                'direct_dependent_settings': {'defines': ['OPENSSL_CA_DIR="<(ca_d)"']}
+              }
+            ]]  # ca_d
+          }  
+        ],  # ca_f
         ['OS=="mac"', {
           'xcode_settings': {
             'OTHER_CFLAGS': [
               # silence warnings
-              '-Wno-sign-compare',
               '-Wno-pointer-sign',
+              '-Wno-sign-compare',
               '-Wno-missing-field-initializers',
               '-mmacosx-version-min=10.5'
             ],
           }
-        }],
+        }],  # OS==mac
         ['node_shared_openssl=="false"', {
           # so when "node_shared_openssl" is "false", then OpenSSL has been
           # bundled into the node executable. So we need to include the same
@@ -66,10 +78,10 @@
             }],
             ["target_arch=='arm'", {
               "include_dirs": [ "<(node_root_dir)/deps/openssl/config/arm" ]
-            }],
-          ]
-        }]
-      ],
-    },
-  ],
+            }]
+          ]   # conditions
+        }]  # node_shared_openssl
+      ]  # conditions
+    }  # targets hash
+  ]  # targets
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: gt_publicationsfile.c 177 2014-01-16 22:18:43Z ahto.truu $
+ * $Id: gt_publicationsfile.c 203 2014-01-28 23:16:24Z risto.laanoja $
  *
  * Copyright 2008-2010 GuardTime AS
  *
@@ -24,7 +24,9 @@
 #include <windows.h>
 #include <wincrypt.h>
 #else
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 #endif
 
 #include "gt_publicationsfile.h"
@@ -848,6 +850,12 @@ static int checkCertOpenSSL(const GTPublicationsFile *publications_file)
 	if (store_ctx == NULL) {
 		res = GT_OUT_OF_MEMORY;
 		goto cleanup;
+	}
+
+	/* The truststore is not initialized by default. */
+	if (GT_truststore == NULL) {
+		res = GTTruststore_init(1);
+		if (res != GT_OK) goto cleanup;
 	}
 
 	if (!X509_STORE_CTX_init(store_ctx, GT_truststore, cert,

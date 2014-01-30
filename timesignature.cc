@@ -23,9 +23,9 @@
 
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
-#include <openssl/pem.h>
 
-#ifdef BUNDLED_LIBGT
+#if !(defined OPENSSL_CA_FILE || defined OPENSSL_CA_DIR || defined PREINSTALLED_LIBGT)
+  #include <openssl/pem.h>
   #include "node_root_certs.h"
 #endif
 
@@ -763,9 +763,10 @@ extern "C" {
     }
     TimeSignature::Init(target);
 
-    // If using bundled GT C API then use Node's root certificates to validate signature on
-    // publications file.
-#ifdef BUNDLED_LIBGT
+    // If system certificate stores not detected then use Node's root certificates to
+    // validate signature on publications file.
+    // If libgt is preinstalled then assume that it is already properly configured.
+#if !(defined OPENSSL_CA_FILE || defined OPENSSL_CA_DIR || defined PREINSTALLED_LIBGT)
     if (!GT_truststore)
       GT_truststore = X509_STORE_new();
     if (!GT_truststore) {

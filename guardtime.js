@@ -111,14 +111,11 @@ var GuardTime = module.exports = {
     var hash, rs;
     try {
       hash = crypto.createHash(GuardTime.default_hashalg);
-      rs = fs.createReadStream(filename, {'bufferSize': 128*1024});
-      rs.on('data', function(chunk) { hash.update(chunk); });
-      rs.on('error', function(err) {
-        callback(err);
-        rs.destroy();
-      });
-      rs.on('end', function() {
-        GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);
+      fs.createReadStream(filename, {'bufferSize': 128*1024})
+        .on('data', function(chunk) { hash.update(chunk); })
+        .on('error', callback)
+        .on('end', function() {
+          GuardTime.signHash(hash.digest(), GuardTime.default_hashalg, callback);
       });
     } catch (err) {
       return callback(err);
@@ -318,10 +315,7 @@ var GuardTime = module.exports = {
       var hash = crypto.createHash(ts.getHashAlgorithm());
       fs.createReadStream(filename, {'bufferSize': 128*1024})
         .on('data', function(chunk) { hash.update(chunk); })
-        .on('error', function(er) {
-          callback(er);
-          rs.destroy();
-        })
+        .on('error', callback)
         .on('end', function() {
           GuardTime.verifyHash(hash.digest(), ts.getHashAlgorithm(), ts, callback);
       });

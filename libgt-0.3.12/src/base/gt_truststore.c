@@ -1,5 +1,5 @@
 /*
- * $Id: gt_truststore.c 162 2014-01-14 20:16:13Z ahto.truu $
+ * $Id: gt_truststore.c 203 2014-01-28 23:16:24Z risto.laanoja $
  *
  * Copyright 2008-2013 GuardTime AS
  *
@@ -22,11 +22,14 @@
 #include <openssl/pkcs7.h>
 #include <openssl/err.h>
 #include <openssl/x509.h>
+#include <openssl/pem.h>
 
 #include "gt_base.h"
 
 #ifndef _WIN32
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 #endif
 
 /*
@@ -38,7 +41,11 @@ int GTTruststore_init(int set_defaults)
 {
 	int res = GT_UNKNOWN_ERROR;
 
-	assert(GT_truststore == NULL);
+	/* Do nothing if truststore initialized. */
+	if (GT_truststore != NULL) {
+		res = GT_OK;
+		goto cleanup;
+	}
 
 	GT_truststore = X509_STORE_new();
 	if (GT_truststore == NULL) {
@@ -97,7 +104,11 @@ int GTTruststore_addLookupFile(const char *path)
 	int res = GT_UNKNOWN_ERROR;
 	X509_LOOKUP *lookup = NULL;
 
-	assert(GT_truststore != NULL);
+	if (GT_truststore == NULL) {
+		/* Create an empty trustrore. */
+		res = GTTruststore_init(0);
+		if (res != GT_OK) goto cleanup;
+	}
 
 	if (path == NULL) {
 		res = GT_INVALID_ARGUMENT;
@@ -129,7 +140,11 @@ int GTTruststore_addLookupDir(const char *path)
 	int res = GT_UNKNOWN_ERROR;
 	X509_LOOKUP *lookup = NULL;
 
-	assert(GT_truststore != NULL);
+	if (GT_truststore == NULL) {
+		/* Create an empty trustrore. */
+		res = GTTruststore_init(0);
+		if (res != GT_OK) goto cleanup;
+	}
 
 	if (path == NULL) {
 		res = GT_INVALID_ARGUMENT;
@@ -162,4 +177,41 @@ int GTTruststore_reset(int keep_defaults)
 
 	GTTruststore_finalize();
 	return GTTruststore_init(keep_defaults);
+}
+
+int GTTruststore_addCert(const char *pem) {
+	int res = GT_UNKNOWN_ERROR;
+	BIO *bio = NULL;
+	X509 *cert = NULL;
+
+	if (GT_truststore == NULL) {
+		res = GTTruststore_init(0);
+		if (res != GT_OK) goto cleanup;
+	}
+
+
+	bio = BIO_new_mem_buf((char *) pem, -1);
+	if (bio == NULL) {
+		res = GT_OUT_OF_MEMORY;
+		goto cleanup;
+	}
+
+	cert = PEM_read_bio_X509(bio, NULL, 0, NULL);
+	if (cert == NULL) {
+		res = GT_CRYPTO_FAILURE;
+		goto cleanup;
+	}
+
+	if (!X509_STORE_add_cert(GT_truststore, cert)) {
+		res = GT_CRYPTO_FAILURE;
+		goto cleanup;
+	}
+
+	res = GT_OK;
+
+cleanup:
+	BIO_free(bio);
+	X509_free(cert);
+
+	return res;
 }
