@@ -25,7 +25,6 @@
 #include <openssl/opensslv.h>
 
 #if !(defined OPENSSL_CA_FILE || defined OPENSSL_CA_DIR || defined PREINSTALLED_LIBGT)
-  #include <openssl/pem.h>
   #include "node_root_certs.h"
 #endif
 
@@ -749,8 +748,6 @@ private:
 Persistent<FunctionTemplate> TimeSignature::constructor_template;
 
 extern "C" {
-  extern X509_STORE *GT_truststore;
-
   static void init (Handle<Object> target)
   {
     int res;
@@ -767,37 +764,12 @@ extern "C" {
     // validate signature on publications file.
     // If libgt is preinstalled then assume that it is already properly configured.
 #if !(defined OPENSSL_CA_FILE || defined OPENSSL_CA_DIR || defined PREINSTALLED_LIBGT)
-    if (!GT_truststore)
-      GT_truststore = X509_STORE_new();
-    if (!GT_truststore) {
-      THROW_GT_ERROR(GT_OUT_OF_MEMORY);
-      return;
-    }
-
     for (int i = 0; root_certs[i]; i++) {
-      BIO *bp = BIO_new(BIO_s_mem());
-      if (bp == NULL) {
-        THROW_GT_ERROR(GT_OUT_OF_MEMORY);
-        return;        
+      res = GTTruststore_addCert(root_certs[i]);
+      if (res != GT_OK) {
+        THROW_GT_ERROR(res);
+        return;                
       }
-
-      if (BIO_write(bp, root_certs[i], strlen(root_certs[i])) <= 0) {
-        BIO_free(bp);
-        THROW_GT_ERROR(GT_OUT_OF_MEMORY);
-        return;
-      }
-
-      X509 *x509 = PEM_read_bio_X509(bp, NULL, NULL, NULL);
-      if (x509 == NULL) {
-        BIO_free(bp);
-        THROW_GT_ERROR(GT_PKI_BAD_DATA_FORMAT);
-        return;
-      }
-
-      X509_STORE_add_cert(GT_truststore, x509);
-
-      BIO_free(bp);
-      X509_free(x509);
     }
 #endif
   }

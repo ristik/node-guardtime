@@ -1,5 +1,5 @@
 /*
- * $Id: gt_base.h 195 2014-01-20 19:28:39Z ahto.truu $
+ * $Id: gt_base.h 202 2014-01-23 16:51:35Z henri.lakk $
  *
  * Copyright 2008-2010 GuardTime AS
  *
@@ -1506,8 +1506,11 @@ int GT_saveFile(const char *path, const void *in_data, size_t in_size);
  * publications file signatures by default. This function overrides it and
  * OpenSSL will be used instead until #GTTruststore_finalize() is called.
  *
- * \note On platforms other than Windows, this is called automatically by
- * #GT_init().
+ * \note On platforms other than Windows, this is called automatically
+ * internally only when needed.
+ *
+ * \note This function has no effect when called while a truststore has
+ * been initialized. To reset the truststore use #GTTruststore_reset().
  */
 int GTTruststore_init(int set_defaults);
 
@@ -1519,9 +1522,7 @@ int GTTruststore_init(int set_defaults);
  * \note On Windows reverts to the native crypto API for verification of
  * the publications file signatures.
  *
- * \note On platforms other than Windows, this is called automatically by
- * #GT_finalize() to balance the automatic call to #GTTruststore_init()
- * by #GT_init() on those platforms.
+ * \note This function is called automatically from #GT_finalize().
  */
 void GTTruststore_finalize(void);
 
@@ -1534,8 +1535,6 @@ void GTTruststore_finalize(void);
  *
  * \return \c GT_OK on success, error code otherwise.
  *
- * \note Can only be called after #GTTruststore_init() and before
- * #GTTruststore_finalize().
  */
 int GTTruststore_addLookupFile(const char *path);
 
@@ -1548,10 +1547,17 @@ int GTTruststore_addLookupFile(const char *path);
  *
  * \return \c GT_OK on success, error code otherwise.
  *
- * \note Can only be called after #GTTruststore_init() and before
- * #GTTruststore_finalize().
  */
 int GTTruststore_addLookupDir(const char *path);
+
+/**
+ * \ingroup publications
+ *
+ * Adds a PEM encoded certificate to the truststore.
+ *
+ * \return \c GT_OK on success, error code otherwise.
+ */
+int GTTruststore_addCert(const char *pem);
 
 /**
  * \ingroup publications
@@ -1564,8 +1570,6 @@ int GTTruststore_addLookupDir(const char *path);
  *
  * \return \c GT_OK on success, error code otherwise.
  *
- * \note Can only be called after #GTTruststore_init() and before
- * #GTTruststore_finalize().
  */
 int GTTruststore_reset(int keep_defaults);
 

@@ -1,6 +1,7 @@
 # Bundled Guardtime C API
 
 This is a stripped version of Guardtime C API. Full tarball is available at http://download.guardtime.com/libgt-0.3.12.tar.gz
+OK, now there are some code changes which probably will make it to the next release.
 
 Changes:
 

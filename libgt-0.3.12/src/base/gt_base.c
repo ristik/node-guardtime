@@ -1,5 +1,5 @@
 /*
- * $Id: gt_base.c 174 2014-01-16 16:23:29Z ahto.truu $
+ * $Id: gt_base.c 202 2014-01-23 16:51:35Z henri.lakk $
  *
  * Copyright 2008-2010 GuardTime AS
  *
@@ -209,13 +209,6 @@ int GT_init(void)
 	OpenSSL_add_all_algorithms();
 	ERR_load_crypto_strings();
 
-#if !defined(_WIN32) || defined(OPENSSL_CA_FILE) || defined(OPENSSL_CA_DIR)
-	res = GTTruststore_init(1);
-	if (res != GT_OK) {
-		goto cleanup;
-	}
-#endif
-
 	/* Create NID for the id-gt-TimeSignatureAlg. */
 	ERR_clear_error();
 	GT_id_gt_time_signature_alg_nid = OBJ_create(
@@ -253,9 +246,7 @@ void GT_finalize(void)
 	 * in practice nothing could be done in this case... */
 	threadCleanup();
 	OBJ_cleanup();
-#if !defined(_WIN32) || defined(OPENSSL_CA_FILE) || defined(OPENSSL_CA_DIR)
 	GTTruststore_finalize();
-#endif
 	ERR_free_strings();
 	ERR_remove_state(0);
 	EVP_cleanup();
