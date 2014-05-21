@@ -37,6 +37,44 @@ function addprops(a, p){
   return a;
 }
 
+function dorequest(where, what, inloop){
+  var callback = arguments[arguments.length - 1];
+    if (typeof(callback) !== 'function')
+      callback = function (){};
+  where.headers = {'Content-Length': what.length};
+  var req = http.request(where, function(res) {
+    if (res.statusCode >= 301 && res.statusCode <= 307 ) {
+      var elsewhere = addprops(where, url.parse(res.headers.location));
+      res.destroy();
+      var loop = typeof(inloop) === 'number' ? inloop+1 : 0;
+      if (loop  > 3)
+        return callback(new Error("Redirect loop at " + elsewhere.href ));
+      else
+        return dorequest(elsewhere, what, loop, callback);
+    }
+    if (res.statusCode != 200) {
+      res.destroy();
+      return callback(new Error("Service '" + where.href
+          + "' error: " + res.statusCode
+          + " (" + http.STATUS_CODES[res.statusCode] + ")"));
+    }
+    var data = "";
+    res.on('data', function (chunk) {
+      data += chunk.toString('binary');
+    });
+    res.on('end', function(){
+      callback(null, data);
+    });
+  });
+  req.on('error', function(e) {
+    return callback(new Error("Service'" + where.href
+        + "' error: " + e.message));
+  });
+  req.write(what);
+  req.end();
+}
+
+
 var GuardTime = module.exports = {
   default_hashalg: 'SHA256',
   VER_RES : {
@@ -60,14 +98,15 @@ var GuardTime = module.exports = {
                                     { maxSockets: defaultconf.signerthreads })
                   }),
     verifier: addprops(url.parse(defaultconf.verifieruri),
-                    { method: 'POST',
-                      agent: addprops(new http.Agent(),
-                                     { maxSockets: defaultconf.verifierthreads })
-                    }),
+                  { method: 'POST',
+                    agent: addprops(new http.Agent(),
+                                   { maxSockets: defaultconf.verifierthreads })
+                  }),
     publications: addprops(url.parse(defaultconf.publicationsuri),
-                        { agent: addprops(new http.Agent(),
-                                        { maxSockets: defaultconf.publicationsthreads })
-                        })
+                  { method: 'GET',
+                    agent: addprops(new http.Agent(),
+                                  { maxSockets: defaultconf.publicationsthreads })
+                  })
   },
 
   conf: function (options) {  // prettify me!
@@ -132,31 +171,17 @@ var GuardTime = module.exports = {
     } catch (err) {
       return callback(err);
     }
-    GuardTime.service.signer.headers = {'Content-Length': reqdata.length};
-    var req = http.request(GuardTime.service.signer, function(res) {
-      if (res.statusCode != 200) {
-        return callback(new Error("Signing service error: " + res.statusCode +
-            " (" + http.STATUS_CODES[res.statusCode] + ")"));
-      }
-      var data = "";
-      res.on('data', function (chunk) {
-        data += chunk.toString('binary');
-      });
-      res.on('end', function(){
-        try {
-          var ts = new TimeSignature(TimeSignature.processResponse(data));
-          callback(null, ts);
-        } catch (err) {
-          return callback(err);
-        }
-      });
-    });
 
-    req.on('error', function(e) {
-      return callback(new Error("Signing service error: " + e.message));
+    dorequest(GuardTime.service.signer, reqdata, function(err, data){
+      if (err)
+        return callback(err);
+      try {
+        var ts = new TimeSignature(TimeSignature.processResponse(data));
+        callback(null, ts);
+      } catch (err) {
+        return callback(err);
+      }
     });
-    req.write(reqdata);
-    req.end();
   },
 
   save: function (filename, ts, cb) {
@@ -185,30 +210,19 @@ var GuardTime = module.exports = {
     var callback = arguments[arguments.length - 1];
     if (typeof(callback) !== 'function')
       callback = function (){};
-    var req = http.get(GuardTime.service.publications, function(res) {
-      if (res.statusCode != 200) {
-        return callback(new Error("Publications download: " + res.statusCode +
-            " (" + http.STATUS_CODES[res.statusCode] + ")"));
-      }
-      var data = "";
-      res.on('data', function (chunk) {
-        data += chunk.toString('binary');
-      });
-      res.on('end', function(){
-        try {
-          var d = TimeSignature.verifyPublications(data); // exception on error
-          GuardTime.publications.last = d;
-          GuardTime.publications.data = data;
-          GuardTime.publications.updatedat = Date.now();
-        } catch (err) {
-          return callback(err);
-        }
-        callback(null);
-      });
-    });
 
-    req.on('error', function(e) {
-      return callback(new Error("Publications download: " + e.message));
+    dorequest(GuardTime.service.publications, "", function(err, data){
+      if (err)
+        return callback(err);
+      try {
+        var d = TimeSignature.verifyPublications(data); // exception on error
+        GuardTime.publications.last = d;
+        GuardTime.publications.data = data;
+        GuardTime.publications.updatedat = Date.now();
+      } catch (err) {
+        return callback(err);
+      }
+      callback(null);
     });
   },
 
@@ -223,30 +237,16 @@ var GuardTime = module.exports = {
     } catch (err) {
       return callback(err);
     }
-    GuardTime.service.verifier.headers = {'Content-Length': reqdata.length};
-    var req = http.request(GuardTime.service.verifier, function(res) {
-      if (res.statusCode != 200) {
-        return callback(new Error("Verification service error: " + res.statusCode +
-            " (" + http.STATUS_CODES[res.statusCode] + ")"));
+    dorequest(GuardTime.service.verifier, reqdata, function(err, data){
+      if (err)
+        return callback(err);
+      try{
+        ts.extend(data);
+      } catch (err) {
+        return callback(err);
       }
-      var extendingresponse = "";
-      res.on('data', function (chunk) {
-        extendingresponse += chunk.toString('binary');
-      });
-      res.on('end', function(){
-        try{
-          ts.extend(extendingresponse);
-        } catch (err) {
-          return callback(err);
-        }
-        callback(null, ts);
-      });
+      callback(null, ts);
     });
-    req.on('error', function(e) {
-      return callback(new Error("Verification service error: " + e.message));
-    });
-    req.write(reqdata);
-    req.end();
   },
 
   verify: function(data, ts) {
