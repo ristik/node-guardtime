@@ -1,3 +1,7 @@
+note: this legacy project is not maintained any more.
+
+---
+
 # API to access Guardtime services.
 
 
