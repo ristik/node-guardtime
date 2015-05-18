@@ -1,10 +1,11 @@
 {
   "name": "guardtime",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Guardtime signing service access/verification API for node.js",
   "license": "Apache License v2.0",
   "dependencies": {
-    "bindings": ">=1.0.0"
+    "bindings": ">=1.0.0",
+	  "nan": "*"
   },
   "devDependencies": {
     "mocha": ">=1.7.0"
@@ -39,6 +40,6 @@
     "url": "https://github.com/ristik/node-guardtime.git"
   },
   "engines": {
-    "node": ">=0.6.0"
+    "node": ">=0.8.0"
   }
 }

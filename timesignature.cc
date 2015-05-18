@@ -16,10 +16,12 @@
 #define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_5
 
 #include <gt_base.h>
-#include <v8.h>
 #include <node.h>
 #include <node_buffer.h>
-#include <string.h>
+#include <node_object_wrap.h>
+
+#include <nan.h>
+#include <string>
 
 #include <openssl/crypto.h>
 #include <openssl/opensslv.h>
@@ -28,20 +30,40 @@
   #include "node_root_certs.h"
 #endif
 
+
 // from node_crypo.cc
 #define ASSERT_IS_STRING_OR_BUFFER(val) \
-if (!val->IsString() && !Buffer::HasInstance(val)) { \
-return ThrowException(Exception::TypeError(String::New("Not a string or buffer"))); \
-}
+  if (!val->IsString() && !Buffer::HasInstance(val)) { \
+    return NanThrowTypeError("Not a string or buffer"); \
+  }
 
-#define THROW_GT_ERROR(err) \
-  ThrowException(Exception::Error(String::New(GT_getErrorString(err))))
+#define ASSERT_IS_N_ARGS(val) \
+  if (args.Length() != (val)) { \
+    return NanThrowTypeError("Wrong number of arguments"); \
+  }
+
+#define ASSERT_IS_POSITIVE(val) \
+  if ((val) < 0) { \
+    return NanThrowTypeError("Bad argument"); \
+  }
+
+#define UNWRAP_ts() \
+  TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This()); \
+  if (ts->timestamp == NULL) { \
+    return NanThrowError("TimeSignature is blank"); \
+  }
+
+#define ASSERT_GT_ERROR(res) \
+  if ((res) != GT_OK) { \
+    return NanThrowError(GT_getErrorString(res)); \
+  }
+
 
 using namespace node;
 using namespace v8;
 
 
-class TimeSignature: ObjectWrap
+class TimeSignature: public ObjectWrap
 {
 private:
   GTTimestamp *timestamp;
@@ -51,39 +73,37 @@ public:
 
   static void Init(Handle<Object> target)
   {
-    HandleScope scope;
+    NanScope();
 
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
+    Local<FunctionTemplate> t = NanNew<FunctionTemplate>(New);
+    NanAssignPersistent(constructor_template, t);
+    t->InstanceTemplate()->SetInternalFieldCount(1);
+    t->SetClassName(NanNew<String>("TimeSignature"));
 
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-    constructor_template->SetClassName(String::NewSymbol("TimeSignature"));
+    NODE_SET_PROTOTYPE_METHOD(t, "verify", Verify);
+    NODE_SET_PROTOTYPE_METHOD(t, "isExtended", IsExtended);
+    NODE_SET_PROTOTYPE_METHOD(t, "getHashAlgorithm", GetHashAlgorithm);
+    NODE_SET_PROTOTYPE_METHOD(t, "compareHash", CompareHash);
+    NODE_SET_PROTOTYPE_METHOD(t, "checkPublication", CheckPublication);
+    NODE_SET_PROTOTYPE_METHOD(t, "getSignerName", GetSignerName);
+    NODE_SET_PROTOTYPE_METHOD(t, "getContent", GetContent);
+    NODE_SET_PROTOTYPE_METHOD(t, "composeExtendingRequest", ComposeExtendingRequest);
+    NODE_SET_PROTOTYPE_METHOD(t, "extend", Extend);
+    NODE_SET_PROTOTYPE_METHOD(t, "isEarlierThan", IsEarlierThan);
+    NODE_SET_PROTOTYPE_METHOD(t, "getRegisteredTime", GetRegisteredTime);
 
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "verify", Verify);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "isExtended", IsExtended);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "getHashAlgorithm", GetHashAlgorithm);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "compareHash", CompareHash);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "checkPublication", CheckPublication);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "getSignerName", GetSignerName);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "getContent", GetContent);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "composeExtendingRequest", ComposeExtendingRequest);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "extend", Extend);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "isEarlierThan", IsEarlierThan);
-    NODE_SET_PROTOTYPE_METHOD(constructor_template, "getRegisteredTime", GetRegisteredTime);
+    NODE_SET_METHOD(t, "composeRequest", ComposeRequest);
+    NODE_SET_METHOD(t, "processResponse", ProcessResponse);
+    NODE_SET_METHOD(t, "verifyPublications", VerifyPublications);
 
-    NODE_SET_METHOD(constructor_template->GetFunction(), "composeRequest", ComposeRequest);
-    NODE_SET_METHOD(constructor_template->GetFunction(), "processResponse", ProcessResponse);
-    NODE_SET_METHOD(constructor_template->GetFunction(), "verifyPublications", VerifyPublications);
-
-
-    target->Set(String::NewSymbol("TimeSignature"), constructor_template->GetFunction());
-
+    target->Set(NanNew("TimeSignature"), t->GetFunction());
   }
 
   TimeSignature()
   {
     timestamp = NULL;
   }
+
   TimeSignature(GTTimestamp *ts)
   {
     timestamp = ts;
@@ -95,25 +115,20 @@ public:
       GTTimestamp_free(timestamp);
   }
 
-  static Handle<Value> New(const Arguments& args)
+  static NAN_METHOD(New)
   {
-    HandleScope scope;
+    NanScope();
     GTTimestamp *timestamp;
     int res;
 
     if (!args.IsConstructCall())
-      return ThrowException(String::New("Please use 'new' to instantiate a TimeSignature class"));
+      return NanThrowError("Please use 'new' to instantiate a TimeSignature class");
 
-    if (args.Length() != 1)
-      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-
+    ASSERT_IS_N_ARGS(1);
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
 
     ssize_t len = DecodeBytes(args[0], BINARY);
-    if (len < 0) {
-      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
-      return ThrowException(exception);
-    }
+    ASSERT_IS_POSITIVE(len);
     if (Buffer::HasInstance(args[0])) {
       Local<Object> buffer_obj = args[0]->ToObject();
       char *buffer_data = Buffer::Data(buffer_obj);
@@ -126,26 +141,25 @@ public:
       res = GTTimestamp_DERDecode(buf, len, &timestamp);
       delete [] buf;
     }
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
     TimeSignature *ts = new TimeSignature(timestamp);
 
     ts->Wrap(args.This());
-    return args.This();
+    NanReturnValue(args.This());
   }
 
   static Local<String> format_location_id(GT_UInt64 l)
   {
     char buf[32];
     if (l == 0)
-      return String::New("");
+      return NanNew<String>("");
     snprintf(buf, sizeof(buf), "%u.%u.%u.%u",
             (unsigned) (l >> 48 & 0xffff),
             (unsigned) (l >> 32 & 0xffff),
             (unsigned) (l >> 16 & 0xffff),
             (unsigned) (l & 0xffff)); 
-    return String::New(buf);
+    return NanNew<String>(buf);
   }
   
   static Local<String> hash_algorithm_name_as_String(int alg) 
@@ -153,172 +167,140 @@ public:
       // ids copied from gt_base.h -> enum GTHashAlgorithm
       // there is static func in gt_info.c: hashAlgName(alg));
     switch(alg) {  
-      case 1: return String::New("SHA256");
-      case 0: return String::New("SHA1");
-      case 2: return String::New("RIPEMD160");
-      case 3: return String::New("SHA224");
-      case 4: return String::New("SHA384");
-      case 5: return String::New("SHA512");
+      case 1: return NanNew<String>("SHA256");
+      case 0: return NanNew<String>("SHA1");
+      case 2: return NanNew<String>("RIPEMD160");
+      case 3: return NanNew<String>("SHA224");
+      case 4: return NanNew<String>("SHA384");
+      case 5: return NanNew<String>("SHA512");
       default:
-        return String::New("<unknown or untrusted hash algorithm>");
+        return NanNew<String>("<unknown or untrusted hash algorithm>");
     }    
   }
 
   // no arguments, just syntax check
-  static Handle<Value> Verify(const Arguments& args)
+  static NAN_METHOD(Verify)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-
-    if (ts->timestamp == NULL)
-      return ThrowException(Exception::Error(
-                String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
     GTVerificationInfo *verification_info = NULL;
     int res = GTTimestamp_verify(ts->timestamp, 1, &verification_info);
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
     if (verification_info->verification_errors != GT_NO_FAILURES) {
         GTVerificationInfo_free(verification_info);
-        return ThrowException(Exception::Error(
-                String::New("TimeSignature verification error")));
+        return NanThrowError("TimeSignature verification error");
     }
 
-    Handle<Object> result = Object::New();
-    result->Set(String::New("verification_status"), Integer::New(verification_info->verification_status));
-    result->Set(String::New("location_id"), format_location_id(verification_info->implicit_data->location_id));
-    // result->Set(String::New("location_id"), Number::New(verification_info->implicit_data->location_id));
+    Local<Object> result = NanNew<Object>();
+    result->Set(NanNew<String>("verification_status"), NanNew<Integer>(verification_info->verification_status));
+    result->Set(NanNew<String>("location_id"), format_location_id(verification_info->implicit_data->location_id));
     if (verification_info->implicit_data->location_name != NULL)
-      result->Set(String::New("location_name"), String::New(verification_info->implicit_data->location_name));
-    result->Set(String::New("registered_time"), NODE_UNIXTIME_V8(verification_info->implicit_data->registered_time));
+      result->Set(NanNew<String>("location_name"), NanNew<String>(verification_info->implicit_data->location_name));
+    result->Set(NanNew<String>("registered_time"), NODE_UNIXTIME_V8(verification_info->implicit_data->registered_time));
 
     if (verification_info->explicit_data->policy != NULL)
-      result->Set(String::New("policy"), String::New(verification_info->explicit_data->policy));
-    result->Set(String::New("hash_algorithm"), hash_algorithm_name_as_String(verification_info->explicit_data->hash_algorithm));
+      result->Set(NanNew<String>("policy"), NanNew<String>(verification_info->explicit_data->policy));
+    result->Set(NanNew<String>("hash_algorithm"), hash_algorithm_name_as_String(verification_info->explicit_data->hash_algorithm));
     if (verification_info->explicit_data->hash_value != NULL)
-      result->Set(String::New("hash_value"), String::New(verification_info->explicit_data->hash_value));
+      result->Set(NanNew<String>("hash_value"), NanNew<String>(verification_info->explicit_data->hash_value));
     if (verification_info->explicit_data->issuer_name != NULL)
-      result->Set(String::New("issuer_name"), String::New(verification_info->explicit_data->issuer_name));
+      result->Set(NanNew<String>("issuer_name"), NanNew<String>(verification_info->explicit_data->issuer_name));
 
     // not extended:
     if (verification_info->implicit_data->public_key_fingerprint != NULL)
-      result->Set(String::New("public_key_fingerprint"), String::New(verification_info->implicit_data->public_key_fingerprint));
+      result->Set(NanNew<String>("public_key_fingerprint"), NanNew<String>(verification_info->implicit_data->public_key_fingerprint));
 
     // extended:
     if (verification_info->implicit_data->publication_string != NULL) {
-      result->Set(String::New("publication_string"), String::New(verification_info->implicit_data->publication_string));
-      result->Set(String::New("publication_identifier"), Number::New(verification_info->explicit_data->publication_identifier));
-      result->Set(String::New("publication_time"), NODE_UNIXTIME_V8(verification_info->explicit_data->publication_identifier));
+      result->Set(NanNew<String>("publication_string"), NanNew<String>(verification_info->implicit_data->publication_string));
+      result->Set(NanNew<String>("publication_identifier"), NanNew<Number>(verification_info->explicit_data->publication_identifier));
+      result->Set(NanNew<String>("publication_time"), NODE_UNIXTIME_V8(verification_info->explicit_data->publication_identifier));
 
-      Handle<Array> refarr = Array::New(verification_info->explicit_data->pub_reference_count);
+      Handle<Array> refarr = NanNew<Array>(verification_info->explicit_data->pub_reference_count);
       for (int i = 0; i < verification_info->explicit_data->pub_reference_count; i++)
-        refarr->Set(i, String::New(verification_info->explicit_data->pub_reference_list[i]));
-      result->Set(String::New("pub_reference_list"), refarr);
+        refarr->Set(i, NanNew<String>(verification_info->explicit_data->pub_reference_list[i]));
+      result->Set(NanNew<String>("pub_reference_list"), refarr);
     }
 
     GTVerificationInfo_free(verification_info);
-    return scope.Close(result);
+    NanReturnValue(result);
   }
 
 
-  static Handle<Value> IsExtended(const Arguments& args)
+  static NAN_METHOD(IsExtended)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-
-    if (ts->timestamp == NULL)
-      return ThrowException(Exception::Error(
-                String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
     int res = GTTimestamp_isExtended(ts->timestamp);
 
     switch (res) {
       case GT_EXTENDED:
-          return scope.Close(True());
+          NanReturnValue(NanTrue());
       case GT_NOT_EXTENDED:
-          return scope.Close(False());
+          NanReturnValue(NanFalse());
       default:
-           return THROW_GT_ERROR(res);
+          return NanThrowError(GT_getErrorString(res));
     }
   }
 
 
   // return openssl style hash alg name
-  static Handle<Value> GetHashAlgorithm(const Arguments& args)
+  static NAN_METHOD(GetHashAlgorithm)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-
-    if (ts->timestamp == NULL)
-      return ThrowException(Exception::Error(
-                String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
     int alg;
     int res = GTTimestamp_getAlgorithm(ts->timestamp, &alg);
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
-
-    return scope.Close(hash_algorithm_name_as_String(alg));    
+    ASSERT_GT_ERROR(res);
+    NanReturnValue(hash_algorithm_name_as_String(alg));
   }
 
-  static Handle<Value> GetRegisteredTime(const Arguments& args)
+  static NAN_METHOD(GetRegisteredTime)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-
-    if (ts->timestamp == NULL)
-    return ThrowException(Exception::Error(
-                String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
     GTVerificationInfo *verification_info = NULL;
     int res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
     if (verification_info->verification_errors != GT_NO_FAILURES) {
       GTVerificationInfo_free(verification_info);
-      return ThrowException(Exception::Error(
-                String::New("TimeSignature verification error")));
+      return NanThrowError("TimeSignature verification error");
     }
 
     double result = verification_info->implicit_data->registered_time;
     GTVerificationInfo_free(verification_info);
-    return scope.Close(NODE_UNIXTIME_V8(result));
+    NanReturnValue(NODE_UNIXTIME_V8(result));
   }
 
     // ts.compareHash(binary hash in Buffer, algo)  -> bit flag
-  static Handle<Value> CompareHash(const Arguments& args)
+  static NAN_METHOD(CompareHash)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-
-    if (ts->timestamp == NULL)
-      return ThrowException(Exception::Error(
-            String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
     if (args.Length() < 1 || args.Length() > 2) {
-      return ThrowException(Exception::TypeError(String::New("Bad parameter")));
+      return NanThrowTypeError("Wrong number of parameters");
     }
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
 
     if (args.Length() == 2 && !args[1]->IsString()) {
-      return ThrowException(Exception::TypeError(String::New(
-          "Optional 2nd argument must be hash type as string")));
+      return NanThrowTypeError("Optional 2nd argument must be hash type as string");
     }
     ssize_t len = DecodeBytes(args[0], BINARY);
-    if (len < 0) {
-      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
-      return ThrowException(exception);
-    }
+    ASSERT_IS_POSITIVE(len);
 
     int hashalg_gt_id = 1;
     if (args.Length() == 2)
       hashalg_gt_id = getAlgoID(*String::Utf8Value(args[1]->ToString()));
 
     if (hashalg_gt_id < 0) {
-      Local<Value> exception = Exception::TypeError(String::New("Unsupported hash algorithm"));
-      return ThrowException(exception);
+      return NanThrowError("Unsupported hash algorithm");
     }
     GTDataHash dh;
     dh.context = NULL;
@@ -339,31 +321,23 @@ public:
       delete [] buf;
     }
 
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
-    return scope.Close(Integer::New(GT_DOCUMENT_HASH_CHECKED));
+    ASSERT_GT_ERROR(res);
+    NanReturnValue(NanNew<Integer>(GT_DOCUMENT_HASH_CHECKED));
   }
 
 
     // ts.checkPublication(pub. file content in Buffer) -> true/exception
-  static Handle<Value> CheckPublication(const Arguments& args)
+  static NAN_METHOD(CheckPublication)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
+    NanScope();
+    UNWRAP_ts();
 
-    if (ts->timestamp == NULL)
-      return ThrowException(Exception::Error(
-            String::New("TimeSignature is blank")));
-
-    if (args.Length() != 1)
-      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-
+    ASSERT_IS_N_ARGS(1);
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
+
     ssize_t len = DecodeBytes(args[0], BINARY);
-    if (len < 0) {
-      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
-      return ThrowException(exception);
-    }
+    ASSERT_IS_POSITIVE(len);
+
     int res;
     GTPublicationsFile *pub;
     if (Buffer::HasInstance(args[0])) {
@@ -377,8 +351,7 @@ public:
       res = GTPublicationsFile_DERDecode(buf, len, &pub);
       delete [] buf;
     }
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
     int ext = GTTimestamp_isExtended(ts->timestamp);
     if (ext == GT_EXTENDED)
@@ -391,14 +364,13 @@ public:
       res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
       if (res != GT_OK) {
         GTPublicationsFile_free(pub);
-        return THROW_GT_ERROR(res);
+        ASSERT_GT_ERROR(res);
       }
 
       if (verification_info->verification_errors != GT_NO_FAILURES) {
         GTVerificationInfo_free(verification_info);
         GTPublicationsFile_free(pub);
-        return ThrowException(Exception::Error(
-              String::New("TimeSignature verification error")));
+        return NanThrowError("TimeSignature verification error");
       }
 
       GT_Time_t64 history_id = verification_info->implicit_data->registered_time;
@@ -408,107 +380,82 @@ public:
     else
     {
       GTPublicationsFile_free(pub);
-      return THROW_GT_ERROR(ext);
+      ASSERT_GT_ERROR(ext);
     }
 
     GTPublicationsFile_free(pub);
-
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
-
-    return scope.Close(Integer::New(GT_PUBLICATION_CHECKED));
+    ASSERT_GT_ERROR(res);
+    NanReturnValue(NanNew<Integer>(GT_PUBLICATION_CHECKED));
   }
 
 
-  static Handle<Value> GetSignerName(const Arguments& args)
+  static NAN_METHOD(GetSignerName)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-
-    if (ts->timestamp == NULL)
-    return ThrowException(Exception::Error(
-          String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
     GTVerificationInfo *verification_info = NULL;
     int res = GTTimestamp_verify(ts->timestamp, 0, &verification_info);
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
     if (verification_info->verification_errors != GT_NO_FAILURES) {
       GTVerificationInfo_free(verification_info);
-    return ThrowException(Exception::Error(
-                String::New("TimeSignature verification error")));
+      return NanThrowError("TimeSignature verification error");
     }
-    Local<String> result = String::New(
+    Local<String> result = NanNew<String>(
           (verification_info->implicit_data->location_name != NULL) ?
             verification_info->implicit_data->location_name :
             "");
     GTVerificationInfo_free(verification_info);
-    return scope.Close(result);
+    NanReturnValue(result);
   }
 
   // returns DER encoded ts token
-  static Handle<Value> GetContent(const Arguments& args)
+  static NAN_METHOD(GetContent)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-
-    if (ts->timestamp == NULL)
-      return ThrowException(Exception::Error(
-            String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
     unsigned char *data;
     size_t data_length;
     int res = GTTimestamp_getDEREncoded(ts->timestamp, &data, &data_length);
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
-    Buffer *result = Buffer::New((char *)data, data_length);
+    Local<Object> result = NanNewBufferHandle((char *)data, data_length);
     GT_free(data);
-    return scope.Close(result->handle_);
+    NanReturnValue(result);
   }
 
   // Buffer = composeExtendingRequest()
-  static Handle<Value> ComposeExtendingRequest(const Arguments& args)
+  static NAN_METHOD(ComposeExtendingRequest)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-    if (ts->timestamp == NULL)
-    return ThrowException(Exception::Error(
-          String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
     unsigned char *request = NULL;
     size_t request_length;
 
     int res = GTTimestamp_prepareExtensionRequest(ts->timestamp, &request, &request_length);
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
-    Buffer *result = Buffer::New((char *)request, request_length);
+    Local<Object> result = NanNewBufferHandle((char *)request, request_length);
     GT_free(request);
-    return scope.Close(result->handle_);
+    NanReturnValue(result);
   }
 
     // ts.extend(extending response)
     // returns true or throws an exception
-  static Handle<Value> Extend(const Arguments& args)
+  static NAN_METHOD(Extend)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-    if (ts->timestamp == NULL)
-      return ThrowException(Exception::Error(
-            String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
-    if (args.Length() != 1) {
-      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-    }
-
+    ASSERT_IS_N_ARGS(1);
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
+
     ssize_t len = DecodeBytes(args[0], BINARY);
-    if (len < 0) {
-      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
-      return ThrowException(exception);
-    }
+    ASSERT_IS_POSITIVE(len);
+
     int res;
     GTTimestamp *new_ts;
     if (Buffer::HasInstance(args[0])) {
@@ -524,39 +471,34 @@ public:
       delete [] buf;
     }
     if (res == GT_ALREADY_EXTENDED || res == GT_NONSTD_EXTEND_LATER || res == GT_NONSTD_EXTENSION_OVERDUE)
-      return scope.Close(Integer::New(res));
+      NanReturnValue(NanNew<Integer>(res));
 
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
     GTTimestamp_free(ts->timestamp);
     ts->timestamp = new_ts;
 
-    return scope.Close(True());
+    NanReturnValue(NanTrue());
   }
 
 
-  static Handle<Value> IsEarlierThan(const Arguments& args)
+  static NAN_METHOD(IsEarlierThan)
   {
-    HandleScope scope;
-    TimeSignature* ts = ObjectWrap::Unwrap<TimeSignature>(args.This());
-    if (ts->timestamp == NULL)
-      return ThrowException(Exception::Error(
-            String::New("TimeSignature is blank")));
+    NanScope();
+    UNWRAP_ts();
 
     if (!TimeSignature::HasInstance(args[0])) {
-      return ThrowException(Exception::Error(
-            String::New("First argument needs to be a TimeSignature")));
+      return NanThrowTypeError("First argument needs to be a TimeSignature");
     }
     TimeSignature *ts2 = ObjectWrap::Unwrap<TimeSignature>(args[0]->ToObject());
     int res = GTTimestamp_isEarlierThan(ts->timestamp, ts2->timestamp);
     switch (res) {
       case GT_EARLIER:
-          return scope.Close(True());
+          NanReturnValue(NanTrue());
       case GT_NOT_EARLIER:
-          return scope.Close(False());
+          NanReturnValue(NanFalse());
       default:
-          return THROW_GT_ERROR(res);
+          return NanThrowError(GT_getErrorString(res));
     }
   }
 
@@ -567,31 +509,26 @@ public:
   // binary string will be represented as utf8, needs DecodeBytes/DecodeWrite. \0 is ok.
   // arg: binary hash as a Buffer; hashing or interaction of Hash object should be done in JS layer
   // second optional arg: hash algorithm name as openssl style string.
-  static Handle<Value> ComposeRequest(const Arguments& args)
+  static NAN_METHOD(ComposeRequest)
   {
-    HandleScope scope;
+    NanScope();
 
     if (args.Length() < 1 || args.Length() > 2) {
-      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
+      return NanThrowTypeError("Wrong number of arguments");
     }
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
 
     if (args.Length() == 2 && !args[1]->IsString()) {
-      return ThrowException(Exception::TypeError(String::New(
-            "Optional 2nd argument must be hash algorithm name as string")));
+      return NanThrowTypeError("Optional 2nd argument must be hash algorithm name as string");
     }
     ssize_t len = DecodeBytes(args[0], BINARY);
-    if (len < 0) {
-      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
-      return ThrowException(exception);
-    }
+    ASSERT_IS_POSITIVE(len);
 
     int hashalg_gt_id = 1;
     if (args.Length() == 2)
       hashalg_gt_id = getAlgoID(*String::Utf8Value(args[1]->ToString()));
     if (hashalg_gt_id < 0) {
-      Local<Value> exception = Exception::TypeError(String::New("Unsupported hash algorithm"));
-      return ThrowException(exception);
+      return NanThrowTypeError("Unsupported hash algorithm");
     }
     
     GTDataHash dh;
@@ -614,36 +551,25 @@ public:
       res = GTTimestamp_prepareTimestampRequest(&dh, &request, &request_length);
       delete [] buf;
     }
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
-    //   How to return  String:
-    //Local<Value> outString;
-    //outString = Encode(request, request_length, BINARY);
-    //GT_free(request);
-    //return scope.Close(outString);
-    //   instead we return Buffer:
-    Buffer *result = Buffer::New((char *)request, request_length);
+    Local<Object> result = NanNewBufferHandle((char *)request, request_length);
     GT_free(request);
-    return scope.Close(result->handle_);
+    NanReturnValue(result);
   }
 
 
     // input: raw timestamper response in Buffer, output - DER token to be fed to constructor
-  static Handle<Value> ProcessResponse(const Arguments& args)
+  static NAN_METHOD(ProcessResponse)
   {
-    HandleScope scope;
+    NanScope();
 
-    if (args.Length() != 1) {
-      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
-    }
-
+    ASSERT_IS_N_ARGS(1);
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
+
     ssize_t len = DecodeBytes(args[0], BINARY);
-    if (len < 0) {
-      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
-      return ThrowException(exception);
-    }
+    ASSERT_IS_POSITIVE(len);
+
     int res;
     GTTimestamp *timestamp;
     if (Buffer::HasInstance(args[0])) {
@@ -657,35 +583,29 @@ public:
       res = GTTimestamp_createTimestamp(buf, len, &timestamp);
       delete [] buf;
     }
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
     unsigned char *data;
     size_t data_length;
     res = GTTimestamp_getDEREncoded(timestamp, &data, &data_length);
     GTTimestamp_free(timestamp);
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
-    Buffer *result = Buffer::New((char *)data, data_length);
+    Local<Object> result = NanNewBufferHandle((char *)data, data_length);
     GT_free(data);
-    return scope.Close(result->handle_);
+    NanReturnValue(result);
   }
 
 
    // verifies and returns latest pub. date
-  static Handle<Value> VerifyPublications(const Arguments& args)
+  static NAN_METHOD(VerifyPublications)
   {
-    HandleScope scope;
+    NanScope();
 
-    if (args.Length() != 1)
-      return ThrowException(Exception::TypeError(String::New("Wrong number of arguments")));
+    ASSERT_IS_N_ARGS(1);
     ASSERT_IS_STRING_OR_BUFFER(args[0]);
     ssize_t len = DecodeBytes(args[0], BINARY);
-    if (len < 0) {
-      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
-      return ThrowException(exception);
-    }
+    ASSERT_IS_POSITIVE(len);
 
     bool bufferAllocated = false;
     char *buf;
@@ -703,21 +623,20 @@ public:
     int res = GTPublicationsFile_DERDecode(buf, len, &pub);
     if (bufferAllocated)
       delete [] buf;
-    if (res != GT_OK)
-      return THROW_GT_ERROR(res);
+    ASSERT_GT_ERROR(res);
 
     GTPubFileVerificationInfo *vi;
     res = GTPublicationsFile_verify(pub,  &vi);
     if (res != GT_OK) {
       GTPublicationsFile_free(pub);
-      return THROW_GT_ERROR(res);
+      ASSERT_GT_ERROR(res);
     }
 
     GTPublicationsFile_free(pub);
     double result = vi->last_publication_time;
     GTPubFileVerificationInfo_free(vi);
 
-    return scope.Close(NODE_UNIXTIME_V8(result));
+    NanReturnValue(NODE_UNIXTIME_V8(result));
 
   }
 
@@ -733,29 +652,25 @@ private:
           -1);
   }
 
-  static bool HasInstance(v8::Handle<v8::Value> val) {
+  static bool HasInstance(Handle<Value> val) {
     if (!val->IsObject()) return false;
     Local<Object> obj = val->ToObject();
-
-    if (obj->GetIndexedPropertiesExternalArrayDataType() == kExternalUnsignedByteArray)
-      return true;
-    if (constructor_template->HasInstance(obj))
-      return true;
-    return false;
+    return NanHasInstance(constructor_template, obj);
   }
 };
+
 
 Persistent<FunctionTemplate> TimeSignature::constructor_template;
 
 extern "C" {
-  static void init (Handle<Object> target)
+  void init (Handle<Object> target)
   {
     int res;
     res = GT_init();
     if (res != GT_OK) {
-      ThrowException(Exception::Error(
-            String::Concat(String::New("Error initializing Guardtime C API: "),
-                           String::New(GT_getErrorString(res)))));
+      NanThrowError(
+            String::Concat(NanNew<String>("Error initializing Guardtime C SDK: "),
+                           NanNew<String>(GT_getErrorString(res))));
       return;
     }
     TimeSignature::Init(target);

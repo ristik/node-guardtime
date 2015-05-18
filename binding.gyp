@@ -12,6 +12,9 @@
       'sources': [
         'timesignature.cc'
       ],
+	  'include_dirs': [
+	      "<!(node -e \"require('nan')\")"
+      ],
       'variables': {
         # node v0.6.x doesn't give us its build variables,
         # but on Unix it was only possible to use the system OpenSSL library,

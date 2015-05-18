@@ -135,6 +135,28 @@ describe('GuardTime', function(){
     });
   });
 
+  describe('TimeSignature.checks()', function(){
+    it('tests TimeSignature parameter checks', function(done){
+      assert.throws(function () {
+        old.isEarlierThan(Object);
+        }, /TypeError/
+      );
+      assert.throws(function () {
+        old.extend();
+        }, /TypeError/
+      );
+      assert.throws(function () {
+        old.extend(42);
+        }, /TypeError/
+      );
+      assert.throws(function () {
+        new TimeSignature("blah");
+        }, /Invalid format/i
+      );
+      done();
+    });
+  });
+
   describe('extend() and verify()', function(){
     it('extends a old signature token, and then verifies it', function(done){
       gt.extend(old, function (err, xold) {

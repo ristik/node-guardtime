@@ -42,7 +42,7 @@ root value; and regularily publishes this root value in widely witnessed media.
 This allows you to prove that your document did exist at certain point of time, you
 used certain service endpoint, and this document was not modified ever after.
 
-Needs Node.JS >= 0.6.0; Windows is not tested.
+Needs Node.JS >= 0.8.0; Windows is not tested.
 
 [![build status](https://secure.travis-ci.org/ristik/node-guardtime.png)](http://travis-ci.org/ristik/node-guardtime)
 
