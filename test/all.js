@@ -70,6 +70,17 @@ describe('GuardTime', function(){
     });
   });
 
+  describe('getContent()', function(){
+    it('serialize and deserialize a token', function(done){
+      blob = sig.getContent();
+      assert.ok(blob.length > 100, "way too short serialized blob");
+      sig2 = new TimeSignature(blob);
+      assert.ok(sig2 instanceof TimeSignature, 'deserialization did not return an instance of TimeSignature');
+      assert.equal(sig2.verify().verification_status, gt.VER_RES.PUBLIC_KEY_SIGNATURE_PRESENT);
+      done();
+    });
+  });
+
   describe('TimeSignature.getRegisteredTime()', function(){
     it("checks if fresh signature token's signing time is reasonable", function(done){
       var now = new Date();
