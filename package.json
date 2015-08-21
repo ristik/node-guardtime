@@ -4,11 +4,11 @@
   "description": "Guardtime signing service access/verification API for node.js",
   "license": "Apache-2.0",
   "dependencies": {
-    "bindings": ">=1.0.0",
-    "nan": "~1.9.0"
+    "bindings": "^1.2.1",
+    "nan": "^1.9.0"
   },
   "devDependencies": {
-    "mocha": ">=1.7.0"
+    "mocha": "^2.2.5"
   },
   "author": {
     "name": "Risto Laanoja",
